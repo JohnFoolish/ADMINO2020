@@ -1,0 +1,16 @@
+{
+	"name": "admino",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"login": "clasp login",
+		"pull": "clasp pull",
+		"dev": "clasp push --watch"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@types/google-apps-script": "^1.0.14"
+	}
+}
