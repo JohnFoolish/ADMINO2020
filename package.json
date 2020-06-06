@@ -1,15 +1,15 @@
 {
 	"name": "admino",
 	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
+	"description": "Admino paperwork database backend",
+	"main": "Code.ts",
 	"scripts": {
 		"login": "clasp login",
 		"pull": "git pull",
 		"push": "git add -A && git commit -m \"Automated Commit\" && git push && clasp push"
 	},
-	"author": "",
-	"license": "ISC",
+	"author": "John Lewis Corker and Timothy Bowes",
+	"license": "MIT",
 	"dependencies": {
 		"@types/google-apps-script": "^1.0.14"
 	}
