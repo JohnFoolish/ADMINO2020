@@ -22,6 +22,8 @@ function myOnSubmit() {
 	//This will be a cool thing to edit
 
 	// Written using vs code
+
+	//Added to github and also now in app scripts
 }
 
 function myOnEdit() {
