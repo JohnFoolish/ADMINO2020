@@ -16,6 +16,8 @@ function myOnSubmit() {
 
 	doSomething();
 
+	// Are you sure that you cant?
+	//Nope I cannot :(
 	//THis is a comment htat got pushed automatically
 	// Really cool comment entered here
 	// Hey there bud what about this
