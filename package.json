@@ -5,9 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"login": "clasp login",
-		"pull": "clasp pull",
-		"dev": "clasp push --watch",
-		"push": "git add -A && git commit -m \"Automated Commit\" && git push"
+		"pull": "git pull",
+		"push": "git add -A && git commit -m \"Automated Commit\" && git push && clasp push"
 	},
 	"author": "",
 	"license": "ISC",
