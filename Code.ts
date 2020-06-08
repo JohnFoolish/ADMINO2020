@@ -1,33 +1,15 @@
 const ss = SpreadsheetApp.getActiveSpreadsheet();
 const ssData = ss.getSheetByName('Data');
+const ssResponses = ss.getSheetByName('Responses');
+const ssBattalion = ss.getSheetByName('Battalion Structure');
 
 /*
   const data = ssData.getRange(1,1,ssData.getLastRow(), ssData.getLastColumn()).getValues();   
   ssData.getRange(1,1,ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
-
 */
 
 function myOnSubmit() {
-	console.log('Hello world');
-
-	const doSomething = () => {
-		console.log('Litterally anything');
-	};
-
-	doSomething();
-
-	// Are you sure that you cant?
-	//Nope I cannot :(
-	//THis is a comment htat got pushed automatically
-	// Really cool comment entered here
-	// Hey there bud what about this
-	//This will be a cool thing to edit
-	//This is a new save!
-	//take 3
-
-	// Written using vs code
-
-	//Added to github and also now in app scripts
+	const data = ssResponses.getRange(ssResponses.getLastRow(), 1, 1, ssResponses.getLastColumn()).getValues();
 }
 
 function myOnEdit() {
