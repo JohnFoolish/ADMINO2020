@@ -31,7 +31,8 @@ function myOnEdit() {
 //Make the sheet pretty function--once a week?
 
 function updateFormGroups() {
-	const item = form.addListItem();
+	const FormItem = form.getItems();
+	const item = FormItem[1].asListItem();
 	item.setTitle('Receiever Name/Group');
 	const groups = getGroups();
 	const groupList = [];
@@ -62,6 +63,5 @@ function getGroups(): string[] {
 		}
 	}
 
-	Logger.log(out);
 	return out;
 }
