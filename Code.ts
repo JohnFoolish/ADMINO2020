@@ -33,6 +33,7 @@ function myOnEdit() {
 function updateFormGroups() {
 	const FormItem = form.getItems();
 	const item = FormItem[1].asListItem();
+	item.setChoices([]);
 	item.setTitle('Receiever Name/Group');
 	const groups = getGroups();
 	const groupList = [];
