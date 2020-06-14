@@ -9,10 +9,14 @@ const ssBattalion = ss.getSheetByName('Battalion Structure');
 */
 
 function myOnSubmit() {
-	const data = ssResponses.getRange(ssResponses.getLastRow(), 1, 1, ssResponses.getLastColumn()).getValues();
+	if (ssData.getLastRow() > 0) {
+		const data = ssResponses.getRange(ssResponses.getLastRow(), 1, 1, ssResponses.getLastColumn()).getValues();
+	}
 }
 
 function myOnEdit() {
-	const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
-	ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
+	if (ssData.getLastRow() > 0) {
+		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
+		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
+	}
 }
