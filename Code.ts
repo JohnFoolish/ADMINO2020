@@ -78,7 +78,7 @@ function getGroups(justIndividuals: boolean): string[] {
 
 	for (let i = 1; i < groupData.length; i++) {
 		const person = groupData[i][0] + ', ' + groupData[i][1];
-		if (person !== '') {
+		if (groupData[i][0] !== '' && groupData[i][1] !== '') {
 			out.push(person);
 		}
 	}
