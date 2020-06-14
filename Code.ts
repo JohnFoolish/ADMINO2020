@@ -28,6 +28,9 @@ function myOnSubmit() {
 
 		//Write to data sheet
 		ssData.getRange(ssData.getLastRow() + 1, 1, 1, data[0].length).setValues(data);
+
+		//Check to see if we need to send the email to the recipient
+		if (data[7] === true)
 	}
 }
 
@@ -102,7 +105,7 @@ function getIndividualEmail(name: string): string {
 			returnEmail = groupData[i][2];
 		}
 	}
-	Logger.log(returnEmail);
+	Logger.log(returnEmail, name);
 	return returnEmail;
 }
 
@@ -119,5 +122,5 @@ function getIndividualsInGroup(groupName: string): string[] {
 	}
 
 	Logger.log(out);
-	return out;
+	return out === [] ? [groupName] : out;
 }
