@@ -16,6 +16,7 @@ function myOnSubmit() {
 	if (ssData.getLastRow() > 0) {
 		// Get newly inserted data
 		const data = ssResponses.getRange(ssResponses.getLastRow(), 1, 1, ssResponses.getLastColumn()).getValues();
+		Logger.log(data);
 
 		// Manipulate data
 
