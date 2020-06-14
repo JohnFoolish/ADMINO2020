@@ -32,7 +32,7 @@ function myOnSubmit() {
 		//Check to see if we need to send the email to the recipient
 		if (data[0][7] == 'Yes') {
 			const name = data[0][2];
-			let;
+			let[] indiv = getIndividualsInGroup(name);
 		}
 	}
 }
@@ -123,5 +123,5 @@ function getIndividualsInGroup(groupName: string): string[] {
 		}
 	}
 
-	return out === [] ? [groupName] : out;
+	return out.length === 0 ? [groupName] : out;
 }
