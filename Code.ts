@@ -12,13 +12,19 @@ const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyT
   ssData.getRange(1,1,ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 */
 
+function test() {
+	getIndividualsInGroup('DHs');
+	getIndividualEmail('Bowes, Timothy');
+}
+
 function myOnSubmit() {
 	if (ssData.getLastRow() > 0) {
 		// Get newly inserted data
 		const data = ssResponses.getRange(ssResponses.getLastRow(), 1, 1, ssResponses.getLastColumn()).getValues();
-		Logger.log(data);
 
 		// Manipulate data
+		// Go from [[Timestamp	Assigner's Name	Receiever Name/Group	Paperwork	Reason for paperwork	Date Assigned	Date Due	Send Initial Email Notification]]
+		// To this [[Timestamp	Assigner's Name	Group	Receiver's Name	Paperwork	Date Assigned	Date Due	Received	Reason for paperwork]]
 
 		//Write to data sheet
 		ssData.getRange(ssData.getLastRow() + 1, 1, 1, data[0].length).setValues(data);
@@ -84,5 +90,33 @@ function getGroups(justIndividuals: boolean): string[] {
 		}
 	}
 
+	return out;
+}
+
+function getIndividualEmail(name: string): string {
+	const groupData = ssBattalion.getRange(1, 1, ssBattalion.getLastRow(), ssBattalion.getLastColumn()).getValues();
+	let returnEmail = '';
+	for (let i = 1; i < groupData.length; i++) {
+		const person = groupData[i][0] + ', ' + groupData[i][1];
+		if (name === person) {
+			returnEmail = groupData[i][2];
+		}
+	}
+	return returnEmail;
+}
+
+function getIndividualsInGroup(groupName: string): string[] {
+	const groupData = ssBattalion.getRange(1, 1, ssBattalion.getLastRow(), ssBattalion.getLastColumn()).getValues();
+	const out = [];
+
+	const columnOfGroup = groupData[0].indexOf(groupName);
+
+	if (columnOfGroup !== -1) {
+		for (let i = 1; i < groupData.length; i++) {
+			if (groupData[i][columnOfGroup] !== '') out.push(groupData[i][0] + ', ' + groupData[i][1]);
+		}
+	}
+
+	Logger.log(out);
 	return out;
 }
