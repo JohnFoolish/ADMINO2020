@@ -25,7 +25,12 @@ function myOnSubmit() {
 }
 
 function myOnEdit() {
-	// Not sure what is going to end up going here
+	if (
+		ss.getActiveCell().getSheet().getName() === 'Battalion Structure' &&
+		(ss.getActiveCell().getColumn() === 1 || ss.getActiveCell().getColumn() === 2 || ss.getActiveCell().getRow() === 1)
+	) {
+		updateFormGroups();
+	}
 }
 
 //Make the sheet pretty function--once a week?
