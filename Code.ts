@@ -31,10 +31,11 @@ function myOnEdit() {
 //Make the sheet pretty function--once a week?
 
 function updateFormGroups() {
+	// Update Recieve name / group
 	const FormItem = form.getItems();
 	const item = FormItem[1].asListItem();
 	item.setTitle('Receiever Name/Group');
-	const groups = getGroups();
+	const groups = getGroups(false);
 	const groupList = [];
 	for (const groupData of groups) {
 		groupList.push(item.createChoice(groupData));
@@ -43,16 +44,30 @@ function updateFormGroups() {
 	item.isRequired();
 	item.setHelpText('The group or MIDN you want to assign the paperwork to');
 	Logger.log(groupList);
+
+	// Update assigner names list
+	const item2 = FormItem[0].asListItem();
+	const ind = getGroups(true);
+	const indList = [];
+	for (const individuals of ind) {
+		indList.push(item2.createChoice(individuals));
+	}
+	item2.setChoices(indList);
+	item2.isRequired();
+	item2.setHelpText('Select your name from the list below.');
+	Logger.log(indList);
 }
 
-function getGroups(): string[] {
+function getGroups(justIndividuals: boolean): string[] {
 	const groupData = ssBattalion.getRange(1, 1, ssBattalion.getLastRow(), ssBattalion.getLastColumn()).getValues();
 	const out = [];
 
-	for (let i = 3; i < groupData[0].length; i++) {
-		const group = groupData[0][i];
-		if (group !== '') {
-			out.push(group);
+	if (!justIndividuals) {
+		for (let i = 3; i < groupData[0].length; i++) {
+			const group = groupData[0][i];
+			if (group !== '') {
+				out.push(group);
+			}
 		}
 	}
 
