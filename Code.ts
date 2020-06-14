@@ -13,7 +13,7 @@ const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyT
 */
 
 function test() {
-	getIndividualsInGroup('DHs');
+	Logger.log(getIndividualsInGroup('Bowes, Timothy'));
 	Logger.log(getIndividualEmail('Bowes, Timothy'));
 }
 
@@ -30,7 +30,10 @@ function myOnSubmit() {
 		ssData.getRange(ssData.getLastRow() + 1, 1, 1, data[0].length).setValues(data);
 
 		//Check to see if we need to send the email to the recipient
-		if (data[7] === true)
+		if (data[0][7] == 'Yes') {
+			const name = data[0][2];
+			let;
+		}
 	}
 }
 
@@ -105,7 +108,6 @@ function getIndividualEmail(name: string): string {
 			returnEmail = groupData[i][2];
 		}
 	}
-	Logger.log(returnEmail, name);
 	return returnEmail;
 }
 
@@ -121,6 +123,5 @@ function getIndividualsInGroup(groupName: string): string[] {
 		}
 	}
 
-	Logger.log(out);
 	return out === [] ? [groupName] : out;
 }
