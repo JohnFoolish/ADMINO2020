@@ -56,7 +56,7 @@ function getGroups(): string[] {
 	}
 
 	for (let i = 1; i < groupData.length; i++) {
-		const person = groupData[i][0] + groupData[i][1];
+		const person = groupData[i][0] + ', ' + groupData[i][1];
 		if (person !== '') {
 			out.push(person);
 		}
