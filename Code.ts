@@ -12,28 +12,40 @@ const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyT
   ssData.getRange(1,1,ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 */
 
-function test() {
-	Logger.log(getIndividualsInGroup('Bowes, Timothy'));
-	Logger.log(getIndividualEmail('Bowes, Timothy'));
-}
+function test() {}
 
 function myOnSubmit() {
 	if (ssData.getLastRow() > 0) {
 		// Get newly inserted data
 		const data = ssResponses.getRange(ssResponses.getLastRow(), 1, 1, ssResponses.getLastColumn()).getValues();
+		const outData = data;
 
 		// Manipulate data
-		// Go from [[Timestamp	Assigner's Name	Receiever Name/Group	Paperwork	Reason for paperwork	Date Assigned	Date Due	Send Initial Email Notification]]
-		// To this [[Timestamp	Assigner's Name	Group	Receiver's Name	Paperwork	Date Assigned	Date Due	Received	Reason for paperwork]]
+		// Go from [[Timestamp	Assigner's Name		Receiever Name/Group		Paperwork			Reason for paperwork	Date Assigned	Date Due	Send Initial Email Notification]]
+		// To this [[Timestamp	Assigner's Name		Group						Receiver's Name		Paperwork				Date Assigned	Date Due	Received		Reason for paperwork]]
+		const people = getIndividualsInGroup(data[0][2]);
+		const emailList = [];
+		for (let i = 0; i < people.length; i++) {
+			outData[i][0] = new Date();
+			outData[i][0].setTime(data[0][0].getTime() + i); //Timestamp - UUID
+			outData[i][1] = data[0][1]; // Assigners Name
+			outData[i][2] = people.length === 1 ? 'Individual' : data[0][2]; // Group
+			outData[i][3] = people[i]; // Recievers name
+			outData[i][4] = data[0][3]; // Paperwork
+			outData[i][5] = data[0][5]; // Data assigned
+			outData[i][6] = data[0][6]; // Date Due
+			outData[i][7] = 'false'; // Turned in
+			outData[i][8] = data[0][4]; // Reason for paperwork
+
+			if (data[0][7] == 'Yes') {
+				emailList.push(getIndividualEmail(people[i]));
+			}
+		}
+
+		sendEmail(emailList, data);
 
 		//Write to data sheet
-		ssData.getRange(ssData.getLastRow() + 1, 1, 1, data[0].length).setValues(data);
-
-		//Check to see if we need to send the email to the recipient
-		if (data[0][7] == 'Yes') {
-			const name = data[0][2];
-			let[] indiv = getIndividualsInGroup(name);
-		}
+		ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 	}
 }
 
@@ -124,4 +136,18 @@ function getIndividualsInGroup(groupName: string): string[] {
 	}
 
 	return out.length === 0 ? [groupName] : out;
+}
+function sendEmail(emailList, data) {
+	const emailSender = getIndividualEmail(data[0][0]);
+
+	const emailSubject = 'New ' + data[0][3] + ' has been assigned to you. Due COB' + data[0][6] + '.';
+
+	const emailBody = "<h2 style='color: #5e9ca0;'> You have been assigned a <" + data[0][3] + '.';
+
+	MailApp.sendEmail({
+		to: emailSender,
+		bcc: emailList,
+		subject: emailSubject,
+		htmlBody: emailBody,
+	});
 }
