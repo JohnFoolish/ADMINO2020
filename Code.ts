@@ -14,7 +14,7 @@ const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyT
 
 function test() {
 	getIndividualsInGroup('DHs');
-	getIndividualEmail('Bowes, Timothy');
+	Logger.log(getIndividualEmail('Bowes, Timothy'));
 }
 
 function myOnSubmit() {
@@ -102,6 +102,7 @@ function getIndividualEmail(name: string): string {
 			returnEmail = groupData[i][2];
 		}
 	}
+	Logger.log(returnEmail);
 	return returnEmail;
 }
 
