@@ -21,8 +21,6 @@ function myOnSubmit() {
 		const outData = data;
 
 		// Manipulate data
-		// Go from [[Timestamp	Assigner's Name		Receiever Name/Group		Paperwork			Reason for paperwork	Date Assigned	Date Due	Send Initial Email Notification]]
-		// To this [[Timestamp	Assigner's Name		Group						Receiver's Name		Paperwork				Date Assigned	Date Due	Received		Reason for paperwork]]
 		const people = getIndividualsInGroup(data[0][2]);
 		const emailList = [];
 		for (let i = 0; i < people.length; i++) {
@@ -34,18 +32,20 @@ function myOnSubmit() {
 			outData[i][4] = data[0][3]; // Paperwork
 			outData[i][5] = data[0][5]; // Data assigned
 			outData[i][6] = data[0][6]; // Date Due
-			outData[i][7] = 'false'; // Turned in
+			outData[i][7] = 'FALSE'; // Turned in
 			outData[i][8] = data[0][4]; // Reason for paperwork
 
 			if (data[0][7] == 'Yes') {
 				emailList.push(getIndividualEmail(people[i]));
 			}
 		}
-
 		sendEmail(emailList, data);
 
 		//Write to data sheet
 		ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+
+		// Write to Pending Paperwork
+		ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 	}
 }
 
@@ -56,9 +56,18 @@ function myOnEdit() {
 	) {
 		updateFormGroups();
 	}
+	if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
+		const uuidDate = ssPending.getRange(ss.getActiveCell().getRow(), 1).getValue();
+		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
+		for (let i = 0; i < data.length; i++) {
+			if (data[i][0] == uuidDate) {
+				data[i][7] = 'TRUE';
+			}
+		}
+		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
+		ssPending.deleteRow(ss.getActiveCell().getRow());
+	}
 }
-
-//Make the sheet pretty function--once a week?
 
 function updateFormGroups() {
 	// Update Recieve name / group
@@ -137,12 +146,28 @@ function getIndividualsInGroup(groupName: string): string[] {
 
 	return out.length === 0 ? [groupName] : out;
 }
+
 function sendEmail(emailList, data) {
+	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
+	if (!emailsActivated) return;
+
 	const emailSender = getIndividualEmail(data[0][0]);
 
 	const emailSubject = 'New ' + data[0][3] + ' has been assigned to you. Due COB' + data[0][6] + '.';
 
-	const emailBody = "<h2 style='color: #5e9ca0;'> You have been assigned a <" + data[0][3] + '.';
+	const emailBody =
+		"<h2>style='color: #5e9ca0;'> You have been assigned a " +
+		data[0][3] +
+		' from ' +
+		data[0][1] +
+		'.</h2>' +
+		'<p> The reason is the following: ' +
+		data[0][4] +
+		'.</p> <p> You must turn this form in by COB ' +
+		data[0][6] +
+		'.<p>';
+
+	emailList.filter((email) => email !== '');
 
 	MailApp.sendEmail({
 		to: emailSender,
