@@ -33,8 +33,14 @@ function myOnSubmit() {
 			outData[i][3] = people[i]; // Recievers name
 			outData[i][4] = data[0][3]; // Paperwork
 			outData[i][5] = data[0][5]; // Data assigned
-			outData[i][6] = data[0][6]; // Date Due
-			outData[i][7] = 'Not Recieved'; // Turned in
+			if (outData[i][4] === 'Chit' || outData[i][4] === 'Negative Counseling' || outData[i][4] === 'Merit') {
+				//This function does not work. Placeholder for now.
+				const date = increaseDate(outData[i][4], outData[i][5]);
+				outData[i][6] = date;
+			} else {
+			    outData[i][6] = data[0][6]; // Date Due
+			}
+			outData[i][7] = 'FALSE'; // Turned in
 			outData[i][8] = data[0][4]; // Reason for paperwork
 
 			if (data[0][7] == 'Yes') {
@@ -65,7 +71,7 @@ function myOnEdit() {
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 		for (let i = 0; i < data.length; i++) {
 			if (data[i][0] == uuidDate) {
-				data[i][7] = 'Recieved';
+				data[i][7] = 'TRUE';
 			}
 		}
 		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
@@ -197,4 +203,12 @@ function sendEmail(emailList, data) {
 		subject: emailSubject,
 		htmlBody: emailBody,
 	});
+}
+
+function increaseDate(paperworkType, rawDate) {
+	const dateDemo = String(rawDate[0][6]).split(" ", 4);
+	const date = dateDemo
+	return date
+	//const date = new Date(this.valueOf());
+	//date.setDate(date.getDate() + 3);
 }
