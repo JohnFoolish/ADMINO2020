@@ -48,6 +48,8 @@ function myOnSubmit() {
 
 		// Write to Pending Paperwork
 		ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+
+
 	}
 }
 
@@ -68,6 +70,7 @@ function myOnEdit() {
 		}
 		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 		ssPending.deleteRow(ss.getActiveCell().getRow());
+		Logger.log(uuidDate, data)
 	}
 }
 
@@ -160,7 +163,7 @@ function sendEmail(emailList, data) {
 
 	const emailSender = getIndividualEmail(data[0][0]);
 
-	const emailSubject = 'New ' + data[0][3] + ' due COB ' + date + '.';
+	const emailSubject = 'NROTC ADMIN Department: New ' + data[0][3] + ' due COB ' + date + '.';
 
 	const emailBody =
 		"<h2 'style=color: #5e9ca0;'> You have been assigned a " +
