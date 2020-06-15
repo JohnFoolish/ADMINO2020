@@ -34,7 +34,7 @@ function myOnSubmit() {
 			outData[i][4] = data[0][3]; // Paperwork
 			outData[i][5] = data[0][5]; // Data assigned
 			outData[i][6] = data[0][6]; // Date Due
-			outData[i][7] = 'FALSE'; // Turned in
+			outData[i][7] = 'Not Recieved'; // Turned in
 			outData[i][8] = data[0][4]; // Reason for paperwork
 
 			if (data[0][7] == 'Yes') {
@@ -65,7 +65,7 @@ function myOnEdit() {
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 		for (let i = 0; i < data.length; i++) {
 			if (data[i][0] == uuidDate) {
-				data[i][7] = 'TRUE';
+				data[i][7] = 'Recieved';
 			}
 		}
 		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
