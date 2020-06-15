@@ -76,7 +76,7 @@ function myOnEdit() {
 		}
 		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 		ssPending.deleteRow(ss.getActiveCell().getRow());
-		Logger.log(uuidDate, data)
+		Logger.log(uuidDate)
 	}
 }
 
