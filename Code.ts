@@ -67,15 +67,15 @@ function myOnEdit() {
 		const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 		for (let j = 1; j < pending.length; j++) {
-			if (pending[j][7] === 'TRUE') {
+			if (pending[j][7].toString() === 'true') {
 				Logger.log(pending[j]);
 				const uuidDate = pending[j][0].toString();
 				for (let i = 0; i < data.length; i++) {
 					if (data[i][0].toString() === uuidDate) {
-						data[i][7] = 'TRUE';
+						data[i][7] = 'true';
 					}
 				}
-				pending[j].map((item) => '');
+				pending[j] = pending[j].map((item) => '');
 			}
 		}
 		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
