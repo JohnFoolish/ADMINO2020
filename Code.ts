@@ -68,13 +68,14 @@ function myOnEdit() {
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 		for (let j = 1; j < pending.length; j++) {
 			if (pending[j][7] === 'TRUE') {
+				Logger.log(pending[j]);
 				const uuidDate = pending[j][0].toString();
 				for (let i = 0; i < data.length; i++) {
 					if (data[i][0].toString() === uuidDate) {
 						data[i][7] = 'TRUE';
 					}
 				}
-				pending[j].filter((item) => '');
+				pending[j].map((item) => '');
 			}
 		}
 		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
