@@ -166,9 +166,9 @@ function sendEmail(emailList, data) {
 		'.</h2>' +
 		'<p> The reason is the following: ' +
 		data[0][4] +
-		'.</p> <p> You must turn this form in by COB ' +
+		'.</p> <p> You must turn this form in by COB on' +
 		date +
-		'.<p>';
+		'.<p>' + "<p> If you have any questions regarding the validity of the " + data[0][3] + ", please contact the assignee.";
 
 	//emailList.filter((email) => email !== '');
     var correctedEmail = "";
