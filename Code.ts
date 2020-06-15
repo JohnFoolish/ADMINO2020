@@ -170,15 +170,22 @@ function sendEmail(emailList, data) {
 		'.<p>';
 
 	//emailList.filter((email) => email !== '');
+    var correctedEmail = "";
 	for (let i = 0; i < emailList.length; i++) {
         if (emailList[i] === '') {
-			delete emailList[i];
+			continue;
+		} else {
+			if (correctedEmail === "") {
+				correctedEmail = emailList[i];
+			} else {
+			    correctedEmail = emailList[i] + "," + correctedEmail;
+			}
 		}
 	}
     Logger.log(emailList, emailSender)
 	MailApp.sendEmail({
 		to: emailSender,
-		bcc: emailList,
+		bcc: correctedEmail,
 		subject: emailSubject,
 		htmlBody: emailBody,
 	});
