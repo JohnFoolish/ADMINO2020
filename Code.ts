@@ -64,15 +64,22 @@ function myOnEdit() {
 		updateFormGroups();
 	}
 	if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
-		const uuidDate = ssPending.getRange(ss.getActiveCell().getRow(), 1).getValue().toString();
+		const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
-		for (let i = 0; i < data.length; i++) {
-			if (data[i][0].toString() === uuidDate) {
-				data[i][7] = 'TRUE';
+		for (let j = 1; j < pending.length; j++) {
+			if (pending[j][7] === 'TRUE') {
+				const uuidDate = pending[j][0].toString();
+				for (let i = 0; i < data.length; i++) {
+					if (data[i][0].toString() === uuidDate) {
+						data[i][7] = 'TRUE';
+					}
+				}
+				pending[j].filter((item) => '');
 			}
 		}
 		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
-		ssPending.deleteRow(ss.getActiveCell().getRow());
+		ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).setValues(pending);
+		ssPending.sort(1);
 	}
 }
 
