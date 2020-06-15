@@ -172,10 +172,10 @@ function sendEmail(emailList, data) {
 	//emailList.filter((email) => email !== '');
 	for (let i = 0; i < emailList.length; i++) {
         if (emailList[i] === '') {
-			delete emailList[i]
+			delete emailList[i];
 		}
 	}
-
+    Logger.log(emailList, emailSender)
 	MailApp.sendEmail({
 		to: emailSender,
 		bcc: emailList,
