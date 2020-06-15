@@ -124,7 +124,7 @@ function getGroups(justIndividuals: boolean): string[] {
 
 function getIndividualEmail(name: string): string {
 	const groupData = ssBattalion.getRange(1, 1, ssBattalion.getLastRow(), ssBattalion.getLastColumn()).getValues();
-	let returnEmail = '';
+	let returnEmail = null;
 	for (let i = 1; i < groupData.length; i++) {
 		const person = groupData[i][0] + ', ' + groupData[i][1];
 		if (name === person) {
@@ -154,13 +154,13 @@ function sendEmail(emailList, data) {
 	if (!emailsActivated) return;
 
 
-	const dateDemo = String(data[0][6]).split(" ", 3);
+	const dateDemo = String(data[0][6]).split(" ", 4);
 
-	const date = dateDemo[0] + ", " + dateDemo[2] + dateDemo[1].toUpperCase()
+	const date = dateDemo[0] + ", " + dateDemo[2] + dateDemo[1].toUpperCase() + dateDemo[3]
 
 	const emailSender = getIndividualEmail(data[0][0]);
 
-	const emailSubject = 'New ' + data[0][3] + ' due COB' + date + '.';
+	const emailSubject = 'New ' + data[0][3] + ' due COB ' + date + '.';
 
 	const emailBody =
 		"<h2 'style=color: #5e9ca0;'> You have been assigned a " +
@@ -170,14 +170,14 @@ function sendEmail(emailList, data) {
 		'.</h2>' +
 		'<p> The reason is the following: ' +
 		data[0][4] +
-		'.</p> <p> You must turn this form in by COB on' +
+		'.</p> <p> You must turn this form in by COB on ' +
 		date +
 		'.<p>' + "<p> If you have any questions regarding the validity of the " + data[0][3] + ", please contact the assignee.";
 
 	//emailList.filter((email) => email !== '');
     var correctedEmail = "";
 	for (let i = 0; i < emailList.length; i++) {
-        if (emailList[i] === '') {
+        if (emailList[i] === null) {
 			continue;
 		} else {
 			if (correctedEmail === "") {
