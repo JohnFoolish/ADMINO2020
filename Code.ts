@@ -18,12 +18,14 @@ function myOnSubmit() {
 	if (ssData.getLastRow() > 0) {
 		// Get newly inserted data
 		const data = ssResponses.getRange(ssResponses.getLastRow(), 1, 1, ssResponses.getLastColumn()).getValues();
-		const outData = data;
+		
 
 		// Manipulate data
 		const people = getIndividualsInGroup(data[0][2]);
+		const outData = new Array(people.length);
 		const emailList = [];
 		for (let i = 0; i < people.length; i++) {
+            outData[i] = new Array(9)
 			outData[i][0] = new Date();
 			outData[i][0].setTime(data[0][0].getTime() + i); //Timestamp - UUID
 			outData[i][1] = data[0][1]; // Assigners Name
