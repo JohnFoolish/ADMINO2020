@@ -18,16 +18,15 @@ function myOnSubmit() {
 	if (ssData.getLastRow() > 0) {
 		// Get newly inserted data
 		const data = ssResponses.getRange(ssResponses.getLastRow(), 1, 1, ssResponses.getLastColumn()).getValues();
-		
 
 		// Manipulate data
 		const people = getIndividualsInGroup(data[0][2]);
 		const outData = new Array(people.length);
 		const emailList = [];
 		for (let i = 0; i < people.length; i++) {
-            outData[i] = new Array(9)
-			outData[i][0] = new Date();
-			outData[i][0].setTime(data[0][0].getTime() + i); //Timestamp - UUID
+			outData[i] = new Array(9);
+			outData[i][0] = new Date(data[0][0].toString());
+			outData[i][0].setSeconds(outData[i][0].getSeconds() + i); //Timestamp - UUID
 			outData[i][1] = data[0][1]; // Assigners Name
 			outData[i][2] = people.length === 1 ? 'Individual' : data[0][2]; // Group
 			outData[i][3] = people[i]; // Recievers name
@@ -38,7 +37,7 @@ function myOnSubmit() {
 				const date = increaseDate(outData[i][4], outData[i][5]);
 				outData[i][6] = date;
 			} else {
-			    outData[i][6] = data[0][6]; // Date Due
+				outData[i][6] = data[0][6]; // Date Due
 			}
 			outData[i][7] = 'FALSE'; // Turned in
 			outData[i][8] = data[0][4]; // Reason for paperwork
@@ -54,8 +53,6 @@ function myOnSubmit() {
 
 		// Write to Pending Paperwork
 		ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
-
-
 	}
 }
 
@@ -67,16 +64,15 @@ function myOnEdit() {
 		updateFormGroups();
 	}
 	if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
-		const uuidDate = ssPending.getRange(ss.getActiveCell().getRow(), 1).getValue();
+		const uuidDate = ssPending.getRange(ss.getActiveCell().getRow(), 1).getValue().toString();
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 		for (let i = 0; i < data.length; i++) {
-			if (data[i][0] == uuidDate) {
+			if (data[i][0].toString() === uuidDate) {
 				data[i][7] = 'TRUE';
 			}
 		}
 		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 		ssPending.deleteRow(ss.getActiveCell().getRow());
-		Logger.log(uuidDate)
 	}
 }
 
@@ -162,10 +158,9 @@ function sendEmail(emailList, data) {
 	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;
 
+	const dateDemo = String(data[0][6]).split(' ', 4);
 
-	const dateDemo = String(data[0][6]).split(" ", 4);
-
-	const date = dateDemo[0] + ", " + dateDemo[2] + dateDemo[1].toUpperCase() + dateDemo[3]
+	const date = dateDemo[0] + ', ' + dateDemo[2] + dateDemo[1].toUpperCase() + dateDemo[3];
 
 	const emailSender = getIndividualEmail(data[0][0]);
 
@@ -181,22 +176,25 @@ function sendEmail(emailList, data) {
 		data[0][4] +
 		'.</p> <p> You must turn this form in by COB on ' +
 		date +
-		'.<p>' + "<p> If you have any questions regarding the validity of the " + data[0][3] + ", please contact the assignee.";
+		'.<p>' +
+		'<p> If you have any questions regarding the validity of the ' +
+		data[0][3] +
+		', please contact the assignee.';
 
 	//emailList.filter((email) => email !== '');
-    var correctedEmail = "";
+	var correctedEmail = '';
 	for (let i = 0; i < emailList.length; i++) {
-        if (emailList[i] === null) {
+		if (emailList[i] === null) {
 			continue;
 		} else {
-			if (correctedEmail === "") {
+			if (correctedEmail === '') {
 				correctedEmail = emailList[i];
 			} else {
-			    correctedEmail = emailList[i] + "," + correctedEmail;
+				correctedEmail = emailList[i] + ',' + correctedEmail;
 			}
 		}
 	}
-    Logger.log(emailList, emailSender)
+	Logger.log(emailList, emailSender);
 	MailApp.sendEmail({
 		to: emailSender,
 		bcc: correctedEmail,
@@ -208,7 +206,7 @@ function sendEmail(emailList, data) {
 function increaseDate(paperworkType, rawDate) {
 	//const dateDemo = String(rawDate).split(" ", 4);
 	//const date = dateDemo
-	return rawDate
+	return rawDate;
 	//const date = new Date(this.valueOf());
 	//date.setDate(date.getDate() + 3);
 }
