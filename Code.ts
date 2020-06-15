@@ -7,11 +7,6 @@ const ssPending = ss.getSheetByName('Pending Paperwork');
 
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
 
-/*
-  const data = ssData.getRange(1,1,ssData.getLastRow(), ssData.getLastColumn()).getValues();   
-  ssData.getRange(1,1,ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
-*/
-
 function test() {}
 
 function myOnSubmit() {
