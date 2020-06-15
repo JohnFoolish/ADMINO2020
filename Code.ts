@@ -153,12 +153,13 @@ function sendEmail(emailList, data) {
 	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;
 
+	const date = data[0][6].splice(0, 10);
 	const emailSender = getIndividualEmail(data[0][0]);
 
-	const emailSubject = 'New ' + data[0][3] + ' has been assigned to you. Due COB' + data[0][6] + '.';
+	const emailSubject = 'New ' + data[0][3] + ' has been assigned to you. Due COB' + date + '.';
 
 	const emailBody =
-		"<h2>style='color: #5e9ca0;'> You have been assigned a " +
+		"<h2 'style=color: #5e9ca0;'> You have been assigned a " +
 		data[0][3] +
 		' from ' +
 		data[0][1] +
@@ -166,7 +167,7 @@ function sendEmail(emailList, data) {
 		'<p> The reason is the following: ' +
 		data[0][4] +
 		'.</p> <p> You must turn this form in by COB ' +
-		data[0][6] +
+		date +
 		'.<p>';
 
 	//emailList.filter((email) => email !== '');
