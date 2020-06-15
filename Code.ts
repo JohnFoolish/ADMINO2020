@@ -156,7 +156,7 @@ function sendEmail(emailList, data) {
 	const date = data[0][6].splice(0, 10);
 	const emailSender = getIndividualEmail(data[0][0]);
 
-	const emailSubject = 'New ' + data[0][3] + ' has been assigned to you. Due COB' + date + '.';
+	const emailSubject = 'New ' + data[0][3] + ' due COB' + date + '.';
 
 	const emailBody =
 		"<h2 'style=color: #5e9ca0;'> You have been assigned a " +
