@@ -169,7 +169,12 @@ function sendEmail(emailList, data) {
 		data[0][6] +
 		'.<p>';
 
-	emailList.filter((email) => email !== '');
+	//emailList.filter((email) => email !== '');
+	for (let i = 0; i < emailList.length; i++) {
+        if (emailList[i] === '') {
+			delete emailList[i]
+		}
+	}
 
 	MailApp.sendEmail({
 		to: emailSender,
