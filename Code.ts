@@ -153,7 +153,7 @@ function sendEmail(emailList, data) {
 	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;
 
-	const date = String(data[0][6]).split(" ", 3);
+	const date = String(data[0][6]).slice(0, 10);
 	const emailSender = getIndividualEmail(data[0][0]);
 
 	const emailSubject = 'New ' + data[0][3] + ' due COB' + date + '.';
