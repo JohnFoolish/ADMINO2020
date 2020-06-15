@@ -206,7 +206,7 @@ function sendEmail(emailList, data) {
 }
 
 function increaseDate(paperworkType, rawDate) {
-	const dateDemo = String(rawDate[0][6]).split(" ", 4);
+	const dateDemo = String(rawDate).split(" ", 4);
 	const date = dateDemo
 	return date
 	//const date = new Date(this.valueOf());
