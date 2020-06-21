@@ -6,7 +6,7 @@ const ssOptions = ss.getSheetByName('Options');
 const ssPending = ss.getSheetByName('Pending Paperwork');
 
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
-const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1q9bDRh-oKk9DTpANNvHTBZej8MXzqXEhHcng-GEFOGI/edit')
+const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit')
 
 function test() {}
 
