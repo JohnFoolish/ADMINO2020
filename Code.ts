@@ -10,6 +10,7 @@ const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6
 
 function test() {}
 
+//Triggers when the submission form is submitted
 function myOnSubmit() {
 	if (ssData.getLastRow() > 0) {
 		// Get newly inserted data
@@ -51,6 +52,12 @@ function myOnSubmit() {
 		// Write to Pending Paperwork
 		ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 	}
+}
+
+//This function runs whenever the new paperwork submission form is submitted.
+function myOnFormCompletion() {
+
+
 }
 
 function myOnEdit() {
@@ -121,7 +128,6 @@ function updateFormGroups() {
 	subItem.isRequired();
 	subItem.setHelpText('Select your name from the dropdown menu below');
 	Logger.log(subIndList);
-
 
 }
 
