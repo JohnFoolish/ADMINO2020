@@ -36,6 +36,7 @@ function myOnSubmit() {
 			}
 			outData[i][7] = 'FALSE'; // Turned in
 			outData[i][8] = data[0][4]; // Reason for paperwork
+			outData[i][9] = data[0][8]; //Link to paperwork
 
 			if (data[0][7] == 'Yes') {
 				emailList.push(getIndividualEmail(people[i]));
@@ -179,10 +180,11 @@ function sendEmail(emailList, data) {
 		data[0][4] +
 		'.</p> <p> You must turn this form in by COB on ' +
 		date +
-		'.<p>' +
+		'.</p>' +
 		'<p> If you have any questions regarding the validity of the ' +
 		data[0][3] +
-		', please contact the assignee.';
+		', please contact the assignee. </p>'
+		'<p> You can find the paperwork to complete here: ' + data[0][8] + '</p>';
 
 	//emailList.filter((email) => email !== '');
 	var correctedEmail = '';
