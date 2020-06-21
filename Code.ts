@@ -87,18 +87,20 @@ function updateFormGroups() {
 	const subFormItem = subForm.getItems();
 	const item = FormItem[1].asListItem();
 	const subItem = subFormItem[0].asListItem();
-	item.setTitle('Receiever Name/Group');
+	item.setTitle('Receiver Name/Group');
 	subItem.setTitle('Your name');
 	const groups = getGroups(false);
 	const groupList = [];
+	const subGroupList = [];
 	for (const groupData of groups) {
 		groupList.push(item.createChoice(groupData));
+		subGroupList.push(subItem.createChoice(groupData));
 	}
 	item.setChoices(groupList);
 	item.isRequired();
 	item.setHelpText('The group or MIDN you want to assign the paperwork to');
 
-	subItem.setChoices(groupList);
+	subItem.setChoices(subGroupList);
 	subItem.isRequired();
 	subItem.setHelpText('Select your name from the dropdown menu below');
 
