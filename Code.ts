@@ -6,6 +6,7 @@ const ssOptions = ss.getSheetByName('Options');
 const ssPending = ss.getSheetByName('Pending Paperwork');
 
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
+const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1q9bDRh-oKk9DTpANNvHTBZej8MXzqXEhHcng-GEFOGI/edit')
 
 function test() {}
 
@@ -83,8 +84,11 @@ function myOnEdit() {
 function updateFormGroups() {
 	// Update Recieve name / group
 	const FormItem = form.getItems();
+	const subFormItem = subForm.getItems();
 	const item = FormItem[1].asListItem();
+	const subItem = subFormItem[0].asListItem();
 	item.setTitle('Receiever Name/Group');
+	subItem.setTitle('Your name');
 	const groups = getGroups(false);
 	const groupList = [];
 	for (const groupData of groups) {
@@ -93,6 +97,11 @@ function updateFormGroups() {
 	item.setChoices(groupList);
 	item.isRequired();
 	item.setHelpText('The group or MIDN you want to assign the paperwork to');
+
+	subItem.setChoices(groupList);
+	subItem.isRequired();
+	subItem.setHelpText('Select your name from the dropdown menu below');
+
 	Logger.log(groupList);
 
 	// Update assigner names list
@@ -183,7 +192,7 @@ function sendEmail(emailList, data) {
 		'.</p>' +
 		'<p> If you have any questions regarding the validity of the ' +
 		data[0][3] +
-		', please contact the assignee. </p>'
+		', please contact the assignee. </p>' +
 		'<p> You can find the paperwork to complete here: ' + data[0][8] + '</p>';
 
 	//emailList.filter((email) => email !== '');
