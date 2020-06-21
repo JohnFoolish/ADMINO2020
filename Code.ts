@@ -84,26 +84,16 @@ function myOnEdit() {
 function updateFormGroups() {
 	// Update Recieve name / group
 	const FormItem = form.getItems();
-	const subFormItem = subForm.getItems();
 	const item = FormItem[1].asListItem();
-	const subItem = subFormItem[0].asListItem();
 	item.setTitle('Receiver Name/Group');
-	subItem.setTitle('Your name');
 	const groups = getGroups(false);
 	const groupList = [];
-	const subGroupList = [];
 	for (const groupData of groups) {
-		groupList.push(item.createChoice(groupData));
-		subGroupList.push(subItem.createChoice(groupData));
+		groupList.push(item.createChoice(groupData));	
 	}
 	item.setChoices(groupList);
 	item.isRequired();
 	item.setHelpText('The group or MIDN you want to assign the paperwork to');
-
-	subItem.setChoices(subGroupList);
-	subItem.isRequired();
-	subItem.setHelpText('Select your name from the dropdown menu below');
-
 	Logger.log(groupList);
 
 	// Update assigner names list
@@ -117,6 +107,22 @@ function updateFormGroups() {
 	item2.isRequired();
 	item2.setHelpText('Select your name from the list below.');
 	Logger.log(indList);
+ 
+	//Update the form submission page
+	const subFormItem = subForm.getItems();
+	const subItem = subFormItem[0].asListItem();
+	subItem.setTitle('Your name');
+	const subInd = getGroups(true);
+	const subIndList = [];
+	for (const subIndividuals of subInd) {
+		subIndList.push(item2.createChoice(subIndividuals));
+	}
+	subItem.setChoices(subIndList);
+	subItem.isRequired();
+	subItem.setHelpText('Select your name from the dropdown menu below');
+	Logger.log(subIndList);
+
+
 }
 
 function getGroups(justIndividuals: boolean): string[] {
