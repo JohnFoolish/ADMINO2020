@@ -1,17 +1,29 @@
 const ss = SpreadsheetApp.getActiveSpreadsheet();
 const ssData = ss.getSheetByName('Data');
-const ssResponses = ss.getSheetByName('Responses');
+const ssResponses = ss.getSheetByName('Assignment Responses');
+const ssTurnedIn = ss.getSheetByName('Turnin Responses');
 const ssBattalion = ss.getSheetByName('Battalion Structure');
 const ssOptions = ss.getSheetByName('Options');
 const ssPending = ss.getSheetByName('Pending Paperwork');
 
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
-const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit')
+const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit');
 
 function test() {}
 
 //Triggers when the submission form is submitted
 function myOnSubmit() {
+	if (ssOptions.getRange(2, 2).getValue().toString() !== ssResponses.getLastRow().toString()) {
+		myOnAssignmentSubmit();
+		ssOptions.getRange(2, 2).setValue(ssResponses.getLastRow());
+	}
+	if (ssOptions.getRange(3, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
+		myOnFormTurnedIn();
+		ssOptions.getRange(3, 2).setValue(ssTurnedIn.getLastRow());
+	}
+}
+
+function myOnAssignmentSubmit() {
 	if (ssData.getLastRow() > 0) {
 		// Get newly inserted data
 		const data = ssResponses.getRange(ssResponses.getLastRow(), 1, 1, ssResponses.getLastColumn()).getValues();
@@ -55,9 +67,44 @@ function myOnSubmit() {
 }
 
 //This function runs whenever the new paperwork submission form is submitted.
-function myOnFormCompletion() {
+function myOnFormTurnedIn() {
+	const data = ssTurnedIn.getRange(ssTurnedIn.getLastRow(), 1, 1, ssTurnedIn.getLastColumn()).getValues();
 
+	// Manipulate data
+	const people = getIndividualsInGroup(data[0][2]);
+	const outData = new Array(people.length);
+	const emailList = [];
+	for (let i = 0; i < people.length; i++) {
+		outData[i] = new Array(9);
+		outData[i][0] = new Date(data[0][0].toString());
+		outData[i][0].setSeconds(outData[i][0].getSeconds() + i); //Timestamp - UUID
+		outData[i][1] = data[0][1]; // Assigners Name
+		outData[i][2] = people.length === 1 ? 'Individual' : data[0][2]; // Group
+		outData[i][3] = people[i]; // Recievers name
+		outData[i][4] = data[0][3]; // Paperwork
+		outData[i][5] = data[0][5]; // Data assigned
+		if (outData[i][4] === 'Chit' || outData[i][4] === 'Negative Counseling' || outData[i][4] === 'Merit') {
+			//This function does not work. Placeholder for now.
+			const date = increaseDate(outData[i][4], outData[i][5]);
+			outData[i][6] = date;
+		} else {
+			outData[i][6] = data[0][6]; // Date Due
+		}
+		outData[i][7] = 'FALSE'; // Turned in
+		outData[i][8] = data[0][4]; // Reason for paperwork
+		outData[i][9] = data[0][8]; //Link to paperwork
 
+		if (data[0][7] == 'Yes') {
+			emailList.push(getIndividualEmail(people[i]));
+		}
+	}
+	sendEmail(emailList, data);
+
+	//Write to data sheet
+	ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+
+	// Write to Pending Paperwork
+	ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 }
 
 function myOnEdit() {
@@ -77,6 +124,7 @@ function myOnEdit() {
 				for (let i = 0; i < data.length; i++) {
 					if (data[i][0].toString() === uuidDate) {
 						data[i][7] = 'true';
+						data[i][9] = pending[j][9];
 					}
 				}
 				pending[j] = pending[j].map((item) => '');
@@ -96,7 +144,7 @@ function updateFormGroups() {
 	const groups = getGroups(false);
 	const groupList = [];
 	for (const groupData of groups) {
-		groupList.push(item.createChoice(groupData));	
+		groupList.push(item.createChoice(groupData));
 	}
 	item.setChoices(groupList);
 	item.isRequired();
@@ -114,7 +162,7 @@ function updateFormGroups() {
 	item2.isRequired();
 	item2.setHelpText('Select your name from the list below.');
 	Logger.log(indList);
- 
+
 	//Update the form submission page
 	const subFormItem = subForm.getItems();
 	const subItem = subFormItem[0].asListItem();
@@ -128,7 +176,6 @@ function updateFormGroups() {
 	subItem.isRequired();
 	subItem.setHelpText('Select your name from the dropdown menu below');
 	Logger.log(subIndList);
-
 }
 
 function getGroups(justIndividuals: boolean): string[] {
@@ -207,7 +254,9 @@ function sendEmail(emailList, data) {
 		'<p> If you have any questions regarding the validity of the ' +
 		data[0][3] +
 		', please contact the assignee. </p>' +
-		'<p> You can find the paperwork to complete here: ' + data[0][8] + '</p>';
+		'<p> You can find the paperwork to complete here: ' +
+		data[0][8] +
+		'</p>';
 
 	//emailList.filter((email) => email !== '');
 	var correctedEmail = '';
