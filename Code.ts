@@ -134,12 +134,44 @@ function createGoogleFiles() {
 		'https://docs.google.com/spreadsheets/d/1QbC9z04dQWhDNz-Q4qm2urfWzZjtKxLmmCsFQ4J9uOU/edit#gid=0'
 	);
 	for (const individual in battalionIndividuals) {
+		const email = getIndividualEmail(individual);
+		if (email === '') {
+			continue;
+		}
+		const file = SpreadsheetApp.create(individual);
+		const sh1 = file.getActiveSheet();
+		sh1.appendRow(['testing: ', file.getName()]);
+		var ID = file.getId();
+		var realFile = DriveApp.getFileById(ID);
+		SpreadsheetApp.flush();
+
 		var individualTemplate = ssTemplate.copy(individual);
-		individualTemplate.addViewer(getIndividualEmail(individual));
-		individualTemplate.addEditor('gtnrotc.ado@gmail.com');
-		root.createFile(individualTemplate);
+		individualTemplate.addViewer('johnlcorker88@gmail.com'); //getIndividualEmail(individual));
+		//individualTemplate.addEditor('gtnrotc.ado@gmail.com');
+		const blobData = individualTemplate.getBlob().setContentType('Spreadsheet').setName(individual);
+		root.createFile(realFile);
 	}
 }
+
+function deleteGoogleFiles() {
+	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
+	const battalionIndividuals = getGroups(true);
+	var ssTemplate = SpreadsheetApp.openByUrl(
+		'https://docs.google.com/spreadsheets/d/1QbC9z04dQWhDNz-Q4qm2urfWzZjtKxLmmCsFQ4J9uOU/edit#gid=0'
+	);
+	for (const individual in battalionIndividuals) {
+		const email = getIndividualEmail(individual);
+		if (email === '') {
+			continue;
+		}
+		const file = SpreadsheetApp.create(individual);
+		var ID = file.getId();
+		var realFile = DriveApp.getFileById(ID);
+		SpreadsheetApp.flush();
+		root.removeFile(realFile);
+	}
+}
+
 function updateFormGroups() {
 	// Update Recieve name / group
 	const FormItem = form.getItems();
