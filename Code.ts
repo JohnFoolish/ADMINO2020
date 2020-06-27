@@ -7,6 +7,7 @@ const ssOptions = ss.getSheetByName('Options');
 const ssPending = ss.getSheetByName('Pending Paperwork');
 const ssVariables = ss.getSheetByName('Variables');
 const ssDigitalBox = ss.getSheetByName('Digital Turn In Box');
+const ssBattalionStructure = ss.getSheetByName('New Battalion Structure');
 const ui = SpreadsheetApp.getUi();
 
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
@@ -124,6 +125,26 @@ function myOnEdit() {
 		ss.getActiveCell().getColumn() === 4
 	) {
 		sortDigitalBox();
+	} else if (
+		ss.getActiveCell().getSheet().getName() === 'New Battalion Structure' &&
+		ss.getActiveCell().getColumn() > 2
+	) {
+		chainOfCommandStructureUpdater();
+	}
+}
+
+function chainOfCommandStructureUpdater() {
+	if (ssBattalionStructure.getLastRow() > 1) {
+		const battalionStructureArray = ssBattalionStructure
+			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
+			.getValues();
+		if (battalionStructureArray[1][2].toString() === '') {
+			ssBattalionStructure.getRange(2, 3).setDataValidation();
+		} else {
+			for (let i = 2; i < battalionStructureArray.length; i++) {
+				for (let j = 2; j < battalionStructureArray[0].length; j++) {}
+			}
+		}
 	}
 }
 
@@ -141,12 +162,19 @@ function createGoogleFiles() {
 			continue;
 		}
 		const indFile = newFile.makeCopy(battalionIndividuals[idx], root);
-		indFile.addViewer('johnlcorker88@gmail.com');
+		const indID = indFile.getId();
+		initSheet(indID, battalionIndividuals[idx] + ', GT NROTC');
+		indFile.addViewer(email);
 		indFile.addEditor('gtnrotc.ado@gmail.com');
 	}
 }
 
-function deleteGoogleFiles() {
+function findIndSheet(name) {
+	const sheet = DriveApp.getFilesByName(name + ', GT NROTC');
+	return sheet.next();
+}
+
+function wipeGoogleFiles() {
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	const battalionIndividuals = getGroups(true);
 	for (var ind = 0; ind < battalionIndividuals.length; ind++) {
@@ -154,12 +182,37 @@ function deleteGoogleFiles() {
 		if (email === '') {
 			continue;
 		}
-		const file = SpreadsheetApp.create(battalionIndividuals[ind]);
-		var ID = file.getId();
-		var realFile = DriveApp.getFileById(ID);
-		SpreadsheetApp.flush();
-		root.removeFile(realFile);
+		const file = findIndSheet(battalionIndividuals[ind]);
+		root.removeFile(file);
 	}
+}
+
+function initSheet(sheetID, name) {
+	const userSpread = SpreadsheetApp.openById(sheetID);
+	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
+	const outData = userPaperwork.getRange(1, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+
+	// Manipulate outData according to incomingData
+
+	var chits = 0;
+	var merits = 0;
+	var negCounsel = 0;
+	const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
+	for (var i = 1; i < pending.length; i++) {
+		if (ssPending[i][4] === name) {
+			if (ssPending[i][5] === 'Chit') {
+				chits++;
+			} else if (ssPending[i][5] === 'Negative Counseling') {
+				negCounsel++;
+			} else if (ssPending[i][5] === 'Merit') {
+				merits++;
+			}
+			userPaperwork[userPaperwork.getLastRow()].setValues(ssPending[i]);
+		}
+	}
+	userPaperwork[2].setValues(chits, negCounsel, merits);
+
+	userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
 }
 
 function updateFormGroups() {
