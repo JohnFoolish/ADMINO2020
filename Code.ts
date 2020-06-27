@@ -149,6 +149,7 @@ function createGoogleFiles() {
 		individualTemplate.addViewer('johnlcorker88@gmail.com'); //getIndividualEmail(individual));
 		//individualTemplate.addEditor('gtnrotc.ado@gmail.com');
 		const blobData = individualTemplate.getBlob().setContentType('Spreadsheet').setName(individual);
+
 		root.createFile(realFile);
 	}
 }
