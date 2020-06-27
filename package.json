@@ -11,6 +11,7 @@
 	"author": "John Lewis Corker and Timothy Bowes",
 	"license": "MIT",
 	"dependencies": {
-		"@types/google-apps-script": "^1.0.14"
+		"@types/google-apps-script": "^1.0.14",
+		"googleapis": "^39.2.0"
 	}
 }

@@ -1,10 +1,13 @@
 const ss = SpreadsheetApp.getActiveSpreadsheet();
 const ssData = ss.getSheetByName('Data');
-const ssResponses = ss.getSheetByName('Assignment Responses');
+const ssAssignment = ss.getSheetByName('Assignment Responses');
 const ssTurnedIn = ss.getSheetByName('Turnin Responses');
 const ssBattalion = ss.getSheetByName('Battalion Structure');
 const ssOptions = ss.getSheetByName('Options');
 const ssPending = ss.getSheetByName('Pending Paperwork');
+const ssVariables = ss.getSheetByName('Variables');
+const ssDigitalBox = ss.getSheetByName('Digital Turn In Box');
+const ui = SpreadsheetApp.getUi();
 
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
 const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit');
@@ -13,20 +16,20 @@ function test() {}
 
 //Triggers when the submission form is submitted
 function myOnSubmit() {
-	if (ssOptions.getRange(2, 2).getValue().toString() !== ssResponses.getLastRow().toString()) {
+	if (ssVariables.getRange(1, 2).getValue().toString() !== ssAssignment.getLastRow().toString()) {
 		myOnAssignmentSubmit();
-		ssOptions.getRange(2, 2).setValue(ssResponses.getLastRow());
+		ssVariables.getRange(1, 2).setValue(ssAssignment.getLastRow());
 	}
-	if (ssOptions.getRange(3, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
-		myOnFormTurnedIn();
-		ssOptions.getRange(3, 2).setValue(ssTurnedIn.getLastRow());
+	if (ssVariables.getRange(2, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
+		myOnFormTurnedInSubmit();
+		ssVariables.getRange(2, 2).setValue(ssTurnedIn.getLastRow());
 	}
 }
 
 function myOnAssignmentSubmit() {
 	if (ssData.getLastRow() > 0) {
 		// Get newly inserted data
-		const data = ssResponses.getRange(ssResponses.getLastRow(), 1, 1, ssResponses.getLastColumn()).getValues();
+		const data = ssAssignment.getRange(ssAssignment.getLastRow(), 1, 1, ssAssignment.getLastColumn()).getValues();
 
 		// Manipulate data
 		const people = getIndividualsInGroup(data[0][2]);
@@ -67,44 +70,24 @@ function myOnAssignmentSubmit() {
 }
 
 //This function runs whenever the new paperwork submission form is submitted.
-function myOnFormTurnedIn() {
+function myOnFormTurnedInSubmit() {
+	// Get data from linked sheet to use
 	const data = ssTurnedIn.getRange(ssTurnedIn.getLastRow(), 1, 1, ssTurnedIn.getLastColumn()).getValues();
+	
+	// Manipulate Data / Rearrange Data
+	const outData = data;
+	outData[0].push('FALSE');
 
-	// Manipulate data
-	const people = getIndividualsInGroup(data[0][2]);
-	const outData = new Array(people.length);
-	const emailList = [];
-	for (let i = 0; i < people.length; i++) {
-		outData[i] = new Array(9);
-		outData[i][0] = new Date(data[0][0].toString());
-		outData[i][0].setSeconds(outData[i][0].getSeconds() + i); //Timestamp - UUID
-		outData[i][1] = data[0][1]; // Assigners Name
-		outData[i][2] = people.length === 1 ? 'Individual' : data[0][2]; // Group
-		outData[i][3] = people[i]; // Recievers name
-		outData[i][4] = data[0][3]; // Paperwork
-		outData[i][5] = data[0][5]; // Data assigned
-		if (outData[i][4] === 'Chit' || outData[i][4] === 'Negative Counseling' || outData[i][4] === 'Merit') {
-			//This function does not work. Placeholder for now.
-			const date = increaseDate(outData[i][4], outData[i][5]);
-			outData[i][6] = date;
-		} else {
-			outData[i][6] = data[0][6]; // Date Due
-		}
-		outData[i][7] = 'FALSE'; // Turned in
-		outData[i][8] = data[0][4]; // Reason for paperwork
-		outData[i][9] = data[0][8]; //Link to paperwork
+	// Write to Digital Admin box sheet
+	ssDigitalBox.getRange(ssDigitalBox.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+	sortDigitalBox();
+}
 
-		if (data[0][7] == 'Yes') {
-			emailList.push(getIndividualEmail(people[i]));
-		}
-	}
-	sendEmail(emailList, data);
-
-	//Write to data sheet
-	ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
-
-	// Write to Pending Paperwork
-	ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+function sortDigitalBox(){
+	if (ssDigitalBox.getLastRow()>1){
+		ssDigitalBox.getRange(2,1,ssDigitalBox.getLastRow()-1, ssDigitalBox.getLastColumn()).sort(1);
+		ssDigitalBox.getRange(2,1,ssDigitalBox.getLastRow()-1, ssDigitalBox.getLastColumn()).sort(4);
+	}	
 }
 
 function myOnEdit() {
@@ -114,28 +97,53 @@ function myOnEdit() {
 	) {
 		updateFormGroups();
 	}
-	if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
+	else if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
 		const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 		for (let j = 1; j < pending.length; j++) {
 			if (pending[j][7].toString() === 'true') {
-				Logger.log(pending[j]);
-				const uuidDate = pending[j][0].toString();
-				for (let i = 0; i < data.length; i++) {
-					if (data[i][0].toString() === uuidDate) {
-						data[i][7] = 'true';
-						data[i][9] = pending[j][9];
+				if (pending[j][9] === ''){
+					ui.alert('You need to put either \"Turned in Physically\" or the link to their digitally turned in file');
+					pending[j][7] = 'false';
+				} else {
+					const uuidDate = pending[j][0].toString();
+					for (let i = 0; i < data.length; i++) {
+						if (data[i][0].toString() === uuidDate) {
+							data[i][7] = 'true';
+							data[i][9] = pending[j][9];
+						}
 					}
+					pending[j] = pending[j].map((item) => '');
 				}
-				pending[j] = pending[j].map((item) => '');
 			}
 		}
 		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 		ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).setValues(pending);
 		ssPending.sort(1);
+	} else if ((ss.getActiveCell().getSheet().getName() === 'Digital Turn In Box' && ss.getActiveCell().getColumn() === 4){
+		sortDigitalBox();
 	}
 }
 
+
+function createGoogleFiles() {
+	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
+	const battalionIndividuals = getGroups(true);
+	var ssTemplate = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1QbC9z04dQWhDNz-Q4qm2urfWzZjtKxLmmCsFQ4J9uOU/edit#gid=0');
+	for (const individual in battalionIndividuals) {
+		var individualTemplate = ssTemplate.copy(individual);
+		individualTemplate.addViewer(getIndividualEmail(individual));
+		individualTemplate.addEditor('gtnrotc.ado@gmail.com')
+		root.createFile(individualTemplate);
+	}
+
+
+
+
+	
+	
+
+}
 function updateFormGroups() {
 	// Update Recieve name / group
 	const FormItem = form.getItems();
