@@ -169,9 +169,9 @@ function createGoogleFiles() {
 		if (email === '') {
 			continue;
 		}
-		const indFile = newFile.makeCopy(battalionIndividuals[idx], root);
+		const indFile = newFile.makeCopy(battalionIndividuals[idx] + ', GT NROTC', root);
 		const indID = indFile.getId();
-		initSheet(indID, battalionIndividuals[idx] + ', GT NROTC');
+		initSheet(indID, battalionIndividuals[idx]);
 		indFile.addViewer(email);
 		indFile.addEditor('gtnrotc.ado@gmail.com');
 	}
