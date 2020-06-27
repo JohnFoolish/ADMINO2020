@@ -135,11 +135,15 @@ function myOnEdit() {
 
 function chainOfCommandStructureUpdater() {
 	if (ssBattalionStructure.getLastRow() > 1) {
+		const groupsRange = ssBa
 		const battalionStructureArray = ssBattalionStructure
 			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
 			.getValues();
 		if (battalionStructureArray[1][2].toString() === '') {
-			ssBattalionStructure.getRange(2, 3).setDataValidation(SpreadsheetApp.newDataValidation);
+			ssBattalionStructure.getRange(2, 3).setDataValidation(SpreadsheetApp.newDataValidation()
+			.setAllowInvalid(false)
+			.requireValueInList()
+			.build());
 		} else {
 			for (let i = 2; i < battalionStructureArray.length; i++) {
 				for (let j = 2; j < battalionStructureArray[0].length; j++) {}
@@ -210,7 +214,11 @@ function initSheet(sheetID, name) {
 			userPaperwork[userPaperwork.getLastRow()].setValues(pending[i]);
 		}
 	}
-	userPaperwork[2].setValues(chits, negCounsel, merits);
+	const helpData = new Array[3];
+	helpData[0] = chits;
+	helpData[1] = negCounsel;
+	helpData[2] = merits;
+	userPaperwork.getRange(1, 1, 2, 3).setValues(helpData);
 
 	//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
 }
