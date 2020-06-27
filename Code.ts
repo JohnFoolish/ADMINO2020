@@ -139,7 +139,7 @@ function chainOfCommandStructureUpdater() {
 			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
 			.getValues();
 		if (battalionStructureArray[1][2].toString() === '') {
-			ssBattalionStructure.getRange(2, 3).setDataValidation();
+			ssBattalionStructure.getRange(2, 3).setDataValidation(SpreadsheetApp.newDataValidation);
 		} else {
 			for (let i = 2; i < battalionStructureArray.length; i++) {
 				for (let j = 2; j < battalionStructureArray[0].length; j++) {}
@@ -199,20 +199,20 @@ function initSheet(sheetID, name) {
 	var negCounsel = 0;
 	const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 	for (var i = 1; i < pending.length; i++) {
-		if (ssPending[i][4] === name) {
-			if (ssPending[i][5] === 'Chit') {
+		if (pending[i][4] === name) {
+			if (pending[i][5] === 'Chit') {
 				chits++;
-			} else if (ssPending[i][5] === 'Negative Counseling') {
+			} else if (pending[i][5] === 'Negative Counseling') {
 				negCounsel++;
-			} else if (ssPending[i][5] === 'Merit') {
+			} else if (pending[i][5] === 'Merit') {
 				merits++;
 			}
-			userPaperwork[userPaperwork.getLastRow()].setValues(ssPending[i]);
+			userPaperwork[userPaperwork.getLastRow()].setValues(pending[i]);
 		}
 	}
 	userPaperwork[2].setValues(chits, negCounsel, merits);
 
-	userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
+	//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
 }
 
 function updateFormGroups() {
