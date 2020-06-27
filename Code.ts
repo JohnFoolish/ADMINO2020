@@ -135,16 +135,20 @@ function myOnEdit() {
 
 function chainOfCommandStructureUpdater() {
 	if (ssBattalionStructure.getLastRow() > 1) {
-		const groupsRange = ssBa
+		const groupsRange = ssBattalionStructure.getRange(2, 2, ssBattalionStructure.getLastRow(), 1);
 		const battalionStructureArray = ssBattalionStructure
 			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
 			.getValues();
+
 		if (battalionStructureArray[1][2].toString() === '') {
-			ssBattalionStructure.getRange(2, 3).setDataValidation(SpreadsheetApp.newDataValidation()
-			.setAllowInvalid(false)
-			.requireValueInList()
-			.build());
+			// Init case
+			ssBattalionStructure
+				.getRange(2, 3)
+				.setDataValidation(
+					SpreadsheetApp.newDataValidation().setAllowInvalid(false).requireValueInRange(groupsRange).build()
+				);
 		} else {
+			// Loop case after root group has been set
 			for (let i = 2; i < battalionStructureArray.length; i++) {
 				for (let j = 2; j < battalionStructureArray[0].length; j++) {}
 			}
@@ -174,8 +178,13 @@ function createGoogleFiles() {
 }
 
 function findIndSheet(name) {
-	const sheet = DriveApp.getFilesByName(name + ', GT NROTC');
-	return sheet.next();
+	var files = DriveApp.getFilesByName(name + ', GT NROTC');
+	const fileList = [];
+	while (files.hasNext()) {
+		var sheet = files.next();
+		fileList.push(sheet);
+	}
+	return files;
 }
 
 function wipeGoogleFiles() {
@@ -186,8 +195,11 @@ function wipeGoogleFiles() {
 		if (email === '') {
 			continue;
 		}
-		const file = findIndSheet(battalionIndividuals[ind]);
-		root.removeFile(file);
+		const fileList = findIndSheet(battalionIndividuals[ind]);
+		while (fileList.hasNext()) {
+			var file = fileList.next();
+			root.removeFile(file);
+		}
 	}
 }
 
@@ -214,10 +226,10 @@ function initSheet(sheetID, name) {
 			userPaperwork[userPaperwork.getLastRow()].setValues(pending[i]);
 		}
 	}
-	const helpData = new Array[3];
-	helpData[0] = chits;
-	helpData[1] = negCounsel;
-	helpData[2] = merits;
+	const helpData = [];
+	helpData.push(chits);
+	helpData.push(negCounsel);
+	helpData.push(merits);
 	userPaperwork.getRange(1, 1, 2, 3).setValues(helpData);
 
 	//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
