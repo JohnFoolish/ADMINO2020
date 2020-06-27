@@ -133,8 +133,11 @@ function myOnEdit() {
 	}
 }
 
+// ssBattalionStructure.getRange(2, 3).setDataValidation(SpreadsheetApp.newDataValidation().setAllowInvalid(false).requireValueInRange(groupsRange).build());
+
 function chainOfCommandStructureUpdater() {
 	if (ssBattalionStructure.getLastRow() > 1) {
+		// Create list of all groups remaining
 		const groupsRange = ssBattalionStructure.getRange(2, 2, ssBattalionStructure.getLastRow(), 1);
 		const battalionStructureArray = ssBattalionStructure
 			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
