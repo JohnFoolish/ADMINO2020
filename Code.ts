@@ -73,7 +73,7 @@ function myOnAssignmentSubmit() {
 function myOnFormTurnedInSubmit() {
 	// Get data from linked sheet to use
 	const data = ssTurnedIn.getRange(ssTurnedIn.getLastRow(), 1, 1, ssTurnedIn.getLastColumn()).getValues();
-	
+
 	// Manipulate Data / Rearrange Data
 	const outData = data;
 	outData[0].push('FALSE');
@@ -83,11 +83,11 @@ function myOnFormTurnedInSubmit() {
 	sortDigitalBox();
 }
 
-function sortDigitalBox(){
-	if (ssDigitalBox.getLastRow()>1){
-		ssDigitalBox.getRange(2,1,ssDigitalBox.getLastRow()-1, ssDigitalBox.getLastColumn()).sort(1);
-		ssDigitalBox.getRange(2,1,ssDigitalBox.getLastRow()-1, ssDigitalBox.getLastColumn()).sort(4);
-	}	
+function sortDigitalBox() {
+	if (ssDigitalBox.getLastRow() > 1) {
+		ssDigitalBox.getRange(2, 1, ssDigitalBox.getLastRow() - 1, ssDigitalBox.getLastColumn()).sort(1);
+		ssDigitalBox.getRange(2, 1, ssDigitalBox.getLastRow() - 1, ssDigitalBox.getLastColumn()).sort(4);
+	}
 }
 
 function myOnEdit() {
@@ -96,14 +96,13 @@ function myOnEdit() {
 		(ss.getActiveCell().getColumn() === 1 || ss.getActiveCell().getColumn() === 2 || ss.getActiveCell().getRow() === 1)
 	) {
 		updateFormGroups();
-	}
-	else if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
+	} else if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
 		const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 		for (let j = 1; j < pending.length; j++) {
 			if (pending[j][7].toString() === 'true') {
-				if (pending[j][9] === ''){
-					ui.alert('You need to put either \"Turned in Physically\" or the link to their digitally turned in file');
+				if (pending[j][9] === '') {
+					ui.alert('You need to put either "Turned in Physically" or the link to their digitally turned in file');
 					pending[j][7] = 'false';
 				} else {
 					const uuidDate = pending[j][0].toString();
@@ -120,29 +119,26 @@ function myOnEdit() {
 		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 		ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).setValues(pending);
 		ssPending.sort(1);
-	} else if ((ss.getActiveCell().getSheet().getName() === 'Digital Turn In Box' && ss.getActiveCell().getColumn() === 4){
+	} else if (
+		ss.getActiveCell().getSheet().getName() === 'Digital Turn In Box' &&
+		ss.getActiveCell().getColumn() === 4
+	) {
 		sortDigitalBox();
 	}
 }
 
-
 function createGoogleFiles() {
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	const battalionIndividuals = getGroups(true);
-	var ssTemplate = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1QbC9z04dQWhDNz-Q4qm2urfWzZjtKxLmmCsFQ4J9uOU/edit#gid=0');
+	var ssTemplate = SpreadsheetApp.openByUrl(
+		'https://docs.google.com/spreadsheets/d/1QbC9z04dQWhDNz-Q4qm2urfWzZjtKxLmmCsFQ4J9uOU/edit#gid=0'
+	);
 	for (const individual in battalionIndividuals) {
 		var individualTemplate = ssTemplate.copy(individual);
 		individualTemplate.addViewer(getIndividualEmail(individual));
-		individualTemplate.addEditor('gtnrotc.ado@gmail.com')
+		individualTemplate.addEditor('gtnrotc.ado@gmail.com');
 		root.createFile(individualTemplate);
 	}
-
-
-
-
-	
-	
-
 }
 function updateFormGroups() {
 	// Update Recieve name / group
