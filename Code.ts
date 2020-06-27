@@ -135,44 +135,26 @@ function createGoogleFiles() {
 	);
 	const templateID = ssTemplate.getId();
 	const newFile = DriveApp.getFileById(templateID);
-	for (const individual in battalionIndividuals) {
-		const email = getIndividualEmail(individual);
+	for (var idx = 0; idx < battalionIndividuals.length; idx++) {
+		const email = getIndividualEmail(battalionIndividuals[idx]);
 		if (email === '') {
 			continue;
 		}
-
-		const indFile = newFile.makeCopy(individual, root);
+		const indFile = newFile.makeCopy(battalionIndividuals[idx], root);
 		indFile.addViewer('johnlcorker88@gmail.com');
 		indFile.addEditor('gtnrotc.ado@gmail.com');
-
-		/*
-		const file = SpreadsheetApp.create(individual);
-		file.rename(individual);
-		const sh1 = file.getActiveSheet();
-		sh1.appendRow(['testing: ', file.getName()]);
-		var ID = file.getId();
-		var realFile = DriveApp.getFileById(ID);
-		SpreadsheetApp.flush();
-
-		var individualTemplate = ssTemplate.copy(individual);
-		individualTemplate.addViewer('johnlcorker88@gmail.com'); //getIndividualEmail(individual));
-		//individualTemplate.addEditor('gtnrotc.ado@gmail.com');
-		const blobData = individualTemplate.getBlob().setContentType('Spreadsheet').setName(individual);
-
-		root.createFile(realFile);
-		*/
 	}
 }
 
 function deleteGoogleFiles() {
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	const battalionIndividuals = getGroups(true);
-	for (const individual in battalionIndividuals) {
-		const email = getIndividualEmail(individual);
+	for (var ind = 0; ind < battalionIndividuals.length; ind++) {
+		const email = getIndividualEmail(battalionIndividuals[ind]);
 		if (email === '') {
 			continue;
 		}
-		const file = SpreadsheetApp.create(individual);
+		const file = SpreadsheetApp.create(battalionIndividuals[ind]);
 		var ID = file.getId();
 		var realFile = DriveApp.getFileById(ID);
 		SpreadsheetApp.flush();
