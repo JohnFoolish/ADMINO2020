@@ -164,11 +164,11 @@ function chainOfCommandStructureUpdater() {
 		const data = ssBattalionStructure
 			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
 			.getValues();
-		for (let row = 1; row <= data.length; row++) {
-			for (let col = 2; col <= data[0].length; col++) {
+		for (let row = 1; row < data.length; row++) {
+			for (let col = 2; col < data[0].length; col++) {
 				const gridValue = data[row][col];
-				if (row === 2) {
-					if (col === 3) {
+				if (row === 1) {
+					if (col === 2) {
 						if (groups.indexOf(gridValue) > -1) {
 							chainOfCommand.value = gridValue;
 							groups.splice(groups.indexOf(gridValue), 1);
@@ -197,7 +197,7 @@ function chainOfCommandStructureUpdater() {
 					}
 				}
 			}
-			if (row === 2) {
+			if (row === 1) {
 				previousLevel = [chainOfCommand];
 			} else {
 				const outPreviousLevel = [];
