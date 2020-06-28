@@ -167,6 +167,7 @@ function chainOfCommandStructureUpdater() {
 							chainOfCommand.value = gridValue;
 							groups.splice(groups.indexOf(gridValue), 1);
 							chainOfCommand.pos = [row, col];
+							chainOfCommand.children = [];
 							Logger.log(groups);
 						} else {
 							ssBattalionStructure.getRange(row, col).setValue('');
@@ -181,6 +182,7 @@ function chainOfCommandStructureUpdater() {
 						let CoCnode = {} as chain;
 						CoCnode.pos = [row, col];
 						CoCnode.value = gridValue;
+						CoCnode.children = [];
 						let parent;
 						for (let i = 0; i < previousLevel.length; i++) {
 							if (previousLevel[i].pos[1] <= col) parent = previousLevel[i];
