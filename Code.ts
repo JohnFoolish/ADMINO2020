@@ -225,6 +225,7 @@ function chainOfCommandStructureUpdater() {
 			}
 			chainNode.children.push({ value: 'DropDownPlaceHolder12233', children: [], pos: [0, 0] });
 		}
+		recursiveDropDownChildAddition(chainOfCommand);
 		Logger.log(JSON.stringify(chainOfCommand));
 	}
 }
