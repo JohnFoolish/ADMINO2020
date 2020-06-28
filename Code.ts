@@ -138,24 +138,75 @@ function myOnEdit() {
 function chainOfCommandStructureUpdater() {
 	if (ssBattalionStructure.getLastRow() > 1) {
 		// Create list of all groups remaining
-		const groupsRange = ssBattalionStructure.getRange(2, 2, ssBattalionStructure.getLastRow(), 1);
-		const battalionStructureArray = ssBattalionStructure
-			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
-			.getValues();
+		const groups = [];
+		ssBattalionStructure
+			.getRange(2, 2, ssBattalionStructure.getLastRow(), 1)
+			.getValues()
+			.forEach((row) => {
+				row.forEach((node) => {
+					if (node !== '') {
+						groups.push(node);
+					}
+				});
+			});
 
-		if (battalionStructureArray[1][2].toString() === '') {
-			// Init case
-			ssBattalionStructure
-				.getRange(2, 3)
-				.setDataValidation(
-					SpreadsheetApp.newDataValidation().setAllowInvalid(false).requireValueInRange(groupsRange).build()
-				);
-		} else {
-			// Loop case after root group has been set
-			for (let i = 2; i < battalionStructureArray.length; i++) {
-				for (let j = 2; j < battalionStructureArray[0].length; j++) {}
+		// Read the chain to figure out what the structure is
+		interface chain {
+			value: string;
+			children: chain[];
+			parent: chain;
+			pos: number[];
+		}
+		let chainOfCommand: chain;
+		let previousLevel: chain[];
+		for (let row = 2; row < ssBattalionStructure.getLastRow(); row++) {
+			for (let col = 3; col < ssBattalionStructure.getLastColumn(); col++) {
+				const gridValue = ssBattalionStructure.getRange(row, col).getValue();
+				if (row === 2) {
+					if (col === 3) {
+						if (groups.indexOf(gridValue) > -1) {
+							chainOfCommand.value = gridValue;
+							groups.splice(groups.indexOf(gridValue));
+							chainOfCommand.pos = [row, col];
+							chainOfCommand.parent = null;
+						} else {
+							ssBattalionStructure.getRange(row, col).setValue('');
+						}
+					} else {
+						ssBattalionStructure.getRange(row, col).setValue('');
+					}
+				} else {
+					if (groups.indexOf(gridValue) > -1) {
+						groups.splice(groups.indexOf(gridValue));
+						let CoCnode: chain;
+						CoCnode.pos = [row, col];
+						CoCnode.value = gridValue;
+						for (let i = 0; i < previousLevel.length; i++) {
+							if (previousLevel[i].pos[1] <= col) CoCnode.parent = previousLevel[i];
+						}
+						CoCnode.parent.children.push(CoCnode);
+					} else {
+						ssBattalionStructure.getRange(row, col).setValue('');
+					}
+				}
+			}
+			if (row === 2) {
+				previousLevel = [chainOfCommand];
+			} else {
+				const outPreviousLevel = [];
+				previousLevel.forEach((node) => {
+					node.children.forEach((child) => {
+						outPreviousLevel.push(child);
+					});
+				});
+				previousLevel = outPreviousLevel;
 			}
 		}
+
+		// Update the interface so it can be added to if needed
+
+		//Write json chainOfCOmmand to variables sheet
+		ssVariables.getRange(3, 2).setValue(JSON.stringify(chainOfCommand));
 	}
 }
 
