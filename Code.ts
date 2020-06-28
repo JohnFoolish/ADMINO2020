@@ -178,7 +178,7 @@ function chainOfCommandStructureUpdater() {
 					if (groups.indexOf(gridValue) > -1) {
 						groups.splice(groups.indexOf(gridValue), 1);
 						Logger.log(groups);
-						let CoCnode: chain;
+						let CoCnode = {} as chain;
 						CoCnode.pos = [row, col];
 						CoCnode.value = gridValue;
 						let parent;
