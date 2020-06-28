@@ -186,6 +186,7 @@ function chainOfCommandStructureUpdater() {
 						}
 						CoCnode.parent.children.push(CoCnode);
 					} else {
+						Logger.log(gridValue);
 						ssBattalionStructure.getRange(row, col).setValue('');
 					}
 				}
