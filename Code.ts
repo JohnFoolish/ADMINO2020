@@ -159,8 +159,8 @@ function chainOfCommandStructureUpdater() {
 		}
 		let chainOfCommand: chain;
 		let previousLevel: chain[];
-		for (let row = 2; row < ssBattalionStructure.getLastRow(); row++) {
-			for (let col = 3; col < ssBattalionStructure.getLastColumn(); col++) {
+		for (let row = 2; row <= ssBattalionStructure.getLastRow(); row++) {
+			for (let col = 3; col <= ssBattalionStructure.getLastColumn(); col++) {
 				const gridValue = ssBattalionStructure.getRange(row, col).getValue();
 				if (row === 2) {
 					if (col === 3) {
@@ -169,6 +169,7 @@ function chainOfCommandStructureUpdater() {
 							groups.splice(groups.indexOf(gridValue));
 							chainOfCommand.pos = [row, col];
 							chainOfCommand.parent = null;
+							Logger.log(groups);
 						} else {
 							ssBattalionStructure.getRange(row, col).setValue('');
 						}
@@ -178,6 +179,7 @@ function chainOfCommandStructureUpdater() {
 				} else {
 					if (groups.indexOf(gridValue) > -1) {
 						groups.splice(groups.indexOf(gridValue));
+						Logger.log(groups);
 						let CoCnode: chain;
 						CoCnode.pos = [row, col];
 						CoCnode.value = gridValue;
