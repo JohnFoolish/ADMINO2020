@@ -161,9 +161,15 @@ function chainOfCommandStructureUpdater() {
 		}
 		let chainOfCommand = {} as chain;
 		let previousLevel = [] as chain[];
-		for (let row = 2; row <= ssBattalionStructure.getLastRow(); row++) {
-			for (let col = 3; col <= ssBattalionStructure.getLastColumn(); col++) {
-				const gridValue = ssBattalionStructure.getRange(row, col).getValue();
+		const data = ssBattalionStructure.getRange(
+			1,
+			1,
+			ssBattalionStructure.getLastRow(),
+			ssBattalionStructure.getLastColumn()
+		);
+		for (let row = 2; row <= data.getLastRow(); row++) {
+			for (let col = 3; col <= data.getLastColumn(); col++) {
+				const gridValue = data.getCell(row, col).getValue();
 				if (row === 2) {
 					if (col === 3) {
 						if (groups.indexOf(gridValue) > -1) {
@@ -171,12 +177,11 @@ function chainOfCommandStructureUpdater() {
 							groups.splice(groups.indexOf(gridValue), 1);
 							chainOfCommand.pos = [row, col];
 							chainOfCommand.children = [];
-							Logger.log(groups);
 						} else {
-							ssBattalionStructure.getRange(row, col).setValue('');
+							data.getCell(row, col).setValue('');
 						}
 					} else {
-						ssBattalionStructure.getRange(row, col).setValue('');
+						data.getCell(row, col).setValue('');
 					}
 				} else {
 					if (groups.indexOf(gridValue) > -1) {
@@ -191,7 +196,7 @@ function chainOfCommandStructureUpdater() {
 						}
 						parent.children.push(CoCnode);
 					} else {
-						ssBattalionStructure.getRange(row, col).setValue('');
+						data.getCell(row, col).setValue('');
 					}
 				}
 			}
@@ -207,6 +212,9 @@ function chainOfCommandStructureUpdater() {
 				previousLevel = outPreviousLevel;
 			}
 		}
+		ssBattalionStructure
+			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
+			.setValues(data.getValues());
 
 		// Update the interface so it can be added to if needed
 
