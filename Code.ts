@@ -213,7 +213,7 @@ function chainOfCommandStructureUpdater() {
 			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
 			.setValues(data);
 
-		//Write json chainOfCOmmand to variables sheet
+		//Write json chainOfCOmmand to variables sheet // something random
 		ssVariables.getRange(3, 2).setValue(JSON.stringify(chainOfCommand));
 
 		// Update the interface so it can be added to if needed
