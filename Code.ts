@@ -213,10 +213,19 @@ function chainOfCommandStructureUpdater() {
 			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
 			.setValues(data);
 
-		// Update the interface so it can be added to if needed
-
 		//Write json chainOfCOmmand to variables sheet
 		ssVariables.getRange(3, 2).setValue(JSON.stringify(chainOfCommand));
+
+		// Update the interface so it can be added to if needed
+		function recursiveDropDownChildAddition(chainNode: chain) {
+			if (chainNode.children.length > 0) {
+				chainNode.children.forEach((child) => {
+					recursiveDropDownChildAddition(child);
+				});
+			}
+			chainNode.children.push({ value: 'DropDownPlaceHolder12233', children: [], pos: [0, 0] });
+		}
+		Logger.log(JSON.stringify(chainOfCommand));
 	}
 }
 
