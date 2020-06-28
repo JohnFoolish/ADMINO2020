@@ -13,7 +13,11 @@ const ui = SpreadsheetApp.getUi();
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
 const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit');
 
-function test() {}
+function test() {
+	Logger.log('start');
+	chainOfCommandStructureUpdater();
+	Logger.log('end');
+}
 
 //Triggers when the submission form is submitted
 function myOnSubmit() {
@@ -149,7 +153,6 @@ function chainOfCommandStructureUpdater() {
 					}
 				});
 			});
-		Logger.log(groups);
 		// Read the chain to figure out what the structure is
 		interface chain {
 			value: string;
@@ -178,7 +181,6 @@ function chainOfCommandStructureUpdater() {
 				} else {
 					if (groups.indexOf(gridValue) > -1) {
 						groups.splice(groups.indexOf(gridValue), 1);
-						Logger.log(groups);
 						let CoCnode = {} as chain;
 						CoCnode.pos = [row, col];
 						CoCnode.value = gridValue;
@@ -189,7 +191,6 @@ function chainOfCommandStructureUpdater() {
 						}
 						parent.children.push(CoCnode);
 					} else {
-						Logger.log(gridValue);
 						ssBattalionStructure.getRange(row, col).setValue('');
 					}
 				}
