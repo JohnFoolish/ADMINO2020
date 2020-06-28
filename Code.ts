@@ -149,7 +149,7 @@ function chainOfCommandStructureUpdater() {
 					}
 				});
 			});
-
+		Logger.log(groups);
 		// Read the chain to figure out what the structure is
 		interface chain {
 			value: string;
