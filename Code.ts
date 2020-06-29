@@ -131,7 +131,7 @@ function myOnEdit() {
 		sortDigitalBox();
 	} else if (
 		ss.getActiveCell().getSheet().getName() === 'New Battalion Structure' &&
-		ss.getActiveCell().getColumn() > 2
+		ss.getActiveCell().getColumn() > 1
 	) {
 		chainOfCommandStructureUpdater();
 	}
