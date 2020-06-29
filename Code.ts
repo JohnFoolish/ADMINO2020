@@ -226,7 +226,7 @@ function chainOfCommandStructureUpdater() {
 
 		// Clear Data validations and normal values
 		ssBattalionStructure
-			.getRange(2, 3, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
+			.getRange(2, 3, ssBattalionStructure.getMaxRows() - 1, ssBattalionStructure.getMaxColumns() - 2)
 			.clear();
 
 		// Write value out array
@@ -249,7 +249,6 @@ function chainOfCommandStructureUpdater() {
 		outArrCreator(chainOfCommand, 0);
 
 		// Write dropdown menus
-		// ssBattalionStructure.getRange(2, 3).setDataValidation(SpreadsheetApp.newDataValidation().setAllowInvalid(false).requireValueInList(groups).build());
 		const CoCArea = ssBattalionStructure.getRange(2, 3, outArr.length, outArr[0].length);
 		groups = groupsCopy;
 		let outDataValidations = CoCArea.getDataValidations();
