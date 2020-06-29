@@ -231,13 +231,14 @@ function chainOfCommandStructureUpdater() {
 
 		// Write value out array
 		const outArr = [['']];
-		function outArrCreator(chainNode: chain, outArrRow: number, outArrCol: number) {
+		let outArrCol = 0;
+		function outArrCreator(chainNode: chain, outArrRow: number) {
 			outArr[outArrRow][outArrCol] = chainNode.value;
 			if (chainNode.children.length > 0) {
 				outArr.push(Array(outArr[0].length).fill(''));
 				outArrRow++;
 				chainNode.children.forEach((child) => {
-					outArrCreator(child, outArrRow, outArrCol);
+					outArrCreator(child, outArrRow);
 				});
 			}
 			outArr.forEach((row) => {
@@ -245,7 +246,7 @@ function chainOfCommandStructureUpdater() {
 			});
 			outArrCol++;
 		}
-		outArrCreator(chainOfCommand, 0, 0);
+		outArrCreator(chainOfCommand, 0);
 		ssBattalionStructure.getRange(2, 3, outArr.length, outArr[0].length).setValues(outArr);
 
 		// Write dropdown menus
