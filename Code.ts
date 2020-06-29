@@ -227,7 +227,10 @@ function chainOfCommandStructureUpdater() {
 		// Clear Data validations and normal values
 		ssBattalionStructure
 			.getRange(2, 3, ssBattalionStructure.getMaxRows() - 1, ssBattalionStructure.getMaxColumns() - 2)
-			.clear();
+			.clearContent()
+			.clearDataValidations()
+			.clearFormat()
+			.clearNote();
 
 		// Write value out array
 		const outArr = [['']];
