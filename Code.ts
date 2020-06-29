@@ -159,7 +159,7 @@ function chainOfCommandStructureUpdater() {
 			children: chain[];
 			pos: number[];
 		}
-		let chainOfCommand = {} as chain;
+		let chainOfCommand = { value: 'DropDownPlaceHolder12233', children: [], pos: [0, 0] } as chain;
 		let previousLevel = [] as chain[];
 		const data = ssBattalionStructure
 			.getRange(1, 1, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
@@ -230,8 +230,19 @@ function chainOfCommandStructureUpdater() {
 			.clear();
 
 		// Write value out array
-		const outArr = [[]];
-		function outArrCreator(chainNode: chain) {}
+		const outArr = [['']];
+		let outArrRow = 0;
+		let outArrCol = 0;
+		function outArrCreator(chainNode: chain) {
+			outArr[outArrRow][outArrCol] = chainNode.value;
+			if (chainNode.children.length > 0) {
+				outArrRow++;
+				chainNode.children.forEach((child) => {
+					outArrCreator(child);
+				});
+			}
+			outArrCol++;
+		}
 		outArrCreator(chainOfCommand);
 		ssBattalionStructure.getRange(2, 3, outArr.length, outArr[0].length).setValues(outArr);
 
