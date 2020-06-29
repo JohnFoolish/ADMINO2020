@@ -231,23 +231,21 @@ function chainOfCommandStructureUpdater() {
 
 		// Write value out array
 		const outArr = [['']];
-		let outArrRow = 0;
-		let outArrCol = 0;
-		function outArrCreator(chainNode: chain) {
+		function outArrCreator(chainNode: chain, outArrRow: number, outArrCol: number) {
 			outArr[outArrRow][outArrCol] = chainNode.value;
 			if (chainNode.children.length > 0) {
 				outArr.push(Array(outArr[0].length).fill(''));
 				outArrRow++;
 				chainNode.children.forEach((child) => {
-					outArrCreator(child);
+					outArrCreator(child, outArrRow, outArrCol);
+					outArr.forEach((row) => {
+						row.push('');
+					});
+					outArrCol++;
 				});
 			}
-			outArr.forEach((row) => {
-				row.push('');
-			});
-			outArrCol++;
 		}
-		outArrCreator(chainOfCommand);
+		outArrCreator(chainOfCommand, 0, 0);
 		ssBattalionStructure.getRange(2, 3, outArr.length, outArr[0].length).setValues(outArr);
 
 		// Write dropdown menus
