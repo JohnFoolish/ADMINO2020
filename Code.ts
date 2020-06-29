@@ -222,7 +222,7 @@ function chainOfCommandStructureUpdater() {
 			}
 			chainNode.children.push({ value: 'DropDownPlaceHolder12233', children: [], pos: [0, 0] });
 		}
-		if (chainOfCommand.children.length > 0) recursiveDropDownChildAddition(chainOfCommand);
+		if (chainOfCommand.value !== 'DropDownPlaceHolder12233') recursiveDropDownChildAddition(chainOfCommand);
 
 		// Clear Data validations and normal values
 		ssBattalionStructure
