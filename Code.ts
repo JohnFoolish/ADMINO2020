@@ -210,7 +210,7 @@ function chainOfCommandStructureUpdater() {
 			}
 		}
 
-		//Write json chainOfCOmmand to variables sheet // something random
+		//Write json chainOfCOmmand to variables sheet // plz upload already
 		ssVariables.getRange(3, 2).setValue(JSON.stringify(chainOfCommand));
 
 		// Add dropdown children
