@@ -240,11 +240,11 @@ function chainOfCommandStructureUpdater() {
 				chainNode.children.forEach((child) => {
 					outArrCreator(child, outArrRow);
 				});
+				outArr.forEach((row) => {
+					row.push('');
+				});
+				outArrCol++;
 			}
-			outArr.forEach((row) => {
-				row.push('');
-			});
-			outArrCol++;
 		}
 		outArrCreator(chainOfCommand, 0);
 		ssBattalionStructure.getRange(2, 3, outArr.length, outArr[0].length).setValues(outArr);
