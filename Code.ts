@@ -137,12 +137,11 @@ function myOnEdit() {
 	}
 }
 
-// ssBattalionStructure.getRange(2, 3).setDataValidation(SpreadsheetApp.newDataValidation().setAllowInvalid(false).requireValueInRange(groupsRange).build());
-
 function chainOfCommandStructureUpdater() {
 	if (ssBattalionStructure.getLastRow() > 1) {
 		// Create list of all groups remaining
-		const groups = [];
+		let groups = [];
+		let groupsCopy;
 		ssBattalionStructure
 			.getRange(2, 2, ssBattalionStructure.getLastRow(), 1)
 			.getValues()
@@ -153,6 +152,7 @@ function chainOfCommandStructureUpdater() {
 					}
 				});
 			});
+		groupsCopy = groups;
 		// Read the chain to figure out what the structure is
 		interface chain {
 			value: string;
@@ -224,7 +224,7 @@ function chainOfCommandStructureUpdater() {
 		}
 		recursiveDropDownChildAddition(chainOfCommand);
 
-		// Clear Data validations
+		// Clear Data validations and normal values
 		ssBattalionStructure
 			.getRange(2, 3, ssBattalionStructure.getLastRow(), ssBattalionStructure.getLastColumn())
 			.clear();
@@ -247,12 +247,30 @@ function chainOfCommandStructureUpdater() {
 			}
 		}
 		outArrCreator(chainOfCommand, 0);
-		ssBattalionStructure.getRange(2, 3, outArr.length, outArr[0].length).setValues(outArr);
 
 		// Write dropdown menus
+		// ssBattalionStructure.getRange(2, 3).setDataValidation(SpreadsheetApp.newDataValidation().setAllowInvalid(false).requireValueInList(groups).build());
+		const CoCArea = ssBattalionStructure.getRange(2, 3, outArr.length, outArr[0].length);
+		groups = groupsCopy;
+		let outDataValidations = CoCArea.getDataValidations();
 
-		// Check output
-		Logger.log(JSON.stringify(chainOfCommand));
+		for (let i = 0; i < outArr.length; i++) {
+			for (let j = 0; j < outArr[0].length; j++) {
+				if (groups.indexOf(outArr[i][j]) > -1) {
+					groups.splice(groups.indexOf(outArr[i][j]));
+				} else if (outArr[i][j] === 'DropDownPlaceHolder12233') {
+					outDataValidations[i][j] = SpreadsheetApp.newDataValidation()
+						.setAllowInvalid(false)
+						.requireValueInList(groups)
+						.build();
+					outArr[i][j] = '';
+				}
+			}
+		}
+
+		// Write values and data validation
+		CoCArea.setValues(outArr);
+		CoCArea.setDataValidations(outDataValidations);
 	}
 }
 
