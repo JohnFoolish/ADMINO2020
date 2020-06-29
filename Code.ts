@@ -236,11 +236,15 @@ function chainOfCommandStructureUpdater() {
 		function outArrCreator(chainNode: chain) {
 			outArr[outArrRow][outArrCol] = chainNode.value;
 			if (chainNode.children.length > 0) {
+				outArr.push(Array(outArr[0].length).fill(''));
 				outArrRow++;
 				chainNode.children.forEach((child) => {
 					outArrCreator(child);
 				});
 			}
+			outArr.forEach((row) => {
+				row.push('');
+			});
 			outArrCol++;
 		}
 		outArrCreator(chainOfCommand);
