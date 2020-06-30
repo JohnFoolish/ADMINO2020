@@ -97,7 +97,7 @@ function myOnAssignmentSubmit() {
 			if (people[i].canBeAssignedFromAssigner) {
 				const tempOutData = new Array(9);
 				tempOutData[0] = new Date(submitData.timestamp);
-				tempOutData[0].setSeconds(outData[i][0].getSeconds() + i); //Timestamp - UUID
+				tempOutData[0].setSeconds(tempOutData[0].getSeconds() + i); //Timestamp - UUID
 				tempOutData[1] = submitData.assigner; // Assigners Name
 				tempOutData[2] = people[i].group; // Group
 				tempOutData[3] = people[i].name; // Recievers name
