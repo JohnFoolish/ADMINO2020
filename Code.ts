@@ -672,7 +672,7 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 		}
 	});
 
-	// check for duplicates
+	// check for duplicates and remove self
 	const outListWithoutRepeats = [];
 	outList.forEach((outPerson) => {
 		let alreadyInArray = false;
@@ -681,7 +681,7 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 				alreadyInArray = true;
 			}
 		});
-		if (!alreadyInArray) {
+		if (!alreadyInArray && outPerson.name !== assigner.name) {
 			outListWithoutRepeats.push(outPerson);
 		}
 	});
@@ -780,7 +780,9 @@ function getSubordinates(name: string): string[] {
 				addSubGroupMembers(child);
 			});
 		}
-		addSubGroupMembers(highestChainOfIndividual);
+		highestChainOfIndividual.children.forEach((child) => {
+			addSubGroupMembers(child);
+		});
 	}
 
 	return outPeople;
