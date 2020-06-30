@@ -133,10 +133,14 @@ function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifi
 	let out = specifiedDueDate;
 	if (paperwork === 'Chit') {
 		out = assignDate;
-		out.setDate(out.getDate() + adjustDateForWeekends(out, ssOptions.getRange(2, 2).getValue().parseInt()));
+		let chitTime = ssOptions.getRange(2, 2).getValue();
+		if (typeof chitTime.parseInt() != 'number' || chitTime === '') chitTime = '3';
+		out.setDate(out.getDate() + adjustDateForWeekends(out, chitTime.parseInt()));
 	} else if (paperwork === 'Negative Counseling') {
 		out = assignDate;
-		out.setDate(out.getDate() + adjustDateForWeekends(out, ssOptions.getRange(2, 2).getValue().parseInt()));
+		let ncTime = ssOptions.getRange(3, 2).getValue();
+		if (typeof ncTime.parseInt() != 'number' || ncTime === '') ncTime = '3';
+		out.setDate(out.getDate() + adjustDateForWeekends(out, ncTime.parseInt()));
 	} else if (out === '') {
 		out = new Date();
 		out.setDate(out.getDate() + 7);
@@ -650,8 +654,11 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 			}
 		});
 	const canAssignToAnyone = ssOptions.getRange(4, 2).getValue();
-	//IF the assigner cannot assign to anyone check to make sure everyone assigning to is correct
-	if (rolesList.indexOf(canAssignToAnyone) < rolesList.indexOf(assigner.role)) {
+	//IF the assigner cannot assign to anyone check to make sure everyone assigning to is corrects
+	if (
+		rolesList.indexOf(canAssignToAnyone) < rolesList.indexOf(assigner.role) &&
+		rolesList.indexOf(canAssignToAnyone) !== -1
+	) {
 		const subordinates = getSubordinates(assigner.name);
 		outList.forEach((outPerson) => {
 			let isSubordinate = false;
