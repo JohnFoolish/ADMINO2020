@@ -233,12 +233,12 @@ function myOnEdit() {
 	) {
 		sortDigitalBox();
 	} else if (ss.getActiveCell().getSheet().getName() === 'Battalion Structure' && ss.getActiveCell().getColumn() > 1) {
-		if (ss.getActiveCell().getColumn() > 1) {
-			chainOfCommandStructureUpdater();
-		}
 		if (ss.getActiveCell().getColumn() === 1 || ss.getActiveCell().getColumn() === 2) {
 			updateFormGroups();
 			checkForUniqueRolesAndGroups();
+		}
+		if (ss.getActiveCell().getColumn() > 1) {
+			chainOfCommandStructureUpdater();
 		}
 	}
 }
