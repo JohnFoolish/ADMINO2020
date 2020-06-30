@@ -1,3 +1,4 @@
+// This code was complited from typescript
 const ss = SpreadsheetApp.getActiveSpreadsheet();
 const ssData = ss.getSheetByName('Data');
 const ssAssignment = ss.getSheetByName('Assignment Responses');
@@ -82,26 +83,39 @@ function myOnAssignmentSubmit() {
 			}
 		}
 
+		// Make sure assigner is in system
+		let assignerFullData;
+		JSON.parse(ssVariables.getRange(4, 2).getValue()).forEach((member) => {
+			if (member.name === submitData.assigner) {
+				assignerFullData = member;
+			}
+		});
+
 		// Manipulate data
-		const people = getIndividualsFromCheckBoxGrid(keyValuePairsRawGridCheckbox);
+		const people = getIndividualsFromCheckBoxGrid(keyValuePairsRawGridCheckbox, assignerFullData);
 		const outData = new Array(people.length);
 		const emailList = [];
+		const noAuthority = [];
 		for (let i = 0; i < people.length; i++) {
-			outData[i] = new Array(9);
-			outData[i][0] = new Date(submitData.timestamp);
-			outData[i][0].setSeconds(outData[i][0].getSeconds() + i); //Timestamp - UUID
-			outData[i][1] = submitData.assigner; // Assigners Name
-			outData[i][2] = people.length === 1 ? 'Individual' : people[i].group; // Group
-			outData[i][3] = people[i].name; // Recievers name
-			outData[i][4] = submitData.paperwork; // Paperwork
-			outData[i][5] = submitData.dateAssigned; // Date assigned
-			outData[i][6] = submitData.dateDue; // Date Due
-			outData[i][7] = 'FALSE'; // Turned in
-			outData[i][8] = submitData.reason; // Reason for paperwork
-			outData[i][9] = submitData.pdfLink; //Link to paperwork
+			if (people[i].canBeAssignedFromAssigner) {
+				outData[i] = new Array(9);
+				outData[i][0] = new Date(submitData.timestamp);
+				outData[i][0].setSeconds(outData[i][0].getSeconds() + i); //Timestamp - UUID
+				outData[i][1] = submitData.assigner; // Assigners Name
+				outData[i][2] = people[i].group; // Group
+				outData[i][3] = people[i].name; // Recievers name
+				outData[i][4] = submitData.paperwork; // Paperwork
+				outData[i][5] = submitData.dateAssigned; // Date assigned
+				outData[i][6] = submitData.dateDue; // Date Due
+				outData[i][7] = 'FALSE'; // Turned in
+				outData[i][8] = submitData.reason; // Reason for paperwork
+				outData[i][9] = submitData.pdfLink; //Link to paperwork
 
-			if (submitData.sendEmail) {
-				emailList.push(getIndividualEmail(people[i].name));
+				if (submitData.sendEmail) {
+					emailList.push(getIndividualEmail(people[i].name));
+				}
+			} else {
+				noAuthority.push(people[i]);
 			}
 		}
 		sendEmail(emailList, submitData);
@@ -167,13 +181,15 @@ function sortDigitalBox() {
 }
 
 function myOnEdit() {
-	if (
-		ss.getActiveCell().getSheet().getName() === 'Battalion Members' &&
-		(ss.getActiveCell().getColumn() === 1 ||
+	if (ss.getActiveCell().getSheet().getName() === 'Battalion Members') {
+		if (
+			ss.getActiveCell().getColumn() === 1 ||
 			ss.getActiveCell().getColumn() === 2 ||
-			ss.getActiveCell().getColumn() === 3)
-	) {
-		updateFormGroups();
+			ss.getActiveCell().getColumn() === 3
+		) {
+			updateFormGroups();
+		}
+		updateBattalionMembersJSON();
 	} else if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
 		const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
@@ -208,6 +224,7 @@ function myOnEdit() {
 		}
 		if (ss.getActiveCell().getColumn() === 1 || ss.getActiveCell().getColumn() === 2) {
 			updateFormGroups();
+			//Make sure both of these feilds only contain unique identifiers. No repeats
 		}
 	}
 }
@@ -518,13 +535,203 @@ function getIndividualEmail(name: string): string {
 	return returnEmail;
 }
 
-// Still working on this function
-function getIndividualsFromCheckBoxGrid(parsedCheckBoxData): [{ name: string; group: string }] {
-	const outList = [];
+function createFullBattalionStructure() {
+	const people = JSON.parse(ssVariables.getRange(4, 2).getValue());
+	const chain = JSON.parse(ssVariables.getRange(3, 2).getValue());
 
-	parsedCheckBoxData.forEach((node) => {});
+	function fillChain(chainNode) {
+		chainNode.members = [];
+		people.forEach((person) => {
+			if (person.group === chainNode.value) {
+				chainNode.members.push(person);
+			}
+		});
+		if (chainNode.children.length > 0) {
+			chainNode.children.forEach((child) => {
+				child.parent = chainNode;
+				fillChain(child);
+			});
+		}
+	}
+	chain.parent = null;
+	fillChain(chain);
+	return chain;
+}
+
+// Still working on this function
+function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
+	let outList = [] as { name: string; group: string; canBeAssignedFromAssigner: boolean }[];
+	const battalion = createFullBattalionStructure();
+	const battaionMembers = JSON.parse(ssVariables.getRange(4, 2).getValue());
+
+	parsedCheckBoxData.forEach((node) => {
+		// node: role: role or individual, groups: [Individual or groups]
+		let isIndividual = false;
+		battaionMembers.forEach((member) => {
+			if (node.role === member.name) {
+				isIndividual = true;
+				outList.push({ name: member.name, group: 'Individual', canBeAssignedFromAssigner: true });
+			}
+		});
+		if (!isIndividual) {
+			node.groups.forEach((selectedGroup) => {
+				if (selectedGroup !== 'Individual') {
+					//Find the group in the chain
+					let groupChain;
+					function findGroup(chainNode) {
+						if (chainNode.value === selectedGroup) {
+							groupChain = chainNode;
+						}
+						chainNode.children.forEach((child) => {
+							findGroup(child);
+						});
+					}
+					findGroup(battalion);
+
+					//Search down chain for role
+					function addPeopleDownChain(chainNode) {
+						chainNode.members.forEach((member) => {
+							if (member.role === node.role) {
+								outList.push({
+									name: member.name,
+									group: selectedGroup + ':' + node.role,
+									canBeAssignedFromAssigner: true,
+								});
+							}
+						});
+						chainNode.children.forEach((child) => {
+							addPeopleDownChain(child);
+						});
+					}
+					addPeopleDownChain(groupChain);
+
+					//Search up chain for role
+					function addPeopleUpChain(chainNode) {
+						if (chainNode.parent !== null) {
+							chainNode.parent.members.forEach((member) => {
+								outList.push({
+									name: member.name,
+									group: selectedGroup + ':' + node.role,
+									canBeAssignedFromAssigner: true,
+								});
+							});
+							addPeopleUpChain(chainNode.parent);
+						}
+					}
+					addPeopleUpChain(groupChain);
+				}
+			});
+		}
+	});
+
+	// check for duplicates
+	const outListWithoutRepeats = [];
+	outList.forEach((outPerson) => {
+		let alreadyInArray = false;
+		outListWithoutRepeats.forEach((withoutRepeats) => {
+			if (withoutRepeats.name === outPerson.name) {
+				alreadyInArray = true;
+			}
+		});
+		if (!alreadyInArray) {
+			outListWithoutRepeats.push(outPerson);
+		}
+	});
+	outList = outListWithoutRepeats;
+
+	// Check for assigning autority
+	const rolesList = [];
+	ssBattalionStructure
+		.getRange(2, 1, ssBattalionStructure.getLastRow(), 1)
+		.getValues()
+		.forEach((row) => {
+			if (row[0] !== '') {
+				rolesList.push(row[0]);
+			}
+		});
+	const canAssignToAnyone = ssOptions.getRange(4, 2).getValue();
+	//IF the assigner cannot assign to anyone check to make sure everyone assigning to is correct
+	if (rolesList.indexOf(canAssignToAnyone) < rolesList.indexOf(assigner.role)) {
+		const subordinates = getSubordinates(assigner.name);
+		outList.forEach((outPerson) => {
+			let isSubordinate = false;
+			subordinates.forEach((suboord) => {
+				if (outPerson.name === suboord) {
+					isSubordinate = true;
+				}
+			});
+			if (!isSubordinate) {
+				outPerson.canBeAssignedFromAssigner = false;
+			}
+		});
+	}
 
 	return outList; // [{name:string,group:string}]
+}
+
+function updateBattalionMembersJSON() {
+	const data = ssBattalionMembers
+		.getRange(2, 1, ssBattalionMembers.getLastRow(), ssBattalionMembers.getLastColumn())
+		.getValues();
+	const peopleList = [];
+	if (data[0].length === 6) {
+		data.forEach((row) => {
+			if (row[0] !== '' && row[1] !== '' && row[2] !== '' && row[3] !== '' && row[4] !== '' && row[5] !== '') {
+				peopleList.push({ name: `MIDN ${row[0]}/C ${row[1]}, ${row[2]}`, email: row[3], role: row[4], group: row[5] });
+			}
+		});
+	}
+	ssVariables.getRange(4, 2).setValue(JSON.stringify(peopleList));
+}
+
+function getSubordinates(name: string): string[] {
+	const outPeople = [];
+	const battalion = createFullBattalionStructure();
+	const rolesList = [];
+	ssBattalionStructure
+		.getRange(2, 1, ssBattalionStructure.getLastRow(), 1)
+		.getValues()
+		.forEach((row) => {
+			if (row[0] !== '') {
+				rolesList.push(row[0]);
+			}
+		});
+	let highestChainOfIndividual;
+	let personFullData;
+	let foundPerson = false;
+
+	function searchChain(chainNode) {
+		chainNode.members.forEach((member) => {
+			if (member.name === name) {
+				highestChainOfIndividual = chainNode;
+				personFullData = member;
+				foundPerson = true;
+			}
+		});
+		chainNode.children.forEach((child) => {
+			searchChain(child);
+		});
+	}
+	searchChain(battalion);
+
+	if (foundPerson) {
+		highestChainOfIndividual.members.forEach((member) => {
+			if (rolesList.indexOf(member.role) > rolesList.indexOf(personFullData.role)) {
+				outPeople.push(member.name);
+			}
+		});
+		function addSubGroupMembers(chainNode) {
+			chainNode.members.forEach((member) => {
+				outPeople.push(member.name);
+			});
+			chainNode.children.forEach((child) => {
+				addSubGroupMembers(child);
+			});
+		}
+		addSubGroupMembers(highestChainOfIndividual);
+	}
+
+	return outPeople;
 }
 
 function sendEmail(emailList, data) {
