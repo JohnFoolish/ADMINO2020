@@ -34,37 +34,77 @@ function myOnSubmit() {
 function myOnAssignmentSubmit() {
 	if (ssData.getLastRow() > 0) {
 		// Get newly inserted data
-		const data = ssAssignment.getRange(ssAssignment.getLastRow(), 1, 1, ssAssignment.getLastColumn()).getValues();
+		const dataResponseFormat = ssAssignment.getRange(1, 1, 1, ssAssignment.getLastColumn()).getValues();
+		const submittedData = ssAssignment
+			.getRange(ssAssignment.getLastRow(), 1, 1, ssAssignment.getLastColumn())
+			.getValues();
+		const dataPairs = [dataResponseFormat[0], submittedData[0]];
+		if (dataResponseFormat[0].length !== submittedData[0].length) {
+			// MailApp.sendEmail() email that there was a problem, idk if this will happen ever?
+			Logger.log('The submitted data has a differnet length than the expected input');
+		}
+
+		interface submittedData {
+			timestamp: Date;
+			assigner: string;
+			paperwork: string;
+			reason: string;
+			dateAssigned: Date;
+			dateDue: Date;
+			sendEmail: boolean;
+			pdfLink: string;
+		}
+
+		const submitData = {} as submittedData;
+		const keyValuePairsRawGridCheckbox = [];
+		for (let i = 0; i < dataPairs[0].length; i++) {
+			if (dataPairs[0][i] === 'Timestamp') {
+				submitData.timestamp = dataPairs[1][i];
+			} else if (dataPairs[0][i] === "Assigner's Name") {
+				submitData.assigner = dataPairs[1][i];
+			} else if (dataPairs[0][i] === 'Paperwork') {
+				submitData.paperwork = dataPairs[1][i];
+			} else if (dataPairs[0][i] === 'Reason for paperwork') {
+				submitData.reason = dataPairs[1][i];
+			} else if (dataPairs[0][i] === 'Date Assigned') {
+				submitData.dateAssigned = dataPairs[1][i];
+			} else if (dataPairs[0][i] === 'Date Due') {
+				submitData.dateDue = specificDueDateLengthCheck(submitData.paperwork, submitData.dateAssigned, dataPairs[i][1]);
+			} else if (dataPairs[0][i] === 'Send Initial Email Notification') {
+				submitData.sendEmail = dataPairs[1][i] === 'No' ? false : true;
+			} else if (dataPairs[0][i] === 'Upload your form as a PDF here:') {
+				submitData.pdfLink = dataPairs[1][i];
+			} else if (dataPairs[0][i].substring(0, 22) === 'Receiving Individual/s') {
+				keyValuePairsRawGridCheckbox.push({
+					role: dataPairs[0][i].substring(24, dataPairs[0][i].length - 1),
+					groups: JSON.parse('[' + dataPairs[1][i] + ']'),
+				});
+			}
+		}
 
 		// Manipulate data
-		const people = getIndividualsInGroup(data[0][2]);
+		const people = getIndividualsFromCheckBoxGrid(keyValuePairsRawGridCheckbox);
 		const outData = new Array(people.length);
 		const emailList = [];
 		for (let i = 0; i < people.length; i++) {
 			outData[i] = new Array(9);
-			outData[i][0] = new Date(data[0][0].toString());
+			outData[i][0] = new Date(submitData.timestamp);
 			outData[i][0].setSeconds(outData[i][0].getSeconds() + i); //Timestamp - UUID
-			outData[i][1] = data[0][1]; // Assigners Name
-			outData[i][2] = people.length === 1 ? 'Individual' : data[0][2]; // Group
-			outData[i][3] = people[i]; // Recievers name
-			outData[i][4] = data[0][3]; // Paperwork
-			outData[i][5] = data[0][5]; // Data assigned
-			if (outData[i][4] === 'Chit' || outData[i][4] === 'Negative Counseling' || outData[i][4] === 'Merit') {
-				//This function does not work. Placeholder for now.
-				const date = increaseDate(outData[i][4], outData[i][5]);
-				outData[i][6] = date;
-			} else {
-				outData[i][6] = data[0][6]; // Date Due
-			}
+			outData[i][1] = submitData.assigner; // Assigners Name
+			outData[i][2] = people.length === 1 ? 'Individual' : people[i].group; // Group
+			outData[i][3] = people[i].name; // Recievers name
+			outData[i][4] = submitData.paperwork; // Paperwork
+			outData[i][5] = submitData.dateAssigned; // Date assigned
+			outData[i][6] = submitData.dateDue; // Date Due
 			outData[i][7] = 'FALSE'; // Turned in
-			outData[i][8] = data[0][4]; // Reason for paperwork
-			outData[i][9] = data[0][8]; //Link to paperwork
+			outData[i][8] = submitData.reason; // Reason for paperwork
+			outData[i][9] = submitData.pdfLink; //Link to paperwork
 
-			if (data[0][7] == 'Yes') {
-				emailList.push(getIndividualEmail(people[i]));
+			if (submitData.sendEmail) {
+				emailList.push(getIndividualEmail(people[i].name));
 			}
 		}
-		sendEmail(emailList, data);
+		sendEmail(emailList, submitData);
 
 		//Write to data sheet
 		ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
@@ -72,6 +112,37 @@ function myOnAssignmentSubmit() {
 		// Write to Pending Paperwork
 		ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 	}
+}
+
+function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifiedDueDate): Date {
+	//outData[i][4] === 'Chit' || outData[i][4] === 'Negative Counseling' || outData[i][4] === 'Merit'
+	let out = specifiedDueDate;
+	if (paperwork === 'Chit') {
+		out = assignDate;
+		out.setDate(out.getDate() + adjustDateForWeekends(out, ssOptions.getRange(2, 2).getValue().parseInt()));
+	} else if (paperwork === 'Negative Counseling') {
+		out = assignDate;
+		out.setDate(out.getDate() + adjustDateForWeekends(out, ssOptions.getRange(2, 2).getValue().parseInt()));
+	} else if (out === '') {
+		out = new Date();
+		out.setDate(out.getDate() + 7);
+	}
+	return out;
+}
+
+function adjustDateForWeekends(currentDate, daysToAddToDate): number {
+	let daysAdded = 0;
+	const maniputateDate = currentDate;
+
+	for (let i = 0; i < daysToAddToDate; i++) {
+		maniputateDate.setDate(maniputateDate.getDate() + 1);
+		if (maniputateDate.getDay() === 0 || maniputateDate.getDay() === 6) {
+			i--;
+		}
+		daysAdded++;
+	}
+
+	return daysAdded;
 }
 
 //This function runs whenever the new paperwork submission form is submitted.
@@ -372,7 +443,7 @@ function updateFormGroups() {
 	getGroups(true, false).forEach((person) => {
 		rowItems.push(person);
 	});
-	const colItems = ['Individuals'];
+	const colItems = ['Individual'];
 	getGroups(false, true).forEach((group) => {
 		colItems.push(group);
 	});
@@ -447,49 +518,43 @@ function getIndividualEmail(name: string): string {
 	return returnEmail;
 }
 
-function getIndividualsInGroup(groupName: string): string[] {
-	const groupData = ssBattalion.getRange(1, 1, ssBattalion.getLastRow(), ssBattalion.getLastColumn()).getValues();
-	const out = [];
+// Still working on this function
+function getIndividualsFromCheckBoxGrid(parsedCheckBoxData): [{ name: string; group: string }] {
+	const outList = [];
 
-	const columnOfGroup = groupData[0].indexOf(groupName);
+	parsedCheckBoxData.forEach((node) => {});
 
-	if (columnOfGroup !== -1) {
-		for (let i = 1; i < groupData.length; i++) {
-			if (groupData[i][columnOfGroup] !== '') out.push(groupData[i][0] + ', ' + groupData[i][1]);
-		}
-	}
-
-	return out.length === 0 ? [groupName] : out;
+	return outList; // [{name:string,group:string}]
 }
 
 function sendEmail(emailList, data) {
 	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;
 
-	const dateDemo = String(data[0][6]).split(' ', 4);
+	const dateDemo = String(data.dueDate).split(' ', 4);
 
 	const date = dateDemo[0] + ', ' + dateDemo[2] + dateDemo[1].toUpperCase() + dateDemo[3];
 
-	const emailSender = getIndividualEmail(data[0][0]);
+	const emailSender = getIndividualEmail(data.assigner);
 
-	const emailSubject = 'NROTC ADMIN Department: New ' + data[0][3] + ' due COB ' + date + '.';
+	const emailSubject = 'NROTC ADMIN Department: New ' + data.paperwork + ' due COB ' + date + '.';
 
 	const emailBody =
 		"<h2 'style=color: #5e9ca0;'> You have been assigned a " +
-		data[0][3] +
+		data.paperwork +
 		' from ' +
-		data[0][1] +
+		data.assigner +
 		'.</h2>' +
 		'<p> The reason is the following: ' +
-		data[0][4] +
+		data.reason +
 		'.</p> <p> You must turn this form in by COB on ' +
 		date +
 		'.</p>' +
 		'<p> If you have any questions regarding the validity of the ' +
-		data[0][3] +
+		data.paperwork +
 		', please contact the assignee. </p>' +
 		'<p> You can find the paperwork to complete here: ' +
-		data[0][8] +
+		data.pdfLink +
 		'</p>';
 
 	//emailList.filter((email) => email !== '');
