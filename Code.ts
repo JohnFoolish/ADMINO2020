@@ -622,11 +622,13 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 					function addPeopleUpChain(chainNode) {
 						if (chainNode.parent !== null) {
 							chainNode.parent.members.forEach((member) => {
-								outList.push({
-									name: member.name,
-									group: selectedGroup + ':' + node.role,
-									canBeAssignedFromAssigner: true,
-								});
+								if (member.role === node.role) {
+									outList.push({
+										name: member.name,
+										group: selectedGroup + ':' + node.role,
+										canBeAssignedFromAssigner: true,
+									});
+								}
 							});
 							addPeopleUpChain(chainNode.parent);
 						}
