@@ -160,6 +160,7 @@ function adjustDateForWeekends(currentDate, daysToAddToDate): number {
 		}
 		daysAdded++;
 	}
+	Logger.log('Days added to assignment' + daysAdded);
 
 	return daysAdded;
 }
