@@ -9,7 +9,6 @@ const ssVariables = ss.getSheetByName('Variables');
 const ssDigitalBox = ss.getSheetByName('Digital Turn In Box');
 const ssBattalionStructure = ss.getSheetByName('Battalion Structure');
 const ssBattalionMembers = ss.getSheetByName('Battalion Members');
-const ui = SpreadsheetApp.getUi();
 
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
 const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit');
@@ -130,17 +129,20 @@ function myOnAssignmentSubmit() {
 }
 
 function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifiedDueDate): Date {
-	//outData[i][4] === 'Chit' || outData[i][4] === 'Negative Counseling' || outData[i][4] === 'Merit'
 	let out = specifiedDueDate;
 	if (paperwork === 'Chit') {
 		out = assignDate;
 		let chitTime = ssOptions.getRange(2, 2).getValue();
-		if (typeof parseInt(chitTime) != 'number' || chitTime === '') chitTime = '3';
+		if (typeof parseInt(chitTime) != 'number' || chitTime === '') {
+			chitTime = '3';
+		}
 		out.setDate(out.getDate() + adjustDateForWeekends(out, parseInt(chitTime)));
 	} else if (paperwork === 'Negative Counseling') {
 		out = assignDate;
 		let ncTime = ssOptions.getRange(3, 2).getValue();
-		if (typeof parseInt(ncTime) != 'number' || ncTime === '') ncTime = '3';
+		if (typeof parseInt(ncTime) != 'number' || ncTime === '') {
+			ncTime = '3';
+		}
 		out.setDate(out.getDate() + adjustDateForWeekends(out, parseInt(ncTime)));
 	} else if (out === '') {
 		out = new Date();
@@ -202,6 +204,7 @@ function myOnEdit() {
 		for (let j = 1; j < pending.length; j++) {
 			if (pending[j][7].toString() === 'true') {
 				if (pending[j][9] === '') {
+					const ui = SpreadsheetApp.getUi();
 					ui.alert('You need to put either "Turned in Physically" or the link to their digitally turned in file');
 					pending[j][7] = 'false';
 				} else {
