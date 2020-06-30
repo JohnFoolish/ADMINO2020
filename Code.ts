@@ -120,7 +120,6 @@ function myOnAssignmentSubmit() {
 		sendEmail(emailList, submitData);
 		//Email the assigner who was assigned it and who was not
 		Logger.log(noAuthority);
-		Logger.log(outData);
 
 		//Write to data sheet
 		ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
@@ -203,8 +202,10 @@ function myOnEdit() {
 	} else if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
 		const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
+		let oneWasTrue = false;
 		for (let j = 1; j < pending.length; j++) {
 			if (pending[j][7].toString() === 'true') {
+				oneWasTrue = true;
 				if (pending[j][9] === '') {
 					const ui = SpreadsheetApp.getUi();
 					ui.alert('You need to put either "Turned in Physically" or the link to their digitally turned in file');
@@ -221,9 +222,11 @@ function myOnEdit() {
 				}
 			}
 		}
-		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
-		ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).setValues(pending);
-		ssPending.sort(1);
+		if (oneWasTrue) {
+			ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
+			ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).setValues(pending);
+			ssPending.sort(1);
+		}
 	} else if (
 		ss.getActiveCell().getSheet().getName() === 'Digital Turn In Box' &&
 		ss.getActiveCell().getColumn() === 4
