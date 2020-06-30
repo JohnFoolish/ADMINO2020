@@ -416,7 +416,7 @@ function getGroups(individuals: boolean, groups: boolean): string[] {
 
 	if (groups) {
 		for (let i = 0; i < groupData.length; i++) {
-			const group = groupData[0][i];
+			const group = groupData[i][0];
 			if (group !== '') {
 				out.push(group);
 			}
