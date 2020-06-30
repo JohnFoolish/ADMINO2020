@@ -133,14 +133,14 @@ function myOnAssignmentSubmit() {
 function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifiedDueDate): Date {
 	let out = specifiedDueDate;
 	if (paperwork === 'Chit') {
-		out = assignDate;
+		out = new Date(assignDate.toString());
 		let chitTime = ssOptions.getRange(2, 2).getValue();
 		if (typeof parseInt(chitTime) != 'number' || chitTime === '') {
 			chitTime = '3';
 		}
 		out.setDate(out.getDate() + adjustDateForWeekends(out, parseInt(chitTime)));
 	} else if (paperwork === 'Negative Counseling') {
-		out = assignDate;
+		out = new Date(assignDate.toString());
 		let ncTime = ssOptions.getRange(3, 2).getValue();
 		if (typeof parseInt(ncTime) != 'number' || ncTime === '') {
 			ncTime = '3';
