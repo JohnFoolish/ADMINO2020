@@ -2,12 +2,12 @@ const ss = SpreadsheetApp.getActiveSpreadsheet();
 const ssData = ss.getSheetByName('Data');
 const ssAssignment = ss.getSheetByName('Assignment Responses');
 const ssTurnedIn = ss.getSheetByName('Turnin Responses');
-const ssBattalion = ss.getSheetByName('Battalion Structure');
 const ssOptions = ss.getSheetByName('Options');
 const ssPending = ss.getSheetByName('Pending Paperwork');
 const ssVariables = ss.getSheetByName('Variables');
 const ssDigitalBox = ss.getSheetByName('Digital Turn In Box');
-const ssBattalionStructure = ss.getSheetByName('New Battalion Structure');
+const ssBattalionStructure = ss.getSheetByName('Battalion Structure');
+const ssBattalionMembers = ss.getSheetByName('Battalion Members');
 const ui = SpreadsheetApp.getUi();
 
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
@@ -97,8 +97,10 @@ function sortDigitalBox() {
 
 function myOnEdit() {
 	if (
-		ss.getActiveCell().getSheet().getName() === 'Battalion Structure' &&
-		(ss.getActiveCell().getColumn() === 1 || ss.getActiveCell().getColumn() === 2 || ss.getActiveCell().getRow() === 1)
+		ss.getActiveCell().getSheet().getName() === 'Battalion Members' &&
+		(ss.getActiveCell().getColumn() === 1 ||
+			ss.getActiveCell().getColumn() === 2 ||
+			ss.getActiveCell().getColumn() === 3)
 	) {
 		updateFormGroups();
 	} else if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
@@ -129,11 +131,13 @@ function myOnEdit() {
 		ss.getActiveCell().getColumn() === 4
 	) {
 		sortDigitalBox();
-	} else if (
-		ss.getActiveCell().getSheet().getName() === 'New Battalion Structure' &&
-		ss.getActiveCell().getColumn() > 1
-	) {
-		chainOfCommandStructureUpdater();
+	} else if (ss.getActiveCell().getSheet().getName() === 'Battalion Structure' && ss.getActiveCell().getColumn() > 1) {
+		if (ss.getActiveCell().getColumn() > 1) {
+			chainOfCommandStructureUpdater();
+		}
+		if (ss.getActiveCell().getColumn() === 1 || ss.getActiveCell().getColumn() === 2) {
+			updateFormGroups();
+		}
 	}
 }
 
@@ -278,7 +282,7 @@ function chainOfCommandStructureUpdater() {
 
 function createGoogleFiles() {
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
-	const battalionIndividuals = getGroups(true);
+	const battalionIndividuals = getGroups(true, false);
 	var ssTemplate = SpreadsheetApp.openByUrl(
 		'https://docs.google.com/spreadsheets/d/1QbC9z04dQWhDNz-Q4qm2urfWzZjtKxLmmCsFQ4J9uOU/edit#gid=0'
 	);
@@ -309,7 +313,7 @@ function findIndSheet(name) {
 
 function wipeGoogleFiles() {
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
-	const battalionIndividuals = getGroups(true);
+	const battalionIndividuals = getGroups(true, false);
 	for (var ind = 0; ind < battalionIndividuals.length; ind++) {
 		const email = getIndividualEmail(battalionIndividuals[ind]);
 		if (email === '') {
@@ -358,21 +362,29 @@ function initSheet(sheetID, name) {
 function updateFormGroups() {
 	// Update Recieve name / group
 	const FormItem = form.getItems();
-	const item = FormItem[1].asListItem();
-	item.setTitle('Receiver Name/Group');
-	const groups = getGroups(false);
-	const groupList = [];
-	for (const groupData of groups) {
-		groupList.push(item.createChoice(groupData));
-	}
-	item.setChoices(groupList);
-	item.isRequired();
-	item.setHelpText('The group or MIDN you want to assign the paperwork to');
-	Logger.log(groupList);
+	const item = FormItem[1].asCheckboxGridItem();
+	item.setTitle('Receiving Individual/s');
+	let roles = ssBattalionStructure.getRange(2, 1, ssBattalionStructure.getLastRow(), 1).getValues();
+	const rowItems = [];
+	roles[0].forEach((item) => {
+		if (item !== '') rowItems.push(item);
+	});
+	getGroups(true, false).forEach((person) => {
+		rowItems.push(person);
+	});
+	const colItems = ['Individuals'];
+	getGroups(false, true).forEach((group) => {
+		colItems.push(group);
+	});
+	item.setRows(rowItems);
+	item.setColumns(colItems);
+	item.setHelpText(
+		'Select the individual/s receiving the paperwork. This question has smart group selection and will assign the paperwork to anyone who qualifies for any of the groups/individuals selected.'
+	);
 
 	// Update assigner names list
 	const item2 = FormItem[0].asListItem();
-	const ind = getGroups(true);
+	const ind = getGroups(true, false);
 	const indList = [];
 	for (const individuals of ind) {
 		indList.push(item2.createChoice(individuals));
@@ -386,7 +398,7 @@ function updateFormGroups() {
 	const subFormItem = subForm.getItems();
 	const subItem = subFormItem[0].asListItem();
 	subItem.setTitle('Your name');
-	const subInd = getGroups(true);
+	const subInd = getGroups(true, false);
 	const subIndList = [];
 	for (const subIndividuals of subInd) {
 		subIndList.push(item2.createChoice(subIndividuals));
@@ -397,12 +409,13 @@ function updateFormGroups() {
 	Logger.log(subIndList);
 }
 
-function getGroups(justIndividuals: boolean): string[] {
-	const groupData = ssBattalion.getRange(1, 1, ssBattalion.getLastRow(), ssBattalion.getLastColumn()).getValues();
+function getGroups(individuals: boolean, groups: boolean): string[] {
+	const groupData = ssBattalionStructure.getRange(2, 2, ssBattalionStructure.getLastRow(), 1).getValues();
+	const individualData = ssBattalionMembers.getRange(2, 1, ssBattalionMembers.getLastRow(), 3).getValues();
 	const out = [];
 
-	if (!justIndividuals) {
-		for (let i = 3; i < groupData[0].length; i++) {
+	if (groups) {
+		for (let i = 0; i < groupData.length; i++) {
 			const group = groupData[0][i];
 			if (group !== '') {
 				out.push(group);
@@ -410,10 +423,12 @@ function getGroups(justIndividuals: boolean): string[] {
 		}
 	}
 
-	for (let i = 1; i < groupData.length; i++) {
-		const person = groupData[i][0] + ', ' + groupData[i][1];
-		if (groupData[i][0] !== '' && groupData[i][1] !== '') {
-			out.push(person);
+	if (individuals) {
+		for (let i = 0; i < individualData.length; i++) {
+			if (individualData[i][0] !== '' && individualData[i][1] !== '' && individualData[i][2] !== '') {
+				const person = `MIDN ${individualData[i][0]}/C ${individualData[i][1]}, ${individualData[i][2]}`;
+				out.push(person);
+			}
 		}
 	}
 
@@ -421,12 +436,12 @@ function getGroups(justIndividuals: boolean): string[] {
 }
 
 function getIndividualEmail(name: string): string {
-	const groupData = ssBattalion.getRange(1, 1, ssBattalion.getLastRow(), ssBattalion.getLastColumn()).getValues();
+	const individualData = ssBattalionMembers.getRange(2, 1, ssBattalionMembers.getLastRow(), 4).getValues();
 	let returnEmail = null;
-	for (let i = 1; i < groupData.length; i++) {
-		const person = groupData[i][0] + ', ' + groupData[i][1];
+	for (let i = 0; i < individualData.length; i++) {
+		const person = `MIDN ${individualData[i][0]}/C ${individualData[i][1]}, ${individualData[i][2]}`;
 		if (name === person) {
-			returnEmail = groupData[i][2];
+			returnEmail = individualData[i][3];
 		}
 	}
 	return returnEmail;
