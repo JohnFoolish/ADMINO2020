@@ -40,10 +40,6 @@ function myOnAssignmentSubmit() {
 			.getRange(ssAssignment.getLastRow(), 1, 1, ssAssignment.getLastColumn())
 			.getValues();
 		const dataPairs = [dataResponseFormat[0], submittedData[0]];
-		if (dataResponseFormat[0].length !== submittedData[0].length) {
-			// MailApp.sendEmail() email that there was a problem, idk if this will happen ever?
-			Logger.log('The submitted data has a differnet length than the expected input');
-		}
 
 		interface submittedData {
 			timestamp: Date;
@@ -76,10 +72,12 @@ function myOnAssignmentSubmit() {
 			} else if (dataPairs[0][i] === 'Upload your form as a PDF here:') {
 				submitData.pdfLink = dataPairs[1][i];
 			} else if (dataPairs[0][i].substring(0, 22) === 'Receiving Individual/s') {
-				keyValuePairsRawGridCheckbox.push({
-					role: dataPairs[0][i].substring(24, dataPairs[0][i].length - 1),
-					groups: JSON.parse('[' + dataPairs[1][i] + ']'),
-				});
+				if (dataPairs[1][i] !== '') {
+					keyValuePairsRawGridCheckbox.push({
+						role: dataPairs[0][i].substring(24, dataPairs[0][i].length - 1),
+						groups: JSON.parse('[' + dataPairs[1][i] + ']'),
+					});
+				}
 			}
 		}
 
@@ -118,7 +116,10 @@ function myOnAssignmentSubmit() {
 				noAuthority.push(people[i]);
 			}
 		}
+		//Send ouot email notifiying everyone that their paperwork was assigned
 		sendEmail(emailList, submitData);
+		//Email the assigner who was assigned it and who was not
+		Logger.log(noAuthority);
 
 		//Write to data sheet
 		ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
@@ -564,6 +565,8 @@ function createFullBattalionStructure() {
 
 // Still working on this function
 function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
+	Logger.log(parsedCheckBoxData + ' ' + assigner);
+
 	let outList = [] as { name: string; group: string; canBeAssignedFromAssigner: boolean }[];
 	const battalion = createFullBattalionStructure();
 	const battaionMembers = JSON.parse(ssVariables.getRange(4, 2).getValue());
@@ -673,6 +676,7 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 		});
 	}
 
+	Logger.log(outList);
 	return outList; // [{name:string,group:string}]
 }
 
