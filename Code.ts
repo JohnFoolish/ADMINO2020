@@ -90,23 +90,24 @@ function myOnAssignmentSubmit() {
 
 		// Manipulate data
 		const people = getIndividualsFromCheckBoxGrid(keyValuePairsRawGridCheckbox, assignerFullData);
-		const outData = new Array(people.length);
+		const outData = [];
 		const emailList = [];
 		const noAuthority = [];
 		for (let i = 0; i < people.length; i++) {
 			if (people[i].canBeAssignedFromAssigner) {
-				outData[i] = new Array(9);
-				outData[i][0] = new Date(submitData.timestamp);
-				outData[i][0].setSeconds(outData[i][0].getSeconds() + i); //Timestamp - UUID
-				outData[i][1] = submitData.assigner; // Assigners Name
-				outData[i][2] = people[i].group; // Group
-				outData[i][3] = people[i].name; // Recievers name
-				outData[i][4] = submitData.paperwork; // Paperwork
-				outData[i][5] = submitData.dateAssigned; // Date assigned
-				outData[i][6] = submitData.dateDue; // Date Due
-				outData[i][7] = 'FALSE'; // Turned in
-				outData[i][8] = submitData.reason; // Reason for paperwork
-				outData[i][9] = submitData.pdfLink; //Link to paperwork
+				const tempOutData = new Array(9);
+				tempOutData[0] = new Date(submitData.timestamp);
+				tempOutData[0].setSeconds(outData[i][0].getSeconds() + i); //Timestamp - UUID
+				tempOutData[1] = submitData.assigner; // Assigners Name
+				tempOutData[2] = people[i].group; // Group
+				tempOutData[3] = people[i].name; // Recievers name
+				tempOutData[4] = submitData.paperwork; // Paperwork
+				tempOutData[5] = submitData.dateAssigned; // Date assigned
+				tempOutData[6] = submitData.dateDue; // Date Due
+				tempOutData[7] = 'FALSE'; // Turned in
+				tempOutData[8] = submitData.reason; // Reason for paperwork
+				tempOutData[9] = submitData.pdfLink; //Link to paperwork
+				outData.push(tempOutData);
 
 				if (submitData.sendEmail) {
 					emailList.push(getIndividualEmail(people[i].name));
@@ -119,6 +120,7 @@ function myOnAssignmentSubmit() {
 		sendEmail(emailList, submitData);
 		//Email the assigner who was assigned it and who was not
 		Logger.log(noAuthority);
+		Logger.log(outData);
 
 		//Write to data sheet
 		ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
