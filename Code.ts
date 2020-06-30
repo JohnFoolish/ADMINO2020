@@ -749,7 +749,7 @@ function sendEmail(emailList, data) {
 	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;
 
-	const dateDemo = String(data.dueDate).split(' ', 4);
+	const dateDemo = data.dueDate.toString().split(' ', 4);
 
 	const date = dateDemo[0] + ', ' + dateDemo[2] + dateDemo[1].toUpperCase() + dateDemo[3];
 
