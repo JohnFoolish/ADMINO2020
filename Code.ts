@@ -565,7 +565,7 @@ function createFullBattalionStructure() {
 
 // Still working on this function
 function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
-	Logger.log(parsedCheckBoxData + ' ' + assigner);
+	Logger.log(JSON.stringify(parsedCheckBoxData) + ' ' + JSON.stringify(assigner));
 
 	let outList = [] as { name: string; group: string; canBeAssignedFromAssigner: boolean }[];
 	const battalion = createFullBattalionStructure();
