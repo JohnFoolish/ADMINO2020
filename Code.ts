@@ -366,8 +366,8 @@ function updateFormGroups() {
 	item.setTitle('Receiving Individual/s');
 	let roles = ssBattalionStructure.getRange(2, 1, ssBattalionStructure.getLastRow(), 1).getValues();
 	const rowItems = [];
-	roles[0].forEach((item) => {
-		if (item !== '') rowItems.push(item);
+	roles.forEach((item) => {
+		if (item[0] !== '') rowItems.push(item[0]);
 	});
 	getGroups(true, false).forEach((person) => {
 		rowItems.push(person);
