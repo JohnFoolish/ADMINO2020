@@ -155,7 +155,7 @@ function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifi
 
 function adjustDateForWeekends(currentDate, daysToAddToDate): number {
 	let daysAdded = 0;
-	const maniputateDate = currentDate;
+	const maniputateDate = new Date(currentDate.toString());
 
 	for (let i = 0; i < daysToAddToDate; i++) {
 		maniputateDate.setDate(maniputateDate.getDate() + 1);
