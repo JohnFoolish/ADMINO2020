@@ -238,7 +238,7 @@ function myOnEdit() {
 		}
 		if (ss.getActiveCell().getColumn() === 1 || ss.getActiveCell().getColumn() === 2) {
 			updateFormGroups();
-			//Make sure both of these feilds only contain unique identifiers. No repeats
+			checkForUniqueRolesAndGroups();
 		}
 	}
 }
@@ -379,6 +379,36 @@ function chainOfCommandStructureUpdater() {
 		// Write values and data validation
 		CoCArea.setValues(outArr);
 		CoCArea.setDataValidations(outDataValidations);
+	}
+}
+
+function checkForUniqueRolesAndGroups() {
+	const data = ssBattalionStructure.getRange(2, 1, ssBattalionStructure.getLastRow(), 2).getValues();
+	const alreadyRoles = [];
+	const alreadyGroups = [];
+	let somethingWasDeleted = false;
+	data.forEach((row) => {
+		if (row[0] !== '') {
+			alreadyRoles.forEach((role) => {
+				if (role === row[0]) {
+					somethingWasDeleted = true;
+					row[0] = '';
+				}
+			});
+			alreadyRoles.push(row[0]);
+		}
+		if (row[1] !== '') {
+			alreadyGroups.forEach((group) => {
+				if (group === row[1]) {
+					somethingWasDeleted = true;
+					row[1] = '';
+				}
+			});
+			alreadyGroups.push(row[1]);
+		}
+	});
+	if (somethingWasDeleted) {
+		ssBattalionStructure.getRange(2, 1, ssBattalionStructure.getLastRow(), 2).setValues(data);
 	}
 }
 
