@@ -66,7 +66,7 @@ function myOnAssignmentSubmit() {
 			} else if (dataPairs[0][i] === 'Date Assigned') {
 				submitData.dateAssigned = dataPairs[1][i];
 			} else if (dataPairs[0][i] === 'Date Due') {
-				submitData.dateDue = specificDueDateLengthCheck(submitData.paperwork, submitData.dateAssigned, dataPairs[i][1]);
+				submitData.dateDue = specificDueDateLengthCheck(submitData.paperwork, submitData.dateAssigned, dataPairs[1][i]);
 			} else if (dataPairs[0][i] === 'Send Initial Email Notification') {
 				submitData.sendEmail = dataPairs[1][i] === 'No' ? false : true;
 			} else if (dataPairs[0][i] === 'Upload your form as a PDF here:') {
