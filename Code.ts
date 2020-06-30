@@ -135,13 +135,13 @@ function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifi
 	if (paperwork === 'Chit') {
 		out = assignDate;
 		let chitTime = ssOptions.getRange(2, 2).getValue();
-		if (typeof chitTime.parseInt() != 'number' || chitTime === '') chitTime = '3';
-		out.setDate(out.getDate() + adjustDateForWeekends(out, chitTime.parseInt()));
+		if (typeof parseInt(chitTime) != 'number' || chitTime === '') chitTime = '3';
+		out.setDate(out.getDate() + adjustDateForWeekends(out, parseInt(chitTime)));
 	} else if (paperwork === 'Negative Counseling') {
 		out = assignDate;
 		let ncTime = ssOptions.getRange(3, 2).getValue();
-		if (typeof ncTime.parseInt() != 'number' || ncTime === '') ncTime = '3';
-		out.setDate(out.getDate() + adjustDateForWeekends(out, ncTime.parseInt()));
+		if (typeof parseInt(ncTime) != 'number' || ncTime === '') ncTime = '3';
+		out.setDate(out.getDate() + adjustDateForWeekends(out, parseInt(ncTime)));
 	} else if (out === '') {
 		out = new Date();
 		out.setDate(out.getDate() + 7);
