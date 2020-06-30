@@ -73,10 +73,9 @@ function myOnAssignmentSubmit() {
 				submitData.pdfLink = dataPairs[1][i];
 			} else if (dataPairs[0][i].substring(0, 22) === 'Receiving Individual/s') {
 				if (dataPairs[1][i] !== '') {
-					Logger.log(typeof dataPairs[1][i]);
 					keyValuePairsRawGridCheckbox.push({
 						role: dataPairs[0][i].substring(24, dataPairs[0][i].length - 1),
-						groups: JSON.parse('[' + dataPairs[1][i] + ']'),
+						groups: dataPairs[1][i].split(',').map((element) => element.trim()),
 					});
 				}
 			}
