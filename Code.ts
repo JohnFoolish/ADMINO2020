@@ -493,11 +493,11 @@ function initSheet(sheetID, name) {
 
 function updateFormGroups() {
 	// Reset form response
-	ssAssignment.getRange(1, 1, ssAssignment.getLastRow(), ssAssignment.getLastColumn()).clearContent();
-	form.deleteAllResponses();
 	const destID = form.getDestinationId();
 	const destType = form.getDestinationType();
 	form.removeDestination();
+	form.deleteAllResponses();
+	ssAssignment.getRange(1, 1, ssAssignment.getLastRow(), ssAssignment.getLastColumn()).clearContent();
 	form.setDestination(destType, destID);
 
 	// Update Recieve name / group
