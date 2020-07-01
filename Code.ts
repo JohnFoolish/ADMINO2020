@@ -492,6 +492,8 @@ function initSheet(sheetID, name) {
 }
 
 function updateFormGroups() {
+	// clear the resonses sheet
+	ssAssignment.getRange(1, 1, ssAssignment.getLastRow(), ssAssignment.getLastColumn()).clearContent();
 	// Update Recieve name / group
 	const FormItem = form.getItems();
 	const item = FormItem[1].asCheckboxGridItem();
