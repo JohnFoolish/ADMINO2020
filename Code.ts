@@ -495,6 +495,10 @@ function updateFormGroups() {
 	// Reset form response
 	ssAssignment.getRange(1, 1, ssAssignment.getLastRow(), ssAssignment.getLastColumn()).clearContent();
 	form.deleteAllResponses();
+	const destID = form.getDestinationId();
+	const destType = form.getDestinationType();
+	form.removeDestination();
+	form.setDestination(destType, destID);
 
 	// Update Recieve name / group
 	const FormItem = form.getItems();
