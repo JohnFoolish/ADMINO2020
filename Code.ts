@@ -1,7 +1,7 @@
 // This code was complited from typescript
 const ss = SpreadsheetApp.getActiveSpreadsheet();
 const ssData = ss.getSheetByName('Data');
-const ssAssignment = ss.getSheetByName('Assignment Responses');
+let ssAssignment = ss.getSheetByName('Assignment Responses');
 const ssTurnedIn = ss.getSheetByName('Turnin Responses');
 const ssOptions = ss.getSheetByName('Options');
 const ssPending = ss.getSheetByName('Pending Paperwork');
@@ -497,8 +497,16 @@ function updateFormGroups() {
 	const destType = form.getDestinationType();
 	form.removeDestination();
 	form.deleteAllResponses();
-	ssAssignment.getRange(1, 1, ssAssignment.getLastRow(), ssAssignment.getLastColumn()).clearContent();
+	ss.deleteSheet(ssAssignment);
 	form.setDestination(destType, destID);
+
+	// Find sheet and rename to assignmnet
+	ss.getSheets().forEach((sheet) => {
+		if (sheet.getName().substring(0, 14) === 'Form Responses') {
+			sheet.setName('Assignment Responses');
+			ssAssignment = sheet;
+		}
+	});
 
 	// Update Recieve name / group
 	const FormItem = form.getItems();
@@ -532,7 +540,6 @@ function updateFormGroups() {
 	item2.setChoices(indList);
 	item2.isRequired();
 	item2.setHelpText('Select your name from the list below.');
-	Logger.log(indList);
 
 	//Update the form submission page
 	const subFormItem = subForm.getItems();
@@ -546,7 +553,6 @@ function updateFormGroups() {
 	subItem.setChoices(subIndList);
 	subItem.isRequired();
 	subItem.setHelpText('Select your name from the dropdown menu below');
-	Logger.log(subIndList);
 }
 
 function getGroups(individuals: boolean, groups: boolean): string[] {
