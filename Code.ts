@@ -492,22 +492,6 @@ function initSheet(sheetID, name) {
 }
 
 function updateFormGroups() {
-	// Reset form response
-	const destID = form.getDestinationId();
-	const destType = form.getDestinationType();
-	form.removeDestination();
-	form.deleteAllResponses();
-	ss.deleteSheet(ssAssignment);
-	form.setDestination(destType, destID);
-
-	// Find sheet and rename to assignmnet
-	ss.getSheets().forEach((sheet) => {
-		if (sheet.getName().substring(0, 14) === 'Form Responses') {
-			sheet.setName('Assignment Responses');
-			ssAssignment = sheet;
-		}
-	});
-
 	// Update Recieve name / group
 	const FormItem = form.getItems();
 	const item = FormItem[1].asCheckboxGridItem();
@@ -529,6 +513,22 @@ function updateFormGroups() {
 	item.setHelpText(
 		'Select the individual/s receiving the paperwork. This question has smart group selection and will assign the paperwork to anyone who qualifies for any of the groups/individuals selected.'
 	);
+
+	// Reset form response
+	const destID = form.getDestinationId();
+	const destType = form.getDestinationType();
+	form.removeDestination();
+	form.deleteAllResponses();
+	ss.deleteSheet(ssAssignment);
+	form.setDestination(destType, destID);
+
+	// Find sheet and rename to assignmnet
+	ss.getSheets().forEach((sheet) => {
+		if (sheet.getName().substring(0, 14) === 'Form Responses') {
+			sheet.setName('Assignment Responses');
+			ssAssignment = sheet;
+		}
+	});
 
 	// Update assigner names list
 	const item2 = FormItem[0].asListItem();
