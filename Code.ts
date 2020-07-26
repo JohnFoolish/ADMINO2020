@@ -480,6 +480,7 @@ function updateSheet(sheetID, name) {
 	var merits = 0;
 	var negCounsel = 0;
 	const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
+	var data = null;
 	for (var i = 1; i < pending.length; i++) {
 		if (pending[i][3] === name) {
 			Logger.log(pending[i]);
@@ -490,7 +491,9 @@ function updateSheet(sheetID, name) {
 			} else if (pending[i][4] === 'Merit') {
 				merits++;
 			}
-			userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, pending[i].length).setValues(pending[i]);
+			data = pending[i];
+			//ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+			userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, pending[i].length).setValues(data);
 		}
 	}
 	const helpData = [];
@@ -584,7 +587,7 @@ function updateFormGroups() {
 
 function getGroups(individuals: boolean, groups: boolean): string[] {
 	const groupData = ssBattalionStructure.getRange(2, 2, ssBattalionStructure.getLastRow(), 1).getValues();
-	const individualData = ssBattalionMembers.getRange(2, 1, ssBattalionMembers.getLastRow(), 3).getValues();
+	const individualData = JSON.parse(ssVariables.getRange(4, 2).getValue());
 	const out = [];
 
 	if (groups) {
