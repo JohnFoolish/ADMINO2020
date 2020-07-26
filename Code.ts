@@ -481,7 +481,8 @@ function updateSheet(sheetID, name) {
 	var negCounsel = 0;
 	const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 	for (var i = 1; i < pending.length; i++) {
-		if (pending[i][4] === name) {
+		if (pending[i][3] === name) {
+			Logger.log(pending[i]);
 			if (pending[i][4] === 'Chit') {
 				chits++;
 			} else if (pending[i][4] === 'Negative Counseling') {
