@@ -429,7 +429,7 @@ function createGoogleFiles() {
 	const newFile = DriveApp.getFileById(templateID);
 	for (var idx = 0; idx < battalionIndividuals.length; idx++) {
 		const email = getIndividualEmail(battalionIndividuals[idx]);
-		if (email === 'johnlcorker88@gmail.com') {
+		if (email === 'tnbowes@gatech.edu') {
 			continue;
 		}
 		const indFile = newFile.makeCopy(battalionIndividuals[idx] + ', GT NROTC', root);
@@ -727,6 +727,7 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 	outList = outListWithoutRepeats;
 
 	// Check for assigning autority
+
 	const rolesList = [];
 	ssBattalionStructure
 		.getRange(2, 1, ssBattalionStructure.getLastRow(), 1)
