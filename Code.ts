@@ -111,7 +111,7 @@ function myOnAssignmentSubmit() {
 				tempOutData[4] = submitData.paperwork; // Paperwork
 				tempOutData[5] = submitData.dateAssigned; // Date assigned
 				tempOutData[6] = submitData.dateDue; // Date Due
-				tempOutData[7] = 'FALSE'; // Turned in
+				tempOutData[7] = 'Pending'; // Status
 				tempOutData[8] = submitData.reason; // Reason for paperwork
 				tempOutData[9] = submitData.pdfLink; //Link to paperwork
 				outData.push(tempOutData);
@@ -211,17 +211,17 @@ function myOnEdit() {
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 		let oneWasTrue = false;
 		for (let j = 1; j < pending.length; j++) {
-			if (pending[j][7].toString() === 'true') {
+			if (pending[j][7].toString() !== 'Pending' && pending[j][7].toString() !== '') {
 				oneWasTrue = true;
-				if (pending[j][9] === '') {
+				if (pending[j][9] === '' && pending[j][7] === 'Turned In') {
 					const ui = SpreadsheetApp.getUi();
 					ui.alert('You need to put either "Turned in Physically" or the link to their digitally turned in file');
-					pending[j][7] = 'false';
+					pending[j][7] = 'Pending';
 				} else {
 					const uuidDate = pending[j][0].toString();
 					for (let i = 0; i < data.length; i++) {
 						if (data[i][0].toString() === uuidDate) {
-							data[i][7] = 'true';
+							data[i][7] = pending[j][7];
 							data[i][9] = pending[j][9];
 						}
 					}
@@ -436,7 +436,8 @@ function createGoogleFiles() {
 		const indID = indFile.getId();
 		updateSheet(indID, battalionIndividuals[idx]);
 		indFile.addViewer(email);
-		indFile.addEditor('gtnrotc.ado@gmail.com');
+		Logger.log(email, battalionIndividuals[idx]);
+		//indFile.addEditor('gtnrotc.ado@gmail.com');
 	}
 }
 
@@ -726,34 +727,36 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 	outList = outListWithoutRepeats;
 
 	// Check for assigning autority
-
-	const rolesList = [];
-	ssBattalionStructure
-		.getRange(2, 1, ssBattalionStructure.getLastRow(), 1)
-		.getValues()
-		.forEach((row) => {
-			if (row[0] !== '') {
-				rolesList.push(row[0]);
-			}
-		});
 	const canAssignToAnyone = ssOptions.getRange(4, 2).getValue();
-	//IF the assigner cannot assign to anyone check to make sure everyone assigning to is corrects
-	if (
-		rolesList.indexOf(canAssignToAnyone) < rolesList.indexOf(assigner.role) &&
-		rolesList.indexOf(canAssignToAnyone) !== -1
-	) {
-		const subordinates = getSubordinates(assigner.name);
-		outList.forEach((outPerson) => {
-			let isSubordinate = false;
-			subordinates.forEach((suboord) => {
-				if (outPerson.name === suboord) {
-					isSubordinate = true;
+	if (canAssignToAnyone !== 'Disabled' && canAssignToAnyone !== '') {
+		const rolesList = [];
+		ssBattalionStructure
+			.getRange(2, 1, ssBattalionStructure.getLastRow(), 1)
+			.getValues()
+			.forEach((row) => {
+				if (row[0] !== '') {
+					rolesList.push(row[0]);
 				}
 			});
-			if (!isSubordinate) {
-				outPerson.canBeAssignedFromAssigner = false;
-			}
-		});
+
+		//IF the assigner cannot assign to anyone check to make sure everyone assigning to is corrects
+		if (
+			rolesList.indexOf(canAssignToAnyone) < rolesList.indexOf(assigner.role) &&
+			rolesList.indexOf(canAssignToAnyone) !== -1
+		) {
+			const subordinates = getSubordinates(assigner.name);
+			outList.forEach((outPerson) => {
+				let isSubordinate = false;
+				subordinates.forEach((suboord) => {
+					if (outPerson.name === suboord) {
+						isSubordinate = true;
+					}
+				});
+				if (!isSubordinate) {
+					outPerson.canBeAssignedFromAssigner = false;
+				}
+			});
+		}
 	}
 
 	Logger.log(outList);
