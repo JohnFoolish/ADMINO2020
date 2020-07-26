@@ -77,6 +77,13 @@ function myOnAssignmentSubmit() {
 						groups: dataPairs[1][i].split(',').map((element) => element.trim()),
 					});
 				}
+			} else if (dataPairs[0][i].substring(0, 18) === 'Receiving Groups/s') {
+				if (dataPairs[1][i] !== '') {
+					keyValuePairsRawGridCheckbox.push({
+						role: dataPairs[0][i].substring(20, dataPairs[0][i].length - 1),
+						groups: dataPairs[1][i].split(',').map((element) => element.trim()),
+					});
+				}
 			}
 		}
 
@@ -427,7 +434,7 @@ function createGoogleFiles() {
 		}
 		const indFile = newFile.makeCopy(battalionIndividuals[idx] + ', GT NROTC', root);
 		const indID = indFile.getId();
-		initSheet(indID, battalionIndividuals[idx]);
+		updateSheet(indID, battalionIndividuals[idx]);
 		indFile.addViewer(email);
 		indFile.addEditor('gtnrotc.ado@gmail.com');
 	}
@@ -441,7 +448,7 @@ function findIndSheet(name) {
 		var sheet = files.next();
 		fileList.push(sheet);
 	}
-	Logger.log(files);
+	Logger.log(fileList);
 	return files;
 }
 
@@ -461,10 +468,11 @@ function wipeGoogleFiles() {
 	}
 }
 
-function initSheet(sheetID, name) {
+function updateSheet(sheetID, name) {
 	const userSpread = SpreadsheetApp.openById(sheetID);
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
-	const outData = userPaperwork.getRange(1, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+	const header = userPaperwork.getRange(1, 1, 2, 3).getValues();
+	const outData = userPaperwork.getRange(2, 3, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
 
 	// Manipulate outData according to incomingData
 
@@ -488,7 +496,10 @@ function initSheet(sheetID, name) {
 	helpData.push(chits);
 	helpData.push(negCounsel);
 	helpData.push(merits);
-	userPaperwork.getRange(1, 1, 2, 3).setValues(helpData);
+	header[1][1] = chits;
+	header[1][2] = negCounsel;
+	header[1][3] = merits;
+	userPaperwork.getRange(1, 1, 2, 3).setValues(header);
 
 	//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
 }
@@ -537,14 +548,17 @@ function updateFormGroups() {
 	item3.setHelpText('Select the individual/s receiving the paperwork.');
 
 	// Reset form response
-	const destID = form.getDestinationId();
-	const destType = form.getDestinationType();
-	form.removeDestination();
-	form.deleteAllResponses();
-	ss.deleteSheet(ssAssignment);
-	form.setDestination(destType, destID);
+	if (ssAssignment.getLastColumn() > 150) {
+		// 256 is max number of columns, I use 150 cuz why not
+		const destID = form.getDestinationId();
+		const destType = form.getDestinationType();
+		form.removeDestination();
+		form.deleteAllResponses();
+		ss.deleteSheet(ssAssignment);
+		form.setDestination(destType, destID);
+	}
 
-	// Find sheet and rename to assignmnet2
+	// Find sheet and rename to assignmnet
 	ss.getSheets().forEach((sheet) => {
 		if (sheet.getName().substring(0, 14) === 'Form Responses') {
 			sheet.setName('Assignment Responses');
