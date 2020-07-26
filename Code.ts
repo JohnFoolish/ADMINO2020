@@ -441,7 +441,6 @@ function createGoogleFiles() {
 }
 
 function findIndSheet(name) {
-	name = 'Bowes, Timothy';
 	var files = DriveApp.getFilesByName(name + ', GT NROTC');
 	const fileList = [];
 	while (files.hasNext()) {
@@ -496,9 +495,9 @@ function updateSheet(sheetID, name) {
 	helpData.push(chits);
 	helpData.push(negCounsel);
 	helpData.push(merits);
-	header[1][1] = chits;
-	header[1][2] = negCounsel;
-	header[1][3] = merits;
+	header[1][0] = chits;
+	header[1][1] = negCounsel;
+	header[1][2] = merits;
 	userPaperwork.getRange(1, 1, 2, 3).setValues(header);
 
 	//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
