@@ -544,7 +544,7 @@ function updateFormGroups() {
 	ss.deleteSheet(ssAssignment);
 	form.setDestination(destType, destID);
 
-	// Find sheet and rename to assignmnet
+	// Find sheet and rename to assignmnet2
 	ss.getSheets().forEach((sheet) => {
 		if (sheet.getName().substring(0, 14) === 'Form Responses') {
 			sheet.setName('Assignment Responses');
