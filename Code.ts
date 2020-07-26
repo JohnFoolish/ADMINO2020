@@ -493,7 +493,8 @@ function updateSheet(sheetID, name) {
 			}
 			data = pending[i];
 			//ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
-			userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, pending[i].length).setValues(data);
+			// Exception: The parameters (number[]) don't match the method signature for SpreadsheetApp.Range.setValues.
+			userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, data[0].length).setValues(data);
 		}
 	}
 	const helpData = [];
