@@ -213,7 +213,7 @@ function myOnEdit() {
 		for (let j = 1; j < pending.length; j++) {
 			if (pending[j][7].toString() !== 'Pending' && pending[j][7].toString() !== '') {
 				oneWasTrue = true;
-				if (pending[j][9] === '' && pending[j][7] === 'Turned In') {
+				if (pending[j][9] === '' && pending[j][7] === 'Approved') {
 					const ui = SpreadsheetApp.getUi();
 					ui.alert('You need to put either "Turned in Physically" or the link to their digitally turned in file');
 					pending[j][7] = 'Pending';
