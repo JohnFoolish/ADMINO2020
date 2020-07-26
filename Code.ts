@@ -500,6 +500,7 @@ function updateSheet(sheetID, name) {
 	header[1][1] = negCounsel;
 	header[1][2] = merits;
 	userPaperwork.getRange(1, 1, 2, 3).setValues(header);
+	Logger.log(header);
 
 	//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
 }
