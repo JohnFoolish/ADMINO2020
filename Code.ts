@@ -482,11 +482,11 @@ function updateSheet(sheetID, name) {
 	const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 	for (var i = 1; i < pending.length; i++) {
 		if (pending[i][4] === name) {
-			if (pending[i][5] === 'Chit') {
+			if (pending[i][4] === 'Chit') {
 				chits++;
-			} else if (pending[i][5] === 'Negative Counseling') {
+			} else if (pending[i][4] === 'Negative Counseling') {
 				negCounsel++;
-			} else if (pending[i][5] === 'Merit') {
+			} else if (pending[i][4] === 'Merit') {
 				merits++;
 			}
 			userPaperwork[userPaperwork.getLastRow()].setValues(pending[i]);
