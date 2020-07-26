@@ -490,7 +490,7 @@ function updateSheet(sheetID, name) {
 			} else if (pending[i][4] === 'Merit') {
 				merits++;
 			}
-			userPaperwork[userPaperwork.getLastRow()].setValues(pending[i]);
+			userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, pending[i].length).setValues(pending[i]);
 		}
 	}
 	const helpData = [];
