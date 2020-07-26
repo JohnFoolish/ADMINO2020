@@ -198,6 +198,7 @@ function sortDigitalBox() {
 
 function myOnEdit() {
 	if (ss.getActiveCell().getSheet().getName() === 'Battalion Members') {
+		updateBattalionMembersJSON();
 		if (
 			ss.getActiveCell().getColumn() === 1 ||
 			ss.getActiveCell().getColumn() === 2 ||
@@ -205,7 +206,6 @@ function myOnEdit() {
 		) {
 			updateFormGroups();
 		}
-		updateBattalionMembersJSON();
 	} else if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
 		const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
@@ -429,7 +429,7 @@ function createGoogleFiles() {
 	const newFile = DriveApp.getFileById(templateID);
 	for (var idx = 0; idx < battalionIndividuals.length; idx++) {
 		const email = getIndividualEmail(battalionIndividuals[idx]);
-		if (email === 'tnbowes@gatech.edu') {
+		if (email === 'tnbowes@gatech.edu' || email === '') {
 			continue;
 		}
 		const indFile = newFile.makeCopy(battalionIndividuals[idx] + ', GT NROTC', root);
@@ -601,10 +601,7 @@ function getGroups(individuals: boolean, groups: boolean): string[] {
 
 	if (individuals) {
 		for (let i = 0; i < individualData.length; i++) {
-			if (individualData[i][0] !== '' && individualData[i][1] !== '' && individualData[i][2] !== '') {
-				const person = `MIDN ${individualData[i][0]}/C ${individualData[i][1]}, ${individualData[i][2]}`;
-				out.push(person);
-			}
+			out.push(individualData[i].name);
 		}
 	}
 
