@@ -422,7 +422,7 @@ function createGoogleFiles() {
 	const newFile = DriveApp.getFileById(templateID);
 	for (var idx = 0; idx < battalionIndividuals.length; idx++) {
 		const email = getIndividualEmail(battalionIndividuals[idx]);
-		if (email === '') {
+		if (email === 'johnlcorker88@gmail.com') {
 			continue;
 		}
 		const indFile = newFile.makeCopy(battalionIndividuals[idx] + ', GT NROTC', root);
@@ -434,12 +434,14 @@ function createGoogleFiles() {
 }
 
 function findIndSheet(name) {
+	name = 'Bowes, Timothy';
 	var files = DriveApp.getFilesByName(name + ', GT NROTC');
 	const fileList = [];
 	while (files.hasNext()) {
 		var sheet = files.next();
 		fileList.push(sheet);
 	}
+	Logger.log(files);
 	return files;
 }
 
@@ -492,27 +494,47 @@ function initSheet(sheetID, name) {
 }
 
 function updateFormGroups() {
-	// Update Recieve name / group
+	// Update assigner names list
 	const FormItem = form.getItems();
+	const item2 = FormItem[0].asListItem();
+	const ind = getGroups(true, false);
+	const indList = [];
+	for (const individuals of ind) {
+		indList.push(item2.createChoice(individuals));
+	}
+	item2.setChoices(indList);
+	item2.isRequired();
+	item2.setHelpText('Select your name from the list below.');
+
+	// Update Recieve groups
 	const item = FormItem[1].asCheckboxGridItem();
-	item.setTitle('Receiving Individual/s');
+	item.setTitle('Receiving Groups/s');
 	let roles = ssBattalionStructure.getRange(2, 1, ssBattalionStructure.getLastRow(), 1).getValues();
 	const rowItems = [];
 	roles.forEach((item) => {
 		if (item[0] !== '') rowItems.push(item[0]);
 	});
-	getGroups(true, false).forEach((person) => {
-		rowItems.push(person);
-	});
-	const colItems = ['Individual'];
+	const colItems = [];
 	getGroups(false, true).forEach((group) => {
 		colItems.push(group);
 	});
 	item.setRows(rowItems);
 	item.setColumns(colItems);
 	item.setHelpText(
-		'Select the individual/s receiving the paperwork. This question has smart group selection and will assign the paperwork to anyone who qualifies for any of the groups/individuals selected.'
+		'Select the groups/s receiving the paperwork. This question has smart group selection and will assign the paperwork to anyone who qualifies for any of the groups selected.'
 	);
+
+	// Update Reciever individuals
+	const item3 = FormItem[2].asCheckboxGridItem();
+	item3.setTitle('Receiving Individual/s');
+	const rowItems2 = [];
+	getGroups(true, false).forEach((person) => {
+		rowItems2.push(person);
+	});
+	const colItems2 = ['Individual'];
+	item3.setRows(rowItems2);
+	item3.setColumns(colItems2);
+	item3.setHelpText('Select the individual/s receiving the paperwork.');
 
 	// Reset form response
 	const destID = form.getDestinationId();
@@ -529,17 +551,6 @@ function updateFormGroups() {
 			ssAssignment = sheet;
 		}
 	});
-
-	// Update assigner names list
-	const item2 = FormItem[0].asListItem();
-	const ind = getGroups(true, false);
-	const indList = [];
-	for (const individuals of ind) {
-		indList.push(item2.createChoice(individuals));
-	}
-	item2.setChoices(indList);
-	item2.isRequired();
-	item2.setHelpText('Select your name from the list below.');
 
 	//Update the form submission page
 	const subFormItem = subForm.getItems();
