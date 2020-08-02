@@ -452,7 +452,7 @@ function createGoogleFiles() {
 		}
 		const indFile = newFile.makeCopy(battalionIndividuals[idx] + ', GT NROTC', root);
 		const indID = indFile.getId();
-		updateSheet(indID, battalionIndividuals[idx]);
+		initSheet(indID, battalionIndividuals[idx]);
 		indFile.addViewer(email);
 		Logger.log(email, battalionIndividuals[idx]);
 		//indFile.addEditor('gtnrotc.ado@gmail.com');
@@ -489,6 +489,50 @@ function wipeGoogleFiles() {
 	}
 }
 
+function updateSubordinateTab(name) {
+	//go and get the data from each of the subordinate's paperwork sheets
+	const [fileIterator, fileList] = findIndSheet(name);
+	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
+	const fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
+
+	if (fileArray.length > 1) {
+		Logger.log('Error, multiple sheets for ' + name);
+		throw Error;
+	}
+
+	const userSpread = SpreadsheetApp.open(fileArray[0]);
+	const userPaperwork = userSpread.getSheetByName('Subordinate_Paperwork');
+
+	const topChain = createFullBattalionStructure();
+
+	const subordinateData = [[]];
+	var blankLine;
+	var data;
+	// here get each of the subordinates data arrays
+	//for each something goes here
+	data = grabUserData(name);
+	blankLine = Array(data[data.length - 1].length);
+	data.push(blankLine);
+}
+
+function grabUserData(name) {
+	const [fileIterator, fileList] = findIndSheet(name);
+	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
+	const fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
+
+	if (fileArray.length > 1) {
+		Logger.log('Error, multiple sheets for ' + name);
+		throw Error;
+	}
+
+	const sheetID = fileArray[0].getId();
+	const userSpread = SpreadsheetApp.open(fileArray[0]);
+	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
+	const fullData = userPaperwork.getRange(1, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+
+	return fullData;
+}
+
 function dynamicSheetUpdate(tempData) {
 	const [fileIterator, fileList] = findIndSheet(tempData[3]);
 	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
@@ -498,8 +542,7 @@ function dynamicSheetUpdate(tempData) {
 		Logger.log('Error, multiple sheets for ' + tempData[3]);
 		throw Error;
 	}
-	const sheetID = fileArray[0].getId();
-	const userSpread = SpreadsheetApp.openById(sheetID);
+	const userSpread = SpreadsheetApp.open(fileArray[0]);
 
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
 	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
@@ -532,7 +575,7 @@ function dynamicSheetUpdate(tempData) {
 			}
 		}
 	}
-
+	Logger.log(lineAddition);
 	Logger.log(tempData);
 	var change = 1;
 	if (tempData[7] === 'Cancelled' || tempData[7] === 'Rejected') {
@@ -559,9 +602,14 @@ function dynamicSheetUpdate(tempData) {
 	userPaperwork.getRange(1, 1, 2, 3).setValues(header);
 	totalPaperwork.getRange(1, 1, 2, 3).setValues(header);
 	Logger.log(header);
+
+	const superiorList = getSuperiors(tempData[3]);
+	superiorList.forEach((superior) => {
+		updateSubordinateTab(superior);
+	});
 }
 
-function updateSheet(sheetID, name) {
+function initSheet(sheetID, name) {
 	const userSpread = SpreadsheetApp.openById(sheetID);
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
 	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
@@ -875,6 +923,58 @@ function updateBattalionMembersJSON() {
 	ssVariables.getRange(4, 2).setValue(JSON.stringify(peopleList));
 }
 
+function getSuperiors(name: string): string[] {
+	const outPeople = [];
+	const battalion = createFullBattalionStructure();
+	const rolesList = [];
+	ssBattalionStructure
+		.getRange(2, 1, ssBattalionStructure.getLastRow(), 1)
+		.getValues()
+		.forEach((row) => {
+			if (row[0] !== '') {
+				rolesList.push(row[0]);
+			}
+		});
+	let highestChainOfIndividual;
+	let personFullData;
+	let foundPerson = false;
+
+	function searchChain(chainNode) {
+		chainNode.members.forEach((member) => {
+			if (member.name === name) {
+				highestChainOfIndividual = chainNode;
+				personFullData = member;
+				foundPerson = true;
+			}
+		});
+		chainNode.children.forEach((child) => {
+			searchChain(child);
+		});
+	}
+	searchChain(battalion);
+
+	if (foundPerson) {
+		highestChainOfIndividual.members.forEach((member) => {
+			if (rolesList.indexOf(member.role) < rolesList.indexOf(personFullData.role)) {
+				outPeople.push(member.name);
+			}
+		});
+		function getMemebersFromChainAscending(chainNode) {
+			chainNode.members.forEach((member) => {
+				outPeople.push(member.name);
+			});
+			if (chainNode.parent !== null) {
+				getMemebersFromChainAscending(chainNode.parent);
+			}
+		}
+		if (highestChainOfIndividual.parent !== null) {
+			getMemebersFromChainAscending(highestChainOfIndividual.parent);
+		}
+	}
+
+	return outPeople;
+}
+
 function getSubordinates(name: string): string[] {
 	const outPeople = [];
 	const battalion = createFullBattalionStructure();
@@ -969,16 +1069,89 @@ function sendAssignerSuccessEmail(
 		});
 		let out = '';
 
+		classSeperatedNames.forEach((classList, index) => {
+			if (classList.length !== 0) {
+				out += `MIDN ${index + 1}/C ${classList.join(' | ')}\n`;
+			}
+		});
+
 		return out;
 	};
 
-	let emailBody = assignerData.name + ',\n\n';
+	let emailBody = `${assignerData.name},
+	
+	You assigned a ${submitData.paperwork} on ${dateToROTCFormat(submitData.dateAssigned)} to:
+	${namesToEmailFormat(authority)}because, ${submitData.reason}. It will be due on ${submitData.dateDue}`;
+
+	if (noAuthority.length > 0) {
+		emailBody += `
+		
+		You attempted to assign the ${submitData.paperwork} to:
+		${namesToEmailFormat(noAuthority)}but you do not have the authority to do so.`;
+	}
+
+	emailBody += `
+	
+	Very Respectfully,
+	The ADMIN Department`;
 
 	MailApp.sendEmail({
 		to: assignerData.email,
 		subject: `${authority.length === 0 ? 'No' : authority.length} ${submitData.paperwork} were successfully assigned`,
 		htmlBody: emailBody,
 	});
+}
+
+function dateToROTCFormat(date: Date): string {
+	let dayNum = date.getDate();
+	let monthNum = date.getMonth();
+	let year = date.getFullYear();
+	let month = '';
+	let day = '';
+	switch (monthNum) {
+		case 0:
+			month = 'JAN';
+			break;
+		case 1:
+			month = 'FEB';
+			break;
+		case 2:
+			month = 'MAR';
+			break;
+		case 3:
+			month = 'APR';
+			break;
+		case 4:
+			month = 'MAY';
+			break;
+		case 5:
+			month = 'JUN';
+			break;
+		case 6:
+			month = 'JUL';
+			break;
+		case 7:
+			month = 'AUG';
+			break;
+		case 8:
+			month = 'SEP';
+			break;
+		case 9:
+			month = 'OCT';
+			break;
+		case 10:
+			month = 'NOV';
+			break;
+		case 11:
+			month = 'DEC';
+			break;
+	}
+	if (dayNum < 10) {
+		day = '0' + dayNum;
+	} else {
+		day = dayNum.toString();
+	}
+	return day + month + year;
 }
 
 function sendAssigneesEmail(emailList, data) {
@@ -1033,10 +1206,12 @@ function sendAssigneesEmail(emailList, data) {
 	});
 }
 
-function increaseDate(paperworkType, rawDate) {
-	//const dateDemo = String(rawDate).split(" ", 4);
-	//const date = dateDemo
-	return rawDate;
-	//const date = new Date(this.valueOf());
-	//date.setDate(date.getDate() + 3);
+function getFullMemberData(name: string): { name: string; email: string; role: string; group: string } {
+	let fullData;
+	JSON.parse(ssVariables.getRange(4, 2).getValue()).forEach((member) => {
+		if (member.name === name) {
+			fullData = member;
+		}
+	});
+	return fullData;
 }
