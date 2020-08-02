@@ -471,6 +471,7 @@ function wipeGoogleFiles() {
 function updateSheet(sheetID, name) {
 	const userSpread = SpreadsheetApp.openById(sheetID);
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
+	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
 	const header = userPaperwork.getRange(1, 1, 2, 3).getValues();
 	const outData = userPaperwork.getRange(2, 3, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
 
@@ -493,6 +494,7 @@ function updateSheet(sheetID, name) {
 			//ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 			// Exception: The parameters (number,number,number,null) don't match the method signature for SpreadsheetApp.Range.setValues.
 			userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, pending[i].length).setValues([pending[i]]);
+			totalPaperwork.getRange(totalPaperwork.getLastRow() + 1, 1, 1, pending[i].length).setValues([pending[i]]);
 		}
 	}
 	const helpData = [];
@@ -503,6 +505,7 @@ function updateSheet(sheetID, name) {
 	header[1][1] = negCounsel;
 	header[1][2] = merits;
 	userPaperwork.getRange(1, 1, 2, 3).setValues(header);
+	totalPaperwork.getRange(1, 1, 2, 3).setValues(header);
 	Logger.log(header);
 
 	//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
