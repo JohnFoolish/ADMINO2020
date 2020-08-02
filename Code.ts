@@ -521,7 +521,7 @@ function updateSubordinateTab(name) {
 		blankLine = Array(indData[indData.length - 1].length);
 		indData.push(blankLine);
 		indData.push(blankLine);
-		subordinateData.push(indData);
+		indData.forEach((row) => subordinateData.push(row));
 	});
 	Logger.log('total subordinate data is: ', subordinateData.length);
 	if (subordinateData.length > 0) {
