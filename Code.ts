@@ -228,12 +228,14 @@ function myOnEdit() {
 		let oneWasTrue = false;
 		for (let j = 1; j < pending.length; j++) {
 			if (pending[j][7].toString() !== 'Pending' && pending[j][7].toString() !== '') {
-				oneWasTrue = true;
 				if (pending[j][9] === '' && pending[j][7] === 'Approved') {
 					const ui = SpreadsheetApp.getUi();
 					ui.alert('You need to put either "Turned in Physically" or the link to their digitally turned in file');
 					pending[j][7] = 'Pending';
 				} else {
+					// put your thing here
+					dynamicSheetUpdate(pending[j]);
+					oneWasTrue = true;
 					const uuidDate = pending[j][0].toString();
 					for (let i = 0; i < data.length; i++) {
 						if (data[i][0].toString() === uuidDate) {
@@ -503,21 +505,49 @@ function dynamicSheetUpdate(tempData) {
 	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
 	const header = userPaperwork.getRange(1, 1, 2, 3).getValues();
 	const outData = userPaperwork.getRange(2, 3, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+	const totalOutData = totalPaperwork
+		.getRange(2, 3, totalPaperwork.getLastRow(), totalPaperwork.getLastColumn())
+		.getValues();
 
 	var chits = header[1][0];
 	var merits = header[1][1];
 	var negCounsel = header[1][2];
+	var lineAddition = userPaperwork.getLastRow() + 1;
+	var totalLineAddition = totalPaperwork.getLastRow() + 1;
+	var found = false;
+
+	for (var i = 1; i < outData.length; i++) {
+		if (tempData[0] === outData[i][0]) {
+			//Duplicate file found!
+			lineAddition = i;
+			for (var j = 1; j < totalOutData.length; j++) {
+				if (tempData[0] === totalOutData[j][0]) {
+					totalLineAddition = j;
+					found = true;
+				}
+			}
+			if (!found) {
+				Logger.log("Did not find the data in the total paperwork, but it was present in this semester's... Error");
+				throw Error;
+			}
+		}
+	}
 
 	Logger.log(tempData);
-	if (tempData[4] === 'Chit') {
-		chits++;
-	} else if (tempData[4] === 'Negative Counseling') {
-		negCounsel++;
-	} else if (tempData[4] === 'Merit') {
-		merits++;
+	var change = 1;
+	if (tempData[7] === 'Canceled') {
+		change = -1;
 	}
-	userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, tempData.length).setValues([tempData]);
-	totalPaperwork.getRange(totalPaperwork.getLastRow() + 1, 1, 1, tempData.length).setValues([tempData]);
+	if (tempData[4] === 'Chit') {
+		chits += change;
+	} else if (tempData[4] === 'Negative Counseling') {
+		negCounsel += change;
+	} else if (tempData[4] === 'Merit') {
+		merits += change;
+	}
+
+	userPaperwork.getRange(lineAddition, 1, 1, tempData.length).setValues([tempData]);
+	totalPaperwork.getRange(totalLineAddition, 1, 1, tempData.length).setValues([tempData]);
 
 	const helpData = [];
 	helpData.push(chits);
@@ -902,9 +932,12 @@ function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: 
 	if (!emailsActivated) return;*/
 	let emailBody = `${assigner.name},
 	
-	Your ${submitData.paperwork} did not assign, because ${
-		noDate ? 'you did not give a date ' : ''
-	}and you did not select to assign it to anyone.\n\nVery respectfully,\nThe ADMIN Department`;
+	Your ${submitData.paperwork} did not assign, because ${noDate ? 'you did not give a date ' : ''}${
+		noDate && noPeople ? 'and ' : ''
+	}${noPeople ? 'you did not select to assign it to anyone' : ''}.
+	
+	Very respectfully,
+	The ADMIN Department`;
 
 	MailApp.sendEmail({
 		to: assigner.email,
@@ -921,10 +954,12 @@ function sendAssignerSuccessEmail(
 ) {
 	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;*/
+	let emailBody = assignerData.name + ',\n\n';
+	const namesToEmailFormat = function () {};
 
 	MailApp.sendEmail({
 		to: assignerData.email,
-		subject: emailSubject,
+		subject: `${authority.length === 0 ? 'No' : authority.length} ${submitData.paperwork} were successfully assigned`,
 		htmlBody: emailBody,
 	});
 }
