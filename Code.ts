@@ -1193,13 +1193,13 @@ function sendAssignerSuccessEmail(
 	<br>
 	${namesToEmailFormat(authority)}because, ${submitData.reason}. It will be due COB ${dateToROTCFormat(
 		submitData.dateDue
-	)}`;
+	)}.`;
 
 	if (noAuthority.length > 0) {
 		emailBody += `
 		<br><br>
-		You attempted to assign the ${submitData.paperwork} to:
-		${namesToEmailFormat(noAuthority)}but you do not have the authority to do so.`;
+		You attempted to assign a ${submitData.paperwork} to:<br>
+		${namesToEmailFormat(noAuthority)}but you do not have the authority.`;
 	}
 
 	emailBody += `
