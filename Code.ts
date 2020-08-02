@@ -128,7 +128,7 @@ function myOnAssignmentSubmit() {
 			//Send ouot email notifiying everyone that their paperwork was assigned
 			sendAssigneesEmail(emailList, submitData);
 			//Email the assigner who was assigned it and who was not
-			sendAssignerSuccessEmail(assignerFullData, noAuthority, Authority);
+			sendAssignerSuccessEmail(assignerFullData, submitData, noAuthority, Authority);
 
 			//Write to data sheet
 			ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
@@ -136,7 +136,12 @@ function myOnAssignmentSubmit() {
 			// Write to Pending Paperwork
 			ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 		} else {
-			sendAssignerFailEmail(assignerFullData, submitData.dateDue.getFullYear() === 1945, people.length === 0);
+			sendAssignerFailEmail(
+				assignerFullData,
+				submitData,
+				submitData.dateDue.getFullYear() === 1945,
+				people.length === 0
+			);
 		}
 	}
 }
@@ -473,9 +478,10 @@ function wipeGoogleFiles() {
 		if (email === '') {
 			continue;
 		}
-		const [fileList, _] = findIndSheet(battalionIndividuals[ind]);
-		while (fileList.hasNext()) {
-			var file = fileList.next();
+		const [fileIterator, _] = findIndSheet(battalionIndividuals[ind]);
+		const fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
+		while (fileLinkedList.hasNext()) {
+			var file = fileLinkedList.next();
 			root.removeFile(file);
 		}
 	}
@@ -483,14 +489,14 @@ function wipeGoogleFiles() {
 
 function dynamicSheetUpdate(tempData) {
 	const [fileIterator, fileList] = findIndSheet(tempData[3]);
-	const fileArray = fileList as Array<string>;
+	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
 	const fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
 
 	if (fileArray.length > 1) {
 		Logger.log('Error, multiple sheets for ' + tempData[3]);
 		throw Error;
 	}
-	const sheetID = fileLinkedList.next().getId();
+	const sheetID = fileArray[0].getId();
 	const userSpread = SpreadsheetApp.openById(sheetID);
 
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
@@ -891,24 +897,30 @@ function getSubordinates(name: string): string[] {
 	return outPeople;
 }
 
-function sendAssignerFailEmail(assigner, noDate: boolean, noPeople: boolean) {
-	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
-	if (!emailsActivated) return;
+function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: boolean) {
+	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
+	if (!emailsActivated) return;*/
+	let emailBody = `${assigner.name},
+	
+	Your ${submitData.paperwork} did not assign, because ${
+		noDate ? 'you did not give a date ' : ''
+	}and you did not select to assign it to anyone.\n\nVery respectfully,\nThe ADMIN Department`;
 
 	MailApp.sendEmail({
-		to: assignerData.email,
-		subject: emailSubject,
+		to: assigner.email,
+		subject: `Failed to assign ${submitData.paperwork}`,
 		htmlBody: emailBody,
 	});
 }
 
 function sendAssignerSuccessEmail(
 	assignerData: { name: string; email: string; role: string; group: string },
+	submitData,
 	authority: string[],
 	noAuthority: string[]
 ) {
-	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
-	if (!emailsActivated) return;
+	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
+	if (!emailsActivated) return;*/
 
 	MailApp.sendEmail({
 		to: assignerData.email,
