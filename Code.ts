@@ -452,7 +452,15 @@ function createGoogleFiles() {
 		initSheet(indID, battalionIndividuals[idx]);
 		indFile.addViewer(email);
 		Logger.log(email, battalionIndividuals[idx]);
-		//indFile.addEditor('gtnrotc.ado@gmail.com');
+		indFile.addEditor('gtnrotc.ado@gmail.com');
+		indFile.addEditor('gtnrotc.ado@gmail.com');
+	}
+	for (var i = 0; i < battalionIndividuals.length; idx++) {
+		const superiorList = getSuperiors(battalionIndividuals[i]);
+		superiorList.forEach((superior) => {
+			updateSubordinateTab(superior);
+		});
+	}
 	}
 }
 
@@ -651,6 +659,7 @@ function initSheet(sheetID, name) {
 	userPaperwork.getRange(1, 1, 3, 3).setValues(header);
 	totalPaperwork.getRange(1, 1, 3, 3).setValues(header);
 	Logger.log(header);
+}
 
 	//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
 }
