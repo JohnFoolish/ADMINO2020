@@ -1167,20 +1167,20 @@ function sendAssignerSuccessEmail(
 		const classSeperatedNames = [[], [], [], []];
 		names.forEach((name) => {
 			if (name.substring(5, 6) === '1') {
-				classSeperatedNames[0].push(name.substring(10));
+				classSeperatedNames[0].push(name.substring(9));
 			} else if (name.substring(5, 6) === '2') {
-				classSeperatedNames[1].push(name.substring(10));
+				classSeperatedNames[1].push(name.substring(9));
 			} else if (name.substring(5, 6) === '3') {
-				classSeperatedNames[2].push(name.substring(10));
+				classSeperatedNames[2].push(name.substring(9));
 			} else if (name.substring(5, 6) === '4') {
-				classSeperatedNames[3].push(name.substring(10));
+				classSeperatedNames[3].push(name.substring(9));
 			}
 		});
 		let out = '';
 		Logger.log(classSeperatedNames);
 		classSeperatedNames.forEach((classList, index) => {
 			if (classList.length !== 0) {
-				out += `MIDN ${index + 1}/C ${classList.join(' | ')}<br>`;
+				out += `MIDN ${index + 1}/C ${classList.join('  |  ')}<br>`;
 			}
 		});
 
@@ -1189,8 +1189,9 @@ function sendAssignerSuccessEmail(
 
 	let emailBody = `${assignerData.name},
 	<br><br>
-	You assigned a ${submitData.paperwork} on ${dateToROTCFormat(submitData.dateAssigned)} to:<br>
-	${namesToEmailFormat(authority)}because, ${submitData.reason}. It will be due on ${dateToROTCFormat(
+	You assigned a ${submitData.paperwork} on ${dateToROTCFormat(submitData.dateAssigned)} to:
+	<br>
+	${namesToEmailFormat(authority)}because, ${submitData.reason}. It will be due COB ${dateToROTCFormat(
 		submitData.dateDue
 	)}`;
 
