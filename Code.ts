@@ -551,15 +551,15 @@ function dynamicSheetUpdate(tempData) {
 
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
 	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
-	const header = userPaperwork.getRange(1, 1, 2, 3).getValues();
-	const outData = userPaperwork.getRange(2, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+	const header = userPaperwork.getRange(1, 1, 3, 3).getValues();
+	const outData = userPaperwork.getRange(3, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
 	const totalOutData = totalPaperwork
-		.getRange(2, 1, totalPaperwork.getLastRow(), totalPaperwork.getLastColumn())
+		.getRange(3, 1, totalPaperwork.getLastRow(), totalPaperwork.getLastColumn())
 		.getValues();
 
-	var chits = header[1][0];
-	var merits = header[1][1];
-	var negCounsel = header[1][2];
+	var chits = header[2][0];
+	var merits = header[2][1];
+	var negCounsel = header[2][2];
 	var lineAddition = userPaperwork.getLastRow() + 1;
 	var totalLineAddition = totalPaperwork.getLastRow() + 1;
 	var found = false;
@@ -601,11 +601,11 @@ function dynamicSheetUpdate(tempData) {
 	helpData.push(chits);
 	helpData.push(negCounsel);
 	helpData.push(merits);
-	header[1][0] = chits;
-	header[1][1] = negCounsel;
-	header[1][2] = merits;
-	userPaperwork.getRange(1, 1, 2, 3).setValues(header);
-	totalPaperwork.getRange(1, 1, 2, 3).setValues(header);
+	header[2][0] = chits;
+	header[2][1] = negCounsel;
+	header[2][2] = merits;
+	userPaperwork.getRange(1, 1, 3, 3).setValues(header);
+	totalPaperwork.getRange(1, 1, 3, 3).setValues(header);
 	Logger.log(header);
 
 	const superiorList = getSuperiors(tempData[3]);
@@ -618,8 +618,8 @@ function initSheet(sheetID, name) {
 	const userSpread = SpreadsheetApp.openById(sheetID);
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
 	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
-	const header = userPaperwork.getRange(1, 1, 2, 3).getValues();
-	const outData = userPaperwork.getRange(2, 3, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+	const header = userPaperwork.getRange(1, 1, 3, 3).getValues();
+	const outData = userPaperwork.getRange(3, 3, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
 
 	// Manipulate outData according to incomingData
 
@@ -647,9 +647,10 @@ function initSheet(sheetID, name) {
 	helpData.push(chits);
 	helpData.push(negCounsel);
 	helpData.push(merits);
-	header[1][0] = chits;
-	header[1][1] = negCounsel;
-	header[1][2] = merits;
+	header[0][1]; = name
+	header[2][0] = chits;
+	header[2][1] = negCounsel;
+	header[2][2] = merits;
 	userPaperwork.getRange(1, 1, 2, 3).setValues(header);
 	totalPaperwork.getRange(1, 1, 2, 3).setValues(header);
 	Logger.log(header);
@@ -1035,19 +1036,19 @@ function getSubordinates(name: string): string[] {
 function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: boolean) {
 	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;*/
-	let emailBody = `<p>${assigner.name},
+	let emailBody = `${assigner.name},
 	\n\n
 	Your ${submitData.paperwork} did not assign, because ${noDate ? 'you did not give a date' : ''}${
 		noDate && noPeople ? ' and ' : ''
 	}${noPeople ? 'you did not select to assign it to anyone' : ''}.
 	\n\n
 	Very respectfully,\n
-	The ADMIN Department</p>`;
+	The ADMIN Department`;
 
 	MailApp.sendEmail({
 		to: assigner.email,
 		subject: `Failed to assign ${submitData.paperwork}`,
-		htmlBody: emailBody,
+		body: emailBody,
 	});
 }
 
@@ -1103,7 +1104,7 @@ function sendAssignerSuccessEmail(
 	MailApp.sendEmail({
 		to: assignerData.email,
 		subject: `${authority.length === 0 ? 'No' : authority.length} ${submitData.paperwork} were successfully assigned`,
-		htmlBody: emailBody,
+		body: emailBody,
 	});
 }
 
