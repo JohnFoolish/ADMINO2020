@@ -437,6 +437,12 @@ function checkForUniqueRolesAndGroups() {
 	}
 }
 
+function autoRunCreateGoogleFiles() {
+	if (ssVariables.getRange(6, 2).getValue().toString().toLowerCase() === 'true') {
+		createGoogleFiles();
+	}
+}
+
 function createGoogleFiles() {
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	const battalionIndividuals = getGroups(true, false);
@@ -445,7 +451,6 @@ function createGoogleFiles() {
 	);
 	const templateID = ssTemplate.getId();
 	const newFile = DriveApp.getFileById(templateID);
-	const initMembers = [];
 	for (var idx = 0; idx < battalionIndividuals.length; idx++) {
 		if (root.getFilesByName(battalionIndividuals[idx] + ', GT NROTC').hasNext()) {
 			Logger.log('The form for user ' + battalionIndividuals[idx] + ' exists.');
@@ -459,16 +464,30 @@ function createGoogleFiles() {
 		Logger.log(email, battalionIndividuals[idx]);
 		indFile.addEditor('johnlcorker88@gmail.com');
 		indFile.addEditor('tnbowes@gmail.com');
-		initMembers.push(battalionIndividuals[idx]);
+		ssVariables.getRange(7, 2).setValue(ssVariables.getRange(7, 2).getValue() + '|' + battalionIndividuals[idx] + '|');
 	}
 	// change battalionIndividuals to initMembers below
-	battalionIndividuals.forEach((member) => updateSubordinateTab(member));
-	if (initMembers.length === 0) {
+	let finishInitMem = ssVariables
+		.getRange(7, 2)
+		.getValue()
+		.split('|')
+		.filter((a) => {
+			return a === '' ? false : true;
+		});
+	for (let i = finishInitMem.length - 1; i >= 0; i++) {
+		updateSubordinateTab(finishInitMem[i]);
+		finishInitMem.splice(i, 1);
+		ssVariables.getRange(7, 2).setValue(finishInitMem.join('|'));
+	}
+	if (finishInitMem.length === 0) {
 		ssVariables.getRange(6, 2).setValue('false');
 	}
 }
 
 function findIndSheet(name) {
+	/**
+	 *
+	 */
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	var files = root.getFilesByName(name + ', GT NROTC');
 	const fileList = [];
@@ -481,7 +500,9 @@ function findIndSheet(name) {
 	const tup = [files, fileList];
 	return tup;
 }
-
+/**
+ *
+ */
 function wipeGoogleFiles() {
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	const battalionIndividuals = getGroups(true, false);
@@ -498,7 +519,9 @@ function wipeGoogleFiles() {
 		}
 	}
 }
-
+/**
+ *
+ */
 function updateSubordinateTab(name) {
 	//go and get the data from each of the subordinate's paperwork sheets
 	const [fileIterator, fileList] = findIndSheet(name);
@@ -532,7 +555,9 @@ function updateSubordinateTab(name) {
 		subPaperwork.getRange(2, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
 	}
 }
-
+/**
+ *
+ */
 function grabUserData(name) {
 	const [fileIterator, fileList] = findIndSheet(name);
 	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
@@ -549,7 +574,9 @@ function grabUserData(name) {
 
 	return fullData;
 }
-
+/**
+ *
+ */
 function dynamicSheetUpdate(tempData) {
 	const [fileIterator, fileList] = findIndSheet(tempData[3]);
 	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
@@ -625,7 +652,9 @@ function dynamicSheetUpdate(tempData) {
 		updateSubordinateTab(superior);
 	});
 }
-
+/**
+ *
+ */
 function initSheet(sheetID, name) {
 	const userSpread = SpreadsheetApp.openById(sheetID);
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
@@ -669,7 +698,9 @@ function initSheet(sheetID, name) {
 }
 
 //userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
-
+/**
+ *
+ */
 function updateFormGroups() {
 	// Update assigner names list
 	const FormItem = form.getItems();
@@ -745,7 +776,9 @@ function updateFormGroups() {
 	subItem.isRequired();
 	subItem.setHelpText('Select your name from the dropdown menu below');
 }
-
+/**
+ *
+ */
 function getGroups(individuals: boolean, groups: boolean): string[] {
 	const groupData = ssBattalionStructure.getRange(2, 2, ssBattalionStructure.getLastRow(), 1).getValues();
 	const individualData = JSON.parse(ssVariables.getRange(4, 2).getValue());
@@ -768,7 +801,9 @@ function getGroups(individuals: boolean, groups: boolean): string[] {
 
 	return out;
 }
-
+/**
+ *
+ */
 function getIndividualEmail(name: string): string {
 	const individualData = ssBattalionMembers.getRange(2, 1, ssBattalionMembers.getLastRow(), 4).getValues();
 	let returnEmail = null;
@@ -780,7 +815,9 @@ function getIndividualEmail(name: string): string {
 	}
 	return returnEmail;
 }
-
+/**
+ *
+ */
 function createFullBattalionStructure() {
 	const people = JSON.parse(ssVariables.getRange(4, 2).getValue());
 	const chain = JSON.parse(ssVariables.getRange(3, 2).getValue());
@@ -803,7 +840,9 @@ function createFullBattalionStructure() {
 	fillChain(chain);
 	return chain;
 }
-
+/**
+ *
+ */
 // Still working on this function
 function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 	Logger.log(JSON.stringify(parsedCheckBoxData) + ' ' + JSON.stringify(assigner));
@@ -925,7 +964,9 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 	Logger.log(outList);
 	return outList; // [{name:string,group:string}]
 }
-
+/**
+ *
+ */
 function updateBattalionMembersJSON() {
 	const data = ssBattalionMembers
 		.getRange(2, 1, ssBattalionMembers.getLastRow(), ssBattalionMembers.getLastColumn())
@@ -940,7 +981,9 @@ function updateBattalionMembersJSON() {
 	}
 	ssVariables.getRange(4, 2).setValue(JSON.stringify(peopleList));
 }
-
+/**
+ *
+ */
 function getSuperiors(name: string): string[] {
 	const outPeople = [];
 	const battalion = createFullBattalionStructure();
@@ -992,7 +1035,9 @@ function getSuperiors(name: string): string[] {
 
 	return outPeople;
 }
-
+/**
+ *
+ */
 function descendingRankOrderOfSubordinateNames(name: string): string[] {
 	const subordinates = getSubordinates(name);
 	const fullSub = [];
@@ -1019,7 +1064,9 @@ function descendingRankOrderOfSubordinateNames(name: string): string[] {
 	Logger.log(outPeople);
 	return outPeople;
 }
-
+/**
+ *
+ */
 function getSubordinates(name: string): string[] {
 	const outPeople = [];
 	const battalion = createFullBattalionStructure();
@@ -1071,7 +1118,9 @@ function getSubordinates(name: string): string[] {
 
 	return outPeople;
 }
-
+/**
+ *
+ */
 function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: boolean) {
 	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;*/
@@ -1090,7 +1139,9 @@ function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: 
 		htmlBody: emailBody,
 	});
 }
-
+/**
+ *
+ */
 function sendAssignerSuccessEmail(
 	assignerData: { name: string; email: string; role: string; group: string },
 	submitData,
