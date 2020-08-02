@@ -447,9 +447,6 @@ function createGoogleFiles() {
 	const newFile = DriveApp.getFileById(templateID);
 	for (var idx = 0; idx < battalionIndividuals.length; idx++) {
 		const email = getIndividualEmail(battalionIndividuals[idx]);
-		if (email === '') {
-			continue;
-		}
 		const indFile = newFile.makeCopy(battalionIndividuals[idx] + ', GT NROTC', root);
 		const indID = indFile.getId();
 		initSheet(indID, battalionIndividuals[idx]);
@@ -503,47 +500,21 @@ function updateSubordinateTab(name) {
 	const userSpread = SpreadsheetApp.open(fileArray[0]);
 	const subPaperwork = userSpread.getSheetByName('Subordinate_Paperwork');
 
-	const battalion = createFullBattalionStructure();
-	const rolesList = [];
-	ssBattalionStructure
-		.getRange(2, 1, ssBattalionStructure.getLastRow(), 1)
-		.getValues()
-		.forEach((row) => {
-			if (row[0] !== '') {
-				rolesList.push(row[0]);
-			}
-		});
-	let highestChainOfIndividual;
-	let personFullData;
-	let foundPerson = false;
-
-	function searchChain(chainNode) {
-		chainNode.members.forEach((member) => {
-			if (member.name === name) {
-				highestChainOfIndividual = chainNode;
-				personFullData = member;
-				foundPerson = true;
-			}
-		});
-		chainNode.children.forEach((child) => {
-			searchChain(child);
-		});
-	}
-	searchChain(battalion);
-
+	const subList = descendingRankOrderOfSubordinateNames(name);
 	var subordinateData;
 	var blankLine;
 	var indData;
 	// here get each of the subordinates data arrays
 	//for each something goes here
-	indData = grabUserData(name);
-	blankLine = Array(indData[indData.length - 1].length);
-	indData.push(blankLine);
-	indData.push(blankLine);
-	subordinateData.push(indData);
-	//
+	subList.forEach((subName) => {
+		indData = grabUserData(subName);
+		blankLine = Array(indData[indData.length - 1].length);
+		indData.push(blankLine);
+		indData.push(blankLine);
+		subordinateData.push(indData);
+	});
 
-	subPaperwork.getRange(1, 1, 1, subordinateData).setValues([subordinateData]);
+	subPaperwork.getRange(1, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
 }
 
 function grabUserData(name) {
@@ -1003,6 +974,32 @@ function getSuperiors(name: string): string[] {
 			getMemebersFromChainAscending(highestChainOfIndividual.parent);
 		}
 	}
+
+	return outPeople;
+}
+
+function descendingRankOrderOfSubordinateNames(name: string): string[] {
+	const subordinates = getSubordinates(name);
+	const fullSub = [];
+	const rolesList = [];
+	ssBattalionStructure
+		.getRange(2, 1, ssBattalionStructure.getLastRow(), 1)
+		.getValues()
+		.forEach((row) => {
+			if (row[0] !== '') {
+				rolesList.push(row[0]);
+			}
+		});
+	subordinates.forEach((suboord) => {
+		fullSub.push(getFullMemberData(suboord));
+	});
+
+	fullSub.sort((a, b) => {
+		return rolesList.indexOf(a.role) - rolesList.indexOf(b.role);
+	});
+
+	let outPeople = [];
+	fullSub.forEach((sub) => outPeople.push(sub));
 
 	return outPeople;
 }
