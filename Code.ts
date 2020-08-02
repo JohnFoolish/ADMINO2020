@@ -13,11 +13,7 @@ const ssBattalionMembers = ss.getSheetByName('Battalion Members');
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
 const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit');
 
-function test() {
-	Logger.log('start');
-	chainOfCommandStructureUpdater();
-	Logger.log('end');
-}
+function test() {}
 
 //Triggers when the submission form is submitted
 function myOnSubmit() {
@@ -95,44 +91,53 @@ function myOnAssignmentSubmit() {
 			}
 		});
 
-		// Manipulate data
 		const people = getIndividualsFromCheckBoxGrid(keyValuePairsRawGridCheckbox, assignerFullData);
-		const outData = [];
-		const emailList = [];
-		const noAuthority = [];
-		for (let i = 0; i < people.length; i++) {
-			if (people[i].canBeAssignedFromAssigner) {
-				const tempOutData = new Array(9);
-				tempOutData[0] = new Date(submitData.timestamp);
-				tempOutData[0].setSeconds(tempOutData[0].getSeconds() + i); //Timestamp - UUID
-				tempOutData[1] = submitData.assigner; // Assigners Name
-				tempOutData[2] = people[i].group; // Group
-				tempOutData[3] = people[i].name; // Recievers name
-				tempOutData[4] = submitData.paperwork; // Paperwork
-				tempOutData[5] = submitData.dateAssigned; // Date assigned
-				tempOutData[6] = submitData.dateDue; // Date Due
-				tempOutData[7] = 'Pending'; // Status
-				tempOutData[8] = submitData.reason; // Reason for paperwork
-				tempOutData[9] = submitData.pdfLink; //Link to paperwork
-				outData.push(tempOutData);
 
-				if (submitData.sendEmail) {
-					emailList.push(getIndividualEmail(people[i].name));
+		// Check to make sure inputs are valid
+		if (submitData.dateDue.getFullYear() !== 1945 && people.length !== 0) {
+			// Manipulate data
+			const outData = [];
+			const emailList = [];
+			const noAuthority = [];
+			const Authority = [];
+			for (let i = 0; i < people.length; i++) {
+				if (people[i].canBeAssignedFromAssigner) {
+					const tempOutData = new Array(9);
+					tempOutData[0] = new Date(submitData.timestamp);
+					tempOutData[0].setSeconds(tempOutData[0].getSeconds() + i); //Timestamp - UUID
+					tempOutData[1] = submitData.assigner; // Assigners Name
+					tempOutData[2] = people[i].group; // Group
+					tempOutData[3] = people[i].name; // Recievers name
+					tempOutData[4] = submitData.paperwork; // Paperwork
+					tempOutData[5] = submitData.dateAssigned; // Date assigned
+					tempOutData[6] = submitData.dateDue; // Date Due
+					tempOutData[7] = 'Pending'; // Status
+					tempOutData[8] = submitData.reason; // Reason for paperwork
+					tempOutData[9] = submitData.pdfLink; //Link to paperwork
+					outData.push(tempOutData);
+					dynamicSheetUpdate(tempOutData);
+
+					if (submitData.sendEmail) {
+						emailList.push(getIndividualEmail(people[i].name));
+					}
+					Authority.push(people[i]);
+				} else {
+					noAuthority.push(people[i]);
 				}
-			} else {
-				noAuthority.push(people[i]);
 			}
+			//Send ouot email notifiying everyone that their paperwork was assigned
+			sendAssigneesEmail(emailList, submitData);
+			//Email the assigner who was assigned it and who was not
+			sendAssignerSuccessEmail(assignerFullData, noAuthority, Authority);
+
+			//Write to data sheet
+			ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+
+			// Write to Pending Paperwork
+			ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+		} else {
+			sendAssignerFailEmail(assignerFullData, submitData.dateDue.getFullYear() === 1945, people.length === 0);
 		}
-		//Send ouot email notifiying everyone that their paperwork was assigned
-		sendEmail(emailList, submitData);
-		//Email the assigner who was assigned it and who was not
-		Logger.log(noAuthority);
-
-		//Write to data sheet
-		ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
-
-		// Write to Pending Paperwork
-		ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 	}
 }
 
@@ -153,8 +158,14 @@ function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifi
 		}
 		out.setDate(out.getDate() + adjustDateForWeekends(out, parseInt(ncTime)));
 	} else if (out === '') {
-		out = new Date();
-		out.setDate(out.getDate() + 7);
+		const handleEmpty = ssOptions.getRange(5, 2).getValue();
+		if (handleEmpty === 'Reject Submission') {
+			out = new Date();
+			out.setFullYear('1945');
+		} else {
+			out = new Date(assignDate.toString());
+			out.setDate(out.getDate() + parseInt(handleEmpty));
+		}
 	}
 	return out;
 }
@@ -447,9 +458,11 @@ function findIndSheet(name) {
 	while (files.hasNext()) {
 		var sheet = files.next();
 		fileList.push(sheet);
+		var ID = sheet.getId();
 	}
 	Logger.log(fileList);
-	return files;
+	const tup = [files, fileList];
+	return tup;
 }
 
 function wipeGoogleFiles() {
@@ -460,12 +473,56 @@ function wipeGoogleFiles() {
 		if (email === '') {
 			continue;
 		}
-		const fileList = findIndSheet(battalionIndividuals[ind]);
+		const [fileList, _] = findIndSheet(battalionIndividuals[ind]);
 		while (fileList.hasNext()) {
 			var file = fileList.next();
 			root.removeFile(file);
 		}
 	}
+}
+
+function dynamicSheetUpdate(tempData) {
+	const [fileIterator, fileList] = findIndSheet(tempData[3]);
+	const fileArray = fileList as Array<string>;
+	const fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
+
+	if (fileArray.length > 1) {
+		Logger.log('Error, multiple sheets for ' + tempData[3]);
+		throw Error;
+	}
+	const sheetID = fileLinkedList.next().getId();
+	const userSpread = SpreadsheetApp.openById(sheetID);
+
+	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
+	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
+	const header = userPaperwork.getRange(1, 1, 2, 3).getValues();
+	const outData = userPaperwork.getRange(2, 3, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+
+	var chits = header[1][0];
+	var merits = header[1][1];
+	var negCounsel = header[1][2];
+
+	Logger.log(tempData);
+	if (tempData[4] === 'Chit') {
+		chits++;
+	} else if (tempData[4] === 'Negative Counseling') {
+		negCounsel++;
+	} else if (tempData[4] === 'Merit') {
+		merits++;
+	}
+	userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, tempData.length).setValues([tempData]);
+	totalPaperwork.getRange(totalPaperwork.getLastRow() + 1, 1, 1, tempData.length).setValues([tempData]);
+
+	const helpData = [];
+	helpData.push(chits);
+	helpData.push(negCounsel);
+	helpData.push(merits);
+	header[1][0] = chits;
+	header[1][1] = negCounsel;
+	header[1][2] = merits;
+	userPaperwork.getRange(1, 1, 2, 3).setValues(header);
+	totalPaperwork.getRange(1, 1, 2, 3).setValues(header);
+	Logger.log(header);
 }
 
 function updateSheet(sheetID, name) {
@@ -732,7 +789,7 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 
 	// Check for assigning autority
 	const canAssignToAnyone = ssOptions.getRange(4, 2).getValue();
-	if (canAssignToAnyone !== 'Disabled' && canAssignToAnyone !== '') {
+	if (canAssignToAnyone !== 'Anyone can assign to anyone' && canAssignToAnyone !== '') {
 		const rolesList = [];
 		ssBattalionStructure
 			.getRange(2, 1, ssBattalionStructure.getLastRow(), 1)
@@ -834,7 +891,33 @@ function getSubordinates(name: string): string[] {
 	return outPeople;
 }
 
-function sendEmail(emailList, data) {
+function sendAssignerFailEmail(assigner, noDate: boolean, noPeople: boolean) {
+	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
+	if (!emailsActivated) return;
+
+	MailApp.sendEmail({
+		to: assignerData.email,
+		subject: emailSubject,
+		htmlBody: emailBody,
+	});
+}
+
+function sendAssignerSuccessEmail(
+	assignerData: { name: string; email: string; role: string; group: string },
+	authority: string[],
+	noAuthority: string[]
+) {
+	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
+	if (!emailsActivated) return;
+
+	MailApp.sendEmail({
+		to: assignerData.email,
+		subject: emailSubject,
+		htmlBody: emailBody,
+	});
+}
+
+function sendAssigneesEmail(emailList, data) {
 	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;
 
