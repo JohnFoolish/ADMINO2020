@@ -504,7 +504,6 @@ function updateSubordinateTab(name) {
 	const [fileIterator, fileList] = findIndSheet(name);
 	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
 	const fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
-	Logger.log('Entering into updateSubordinates for user', name);
 	if (fileArray.length > 1) {
 		Logger.log('Error, multiple sheets for ' + name);
 		throw Error;
@@ -528,6 +527,7 @@ function updateSubordinateTab(name) {
 		indData.forEach((row) => subordinateData.push(row));
 	});
 	Logger.log('total subordinate data is: ', subordinateData.length);
+	subPaperwork.getRange(2, 1, subPaperwork.getLastRow(), subPaperwork.getLastColumn()).clear();
 	if (subordinateData.length > 0) {
 		subPaperwork.getRange(2, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
 	}
@@ -1016,6 +1016,7 @@ function descendingRankOrderOfSubordinateNames(name: string): string[] {
 	let outPeople = [];
 	fullSub.forEach((sub) => outPeople.push(sub.name));
 
+	Logger.log(outPeople);
 	return outPeople;
 }
 
