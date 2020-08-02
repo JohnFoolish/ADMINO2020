@@ -501,18 +501,23 @@ function updateSubordinateTab(name) {
 	}
 
 	const userSpread = SpreadsheetApp.open(fileArray[0]);
-	const userPaperwork = userSpread.getSheetByName('Subordinate_Paperwork');
+	const subPaperwork = userSpread.getSheetByName('Subordinate_Paperwork');
 
 	const topChain = createFullBattalionStructure();
 
-	const subordinateData = [[]];
+	var subordinateData;
 	var blankLine;
-	var data;
+	var indData;
 	// here get each of the subordinates data arrays
 	//for each something goes here
-	data = grabUserData(name);
-	blankLine = Array(data[data.length - 1].length);
-	data.push(blankLine);
+	indData = grabUserData(name);
+	blankLine = Array(indData[indData.length - 1].length);
+	indData.push(blankLine);
+	indData.push(blankLine);
+	subordinateData.push(indData);
+	//
+
+	subPaperwork.getRange(1, 1, 1, subordinateData).setValues([tempData]);
 }
 
 function grabUserData(name) {
@@ -1031,12 +1036,12 @@ function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: 
 	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;*/
 	let emailBody = `${assigner.name},
-	
-	Your ${submitData.paperwork} did not assign, because ${noDate ? 'you did not give a date ' : ''}${
-		noDate && noPeople ? 'and ' : ''
+	\n\n
+	Your ${submitData.paperwork} did not assign, because ${noDate ? 'you did not give a date' : ''}${
+		noDate && noPeople ? ' and ' : ''
 	}${noPeople ? 'you did not select to assign it to anyone' : ''}.
-	
-	Very respectfully,
+	\n\n
+	Very respectfully,\n
 	The ADMIN Department`;
 
 	MailApp.sendEmail({
