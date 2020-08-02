@@ -517,11 +517,11 @@ function dynamicSheetUpdate(tempData) {
 	var found = false;
 
 	for (var i = 0; i < outData.length; i++) {
-		if (tempData[0] === outData[i][0]) {
+		if (tempData[0].toString() === outData[i][0].toString()) {
 			//Duplicate file found!
 			lineAddition = i + 2;
 			for (var j = 1; j < totalOutData.length; j++) {
-				if (tempData[0] === totalOutData[j][0]) {
+				if (tempData[0].toString() === totalOutData[j][0].toString()) {
 					totalLineAddition = j + 2;
 					found = true;
 				}
@@ -967,6 +967,9 @@ function sendAssignerSuccessEmail(
 				classSeperatedNames[3].push(name.substring(10));
 			}
 		});
+		let out = '';
+
+		return out;
 	};
 
 	let emailBody = assignerData.name + ',\n\n';
