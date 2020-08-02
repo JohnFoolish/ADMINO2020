@@ -519,6 +519,7 @@ function updateSubordinateTab(name) {
 	subList.forEach((subName) => {
 		indData = grabUserData(subName);
 		blankLine = Array(indData[indData.length - 1].length);
+		indData.splice(3, 2);
 		indData.push(blankLine);
 		indData.push(blankLine);
 		indData.forEach((row) => subordinateData.push(row));
