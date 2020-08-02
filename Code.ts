@@ -456,7 +456,7 @@ function createGoogleFiles() {
 		indFile.addEditor('tnbowes@gmail.com');
 	}
 	for (var i = 0; i < battalionIndividuals.length; i++) {
-        updateSubordinateTab(battalionIndividuals[i]);
+		updateSubordinateTab(battalionIndividuals[i]);
 	}
 }
 
@@ -657,8 +657,7 @@ function initSheet(sheetID, name) {
 	Logger.log(header);
 }
 
-	//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
-}
+//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
 
 function updateFormGroups() {
 	// Update assigner names list
