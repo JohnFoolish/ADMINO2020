@@ -647,12 +647,12 @@ function initSheet(sheetID, name) {
 	helpData.push(chits);
 	helpData.push(negCounsel);
 	helpData.push(merits);
-	header[0][1]; = name
+	header[0][1] = name;
 	header[2][0] = chits;
 	header[2][1] = negCounsel;
 	header[2][2] = merits;
-	userPaperwork.getRange(1, 1, 2, 3).setValues(header);
-	totalPaperwork.getRange(1, 1, 2, 3).setValues(header);
+	userPaperwork.getRange(1, 1, 3, 3).setValues(header);
+	totalPaperwork.getRange(1, 1, 3, 3).setValues(header);
 	Logger.log(header);
 
 	//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
@@ -1037,12 +1037,12 @@ function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: 
 	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;*/
 	let emailBody = `${assigner.name},
-	\n\n
+	
 	Your ${submitData.paperwork} did not assign, because ${noDate ? 'you did not give a date' : ''}${
 		noDate && noPeople ? ' and ' : ''
 	}${noPeople ? 'you did not select to assign it to anyone' : ''}.
-	\n\n
-	Very respectfully,\n
+	
+	Very respectfully,
 	The ADMIN Department`;
 
 	MailApp.sendEmail({
