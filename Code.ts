@@ -240,7 +240,7 @@ function myOnEdit() {
 			}
 		}
 		if (oneWasTrue) {
-			ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).setValues(pending);
+			ssPending.getRange(1, 1, pending.length, pending[0].length).setValues(pending);
 			ssPending.sort(1);
 		}
 	} else if (
