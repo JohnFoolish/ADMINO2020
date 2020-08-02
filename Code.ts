@@ -1010,7 +1010,7 @@ function descendingRankOrderOfSubordinateNames(name: string): string[] {
 	});
 
 	let outPeople = [];
-	fullSub.forEach((sub) => outPeople.push(sub));
+	fullSub.forEach((sub) => outPeople.push(sub.name));
 
 	return outPeople;
 }
