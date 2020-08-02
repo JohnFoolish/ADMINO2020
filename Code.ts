@@ -461,6 +461,7 @@ function createGoogleFiles() {
 		indFile.addEditor('tnbowes@gmail.com');
 		initMembers.push(battalionIndividuals[idx]);
 	}
+	// change battalionIndividuals to initMembers below
 	battalionIndividuals.forEach((member) => updateSubordinateTab(member));
 }
 
@@ -510,7 +511,7 @@ function updateSubordinateTab(name) {
 	const subPaperwork = userSpread.getSheetByName('Subordinate_Paperwork');
 
 	const subList = descendingRankOrderOfSubordinateNames(name);
-	var subordinateData;
+	var subordinateData = [];
 	var blankLine;
 	var indData;
 	// here get each of the subordinates data arrays
@@ -523,7 +524,9 @@ function updateSubordinateTab(name) {
 		subordinateData.push(indData);
 	});
 
-	subPaperwork.getRange(1, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
+	if (subordinateData.length > 0) {
+		subPaperwork.getRange(1, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
+	}
 }
 
 function grabUserData(name) {
