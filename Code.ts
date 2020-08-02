@@ -1166,14 +1166,13 @@ function sendAssignerSuccessEmail(
 	const namesToEmailFormat = function (names: string[]): string {
 		const classSeperatedNames = [[], [], [], []];
 		names.forEach((name) => {
-			Logger.log(name + '  ' + name.substring(6, 7));
-			if (name.substring(6, 7) === '1') {
+			if (name.substring(5, 6) === '1') {
 				classSeperatedNames[0].push(name.substring(10));
-			} else if (name.substring(6, 7) === '2') {
+			} else if (name.substring(5, 6) === '2') {
 				classSeperatedNames[1].push(name.substring(10));
-			} else if (name.substring(6, 7) === '3') {
+			} else if (name.substring(5, 6) === '3') {
 				classSeperatedNames[2].push(name.substring(10));
-			} else if (name.substring(6, 7) === '4') {
+			} else if (name.substring(5, 6) === '4') {
 				classSeperatedNames[3].push(name.substring(10));
 			}
 		});
