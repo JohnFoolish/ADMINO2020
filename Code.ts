@@ -266,6 +266,7 @@ function updateSheetsFromPendingCache() {
 			const pending = ssPendingCache
 				.getRange(1, 1, ssPendingCache.getLastRow(), ssPendingCache.getLastColumn())
 				.getValues();
+
 			dynamicSheetUpdate(pending[i]);
 			const uuidDate = pending[i][0].toString();
 			for (let i = 0; i < data.length; i++) {
@@ -274,8 +275,12 @@ function updateSheetsFromPendingCache() {
 					data[i][9] = pending[i][9];
 				}
 			}
+			Logger.log('penidng:' + pending);
+			Logger.log('i:' + i);
 			pending[i] = pending[i].map((item) => '');
+
 			ssPendingCache.getRange(1, 1, pending.length, pending[0].length).setValues(pending);
+			ssPendingCache.sort(1);
 			ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 		}
 	}
