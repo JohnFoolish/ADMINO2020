@@ -474,7 +474,7 @@ function createGoogleFiles() {
 		.filter((a) => {
 			return a === '' ? false : true;
 		});
-	for (let i = finishInitMem.length - 1; i >= 0; i++) {
+	for (let i = finishInitMem.length - 1; i >= 0; i--) {
 		updateSubordinateTab(finishInitMem[i]);
 		finishInitMem.splice(i, 1);
 		ssVariables.getRange(7, 2).setValue(finishInitMem.join('|'));
