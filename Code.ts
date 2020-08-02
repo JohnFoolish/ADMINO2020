@@ -516,13 +516,13 @@ function dynamicSheetUpdate(tempData) {
 	var totalLineAddition = totalPaperwork.getLastRow() + 1;
 	var found = false;
 
-	for (var i = 1; i < outData.length; i++) {
+	for (var i = 0; i < outData.length; i++) {
 		if (tempData[0] === outData[i][0]) {
 			//Duplicate file found!
-			lineAddition = i;
+			lineAddition = i + 2;
 			for (var j = 1; j < totalOutData.length; j++) {
 				if (tempData[0] === totalOutData[j][0]) {
-					totalLineAddition = j;
+					totalLineAddition = j + 2;
 					found = true;
 				}
 			}
@@ -954,14 +954,17 @@ function sendAssignerSuccessEmail(
 ) {
 	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;*/
-	const namesToEmailFormat = function (names: string[]) {
+	const namesToEmailFormat = function (names: string[]): string {
 		const classSeperatedNames = [[], [], [], []];
 		names.forEach((name) => {
 			if (name.substring(6, 7) === '1') {
 				classSeperatedNames[0].push(name.substring(10));
 			} else if (name.substring(6, 7) === '2') {
+				classSeperatedNames[1].push(name.substring(10));
 			} else if (name.substring(6, 7) === '3') {
+				classSeperatedNames[2].push(name.substring(10));
 			} else if (name.substring(6, 7) === '4') {
+				classSeperatedNames[3].push(name.substring(10));
 			}
 		});
 	};
