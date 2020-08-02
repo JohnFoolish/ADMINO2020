@@ -525,7 +525,7 @@ function updateSubordinateTab(name) {
 	});
 	Logger.log('total subordinate data is: ', subordinateData.length);
 	if (subordinateData.length > 0) {
-		subPaperwork.getRange(1, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
+		subPaperwork.getRange(6, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
 	}
 }
 
