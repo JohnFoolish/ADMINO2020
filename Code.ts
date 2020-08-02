@@ -234,7 +234,7 @@ function myOnEdit() {
 					pending[j][7] = 'Pending';
 				} else {
 					oneWasTrue = true;
-					ssPendingCache.getRange(ssPendingCache.getLastRow() + 1, 1, pending[j].length).setValues(pending[j]);
+					ssPendingCache.getRange(ssPendingCache.getLastRow() + 1, 1, 1, pending[j].length).setValues(pending[j]);
 					pending[j] = pending[j].map((item) => '');
 				}
 			}
