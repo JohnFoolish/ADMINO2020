@@ -527,7 +527,7 @@ function updateSubordinateTab(name) {
 		indData.forEach((row) => subordinateData.push(row));
 	});
 	Logger.log('total subordinate data is: ', subordinateData.length);
-	subPaperwork.getRange(2, 1, subPaperwork.getLastRow(), subPaperwork.getLastColumn()).clear();
+	subPaperwork.getRange(2, 1, subPaperwork.getLastRow(), subPaperwork.getLastColumn()).clearContent();
 	if (subordinateData.length > 0) {
 		subPaperwork.getRange(2, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
 	}
