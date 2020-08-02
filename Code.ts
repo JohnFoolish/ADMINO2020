@@ -466,7 +466,6 @@ function createGoogleFiles() {
 		indFile.addEditor('tnbowes@gmail.com');
 		ssVariables.getRange(7, 2).setValue(ssVariables.getRange(7, 2).getValue() + '|' + battalionIndividuals[idx] + '|');
 	}
-	// change battalionIndividuals to initMembers below
 	let finishInitMem = ssVariables
 		.getRange(7, 2)
 		.getValue()
