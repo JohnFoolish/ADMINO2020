@@ -121,9 +121,9 @@ function myOnAssignmentSubmit() {
 					if (submitData.sendEmail) {
 						emailList.push(getIndividualEmail(people[i].name));
 					}
-					Authority.push(people[i]);
+					Authority.push(people[i].name);
 				} else {
-					noAuthority.push(people[i]);
+					noAuthority.push(people[i].name);
 				}
 			}
 			//Send ouot email notifiying everyone that their paperwork was assigned
