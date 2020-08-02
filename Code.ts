@@ -445,6 +445,7 @@ function createGoogleFiles() {
 	);
 	const templateID = ssTemplate.getId();
 	const newFile = DriveApp.getFileById(templateID);
+	const initMembers = [];
 	for (var idx = 0; idx < battalionIndividuals.length; idx++) {
 		if (root.getFilesByName(battalionIndividuals[idx] + ', GT NROTC').hasNext()) {
 			Logger.log('The form for user ' + battalionIndividuals[idx] + ' exists.');
@@ -458,14 +459,14 @@ function createGoogleFiles() {
 		Logger.log(email, battalionIndividuals[idx]);
 		indFile.addEditor('johnlcorker88@gmail.com');
 		indFile.addEditor('tnbowes@gmail.com');
+		initMembers.push(battalionIndividuals[idx]);
 	}
-	for (var i = 0; i < battalionIndividuals.length; i++) {
-		updateSubordinateTab(battalionIndividuals[i]);
-	}
+	initMembers.forEach((member) => updateSubordinateTab(member));
 }
 
 function findIndSheet(name) {
-	var files = DriveApp.getFilesByName(name + ', GT NROTC');
+	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
+	var files = root.getFilesByName(name + ', GT NROTC');
 	const fileList = [];
 	while (files.hasNext()) {
 		var sheet = files.next();
