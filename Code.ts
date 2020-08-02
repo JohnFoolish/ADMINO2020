@@ -1190,16 +1190,18 @@ function sendAssignerSuccessEmail(
 	let emailBody = `${assignerData.name},
 	<br><br>
 	You assigned a ${submitData.paperwork} on ${dateToROTCFormat(submitData.dateAssigned)} to:
+	<br><br>
+	${namesToEmailFormat(authority)}
 	<br>
-	${namesToEmailFormat(authority)}because, ${submitData.reason}. It will be due COB ${dateToROTCFormat(
-		submitData.dateDue
-	)}.`;
+	because, ${submitData.reason}. It will be due COB ${dateToROTCFormat(submitData.dateDue)}.`;
 
 	if (noAuthority.length > 0) {
 		emailBody += `
-		<br><br>
-		You attempted to assign a ${submitData.paperwork} to:<br>
-		${namesToEmailFormat(noAuthority)}but you do not have the authority.`;
+		<br><br><br>
+		You attempted to assign a ${submitData.paperwork} to:<br><br>
+		${namesToEmailFormat(noAuthority)}
+		<br>
+		but you do not have the authority.`;
 	}
 
 	emailBody += `
