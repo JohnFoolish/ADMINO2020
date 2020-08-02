@@ -9,6 +9,7 @@ const ssVariables = ss.getSheetByName('Variables');
 const ssDigitalBox = ss.getSheetByName('Digital Turn In Box');
 const ssBattalionStructure = ss.getSheetByName('Battalion Structure');
 const ssBattalionMembers = ss.getSheetByName('Battalion Members');
+const ssPendingCache = ss.getSheetByName('PendingChangedCache');
 
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
 const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit');
@@ -224,7 +225,6 @@ function myOnEdit() {
 		}
 	} else if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
 		const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
-		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 		let oneWasTrue = false;
 		for (let j = 1; j < pending.length; j++) {
 			if (pending[j][7].toString() !== 'Pending' && pending[j][7].toString() !== '') {
@@ -233,22 +233,13 @@ function myOnEdit() {
 					ui.alert('You need to put either "Turned in Physically" or the link to their digitally turned in file');
 					pending[j][7] = 'Pending';
 				} else {
-					// put your thing here
-					dynamicSheetUpdate(pending[j]);
 					oneWasTrue = true;
-					const uuidDate = pending[j][0].toString();
-					for (let i = 0; i < data.length; i++) {
-						if (data[i][0].toString() === uuidDate) {
-							data[i][7] = pending[j][7];
-							data[i][9] = pending[j][9];
-						}
-					}
+					ssPendingCache.getRange(ssPendingCache.getLastRow() + 1, 1, pending[j].length).setValues(pending[j]);
 					pending[j] = pending[j].map((item) => '');
 				}
 			}
 		}
 		if (oneWasTrue) {
-			ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 			ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).setValues(pending);
 			ssPending.sort(1);
 		}
@@ -265,6 +256,28 @@ function myOnEdit() {
 		if (ss.getActiveCell().getColumn() > 1) {
 			chainOfCommandStructureUpdater();
 		}
+	}
+}
+
+function updateSheetsFromPendingCache() {
+	if (ssPendingCache.getLastRow() > 0) {
+		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
+		const pending = ssPendingCache
+			.getRange(1, 1, ssPendingCache.getLastRow(), ssPendingCache.getLastColumn())
+			.getValues();
+		for (let i = 0; i < pending.length; i++) {
+			dynamicSheetUpdate(pending[i]);
+			const uuidDate = pending[i][0].toString();
+			for (let i = 0; i < data.length; i++) {
+				if (data[i][0].toString() === uuidDate) {
+					data[i][7] = pending[i][7];
+					data[i][9] = pending[i][9];
+				}
+			}
+			pending[i] = pending[i].map((item) => '');
+		}
+		ssPendingCache.getRange(1, 1, pending.length, pending[0].length).setValues(pending);
+		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 	}
 }
 
