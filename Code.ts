@@ -1166,6 +1166,7 @@ function sendAssignerSuccessEmail(
 	const namesToEmailFormat = function (names: string[]): string {
 		const classSeperatedNames = [[], [], [], []];
 		names.forEach((name) => {
+			Logger.log(name + '  ' + name.substring(6, 7));
 			if (name.substring(6, 7) === '1') {
 				classSeperatedNames[0].push(name.substring(10));
 			} else if (name.substring(6, 7) === '2') {
@@ -1190,7 +1191,9 @@ function sendAssignerSuccessEmail(
 	let emailBody = `${assignerData.name},
 	<br><br>
 	You assigned a ${submitData.paperwork} on ${dateToROTCFormat(submitData.dateAssigned)} to:<br>
-	${namesToEmailFormat(authority)}because, ${submitData.reason}. It will be due on ${submitData.dateDue}`;
+	${namesToEmailFormat(authority)}because, ${submitData.reason}. It will be due on ${dateToROTCFormat(
+		submitData.dateDue
+	)}`;
 
 	if (noAuthority.length > 0) {
 		emailBody += `
