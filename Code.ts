@@ -1180,7 +1180,7 @@ function sendAssignerSuccessEmail(
 		Logger.log(classSeperatedNames);
 		classSeperatedNames.forEach((classList, index) => {
 			if (classList.length !== 0) {
-				out += `<li>MIDN ${index + 1}/C ${classList.join('  |  ')}</li>`;
+				out += `<li>MIDN ${index + 1}/C ${classList.join('  <b>|</b>  ')}</li>`;
 			}
 		});
 		out += '</ul>';
@@ -1197,7 +1197,7 @@ function sendAssignerSuccessEmail(
 
 	if (noAuthority.length > 0) {
 		emailBody += `
-		<br><br>
+		<br><br><br>
 		You attempted to assign a ${submitData.paperwork} to:<br>
 		${namesToEmailFormat(noAuthority)}
 		but you do not have the authority.`;
@@ -1205,7 +1205,7 @@ function sendAssignerSuccessEmail(
 
 	emailBody += `
 	<br><br>
-	Very Respectfully,
+	Very Respectfully, <br>
 	The ADMIN Department`;
 
 	MailApp.sendEmail({
