@@ -501,7 +501,7 @@ function updateSubordinateTab(name) {
 	const [fileIterator, fileList] = findIndSheet(name);
 	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
 	const fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
-
+	Logger.log('Entering into updateSubordinates for user', name);
 	if (fileArray.length > 1) {
 		Logger.log('Error, multiple sheets for ' + name);
 		throw Error;
@@ -523,7 +523,7 @@ function updateSubordinateTab(name) {
 		indData.push(blankLine);
 		subordinateData.push(indData);
 	});
-
+	Logger.log('total subordinate data is: ', subordinateData.length);
 	if (subordinateData.length > 0) {
 		subPaperwork.getRange(1, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
 	}
