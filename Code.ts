@@ -461,7 +461,7 @@ function createGoogleFiles() {
 		indFile.addEditor('tnbowes@gmail.com');
 		initMembers.push(battalionIndividuals[idx]);
 	}
-	initMembers.forEach((member) => updateSubordinateTab(member));
+	battalionIndividuals.forEach((member) => updateSubordinateTab(member));
 }
 
 function findIndSheet(name) {
