@@ -261,28 +261,24 @@ function myOnEdit() {
 
 function updateSheetsFromPendingCache() {
 	if (ssPendingCache.getLastRow() > 0) {
-		for (let i = 0; i < ssPendingCache.getLastRow(); i++) {
-			const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
-			const pending = ssPendingCache
-				.getRange(1, 1, ssPendingCache.getLastRow(), ssPendingCache.getLastColumn())
-				.getValues();
+		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
+		const pending = ssPendingCache.getRange(1, 1, 1, ssPendingCache.getLastColumn()).getValues();
 
-			dynamicSheetUpdate(pending[i]);
-			const uuidDate = pending[i][0].toString();
-			for (let i = 0; i < data.length; i++) {
-				if (data[i][0].toString() === uuidDate) {
-					data[i][7] = pending[i][7];
-					data[i][9] = pending[i][9];
-				}
+		dynamicSheetUpdate(pending[0]);
+		const uuidDate = pending[0][0].toString();
+		for (let i = 0; i < data.length; i++) {
+			if (data[i][0].toString() === uuidDate) {
+				data[i][7] = pending[0][7];
+				data[i][9] = pending[0][9];
 			}
-			Logger.log('penidng:' + pending);
-			Logger.log('i:' + i);
-			pending[i] = pending[i].map((item) => '');
-
-			ssPendingCache.getRange(1, 1, pending.length, pending[0].length).setValues(pending);
-			ssPendingCache.sort(1);
-			ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 		}
+		Logger.log('penidng:' + pending);
+		pending[0] = pending[0].map((item) => '');
+
+		ssPendingCache.getRange(1, 1, 1, pending[0].length).setValues(pending);
+		ssPendingCache.sort(1);
+		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
+		updateSheetsFromPendingCache();
 	}
 }
 
