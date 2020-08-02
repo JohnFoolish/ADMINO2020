@@ -472,9 +472,9 @@ function findIndSheet(name) {
 	while (files.hasNext()) {
 		var sheet = files.next();
 		fileList.push(sheet);
-		var ID = sheet.getId();
 	}
-	Logger.log(fileList);
+	Logger.log('Name: ', name);
+	Logger.log('The current sheets returned: ', fileList);
 	const tup = [files, fileList];
 	return tup;
 }
@@ -539,7 +539,6 @@ function grabUserData(name) {
 		throw Error;
 	}
 
-	const sheetID = fileArray[0].getId();
 	const userSpread = SpreadsheetApp.open(fileArray[0]);
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
 	const fullData = userPaperwork.getRange(1, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
