@@ -517,7 +517,7 @@ function updateSubordinateTab(name) {
 	subordinateData.push(indData);
 	//
 
-	subPaperwork.getRange(1, 1, 1, subordinateData).setValues([tempData]);
+	subPaperwork.getRange(1, 1, 1, subordinateData).setValues([subordinateData]);
 }
 
 function grabUserData(name) {
@@ -1035,14 +1035,14 @@ function getSubordinates(name: string): string[] {
 function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: boolean) {
 	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;*/
-	let emailBody = `${assigner.name},
+	let emailBody = `<p>${assigner.name},
 	\n\n
 	Your ${submitData.paperwork} did not assign, because ${noDate ? 'you did not give a date' : ''}${
 		noDate && noPeople ? ' and ' : ''
 	}${noPeople ? 'you did not select to assign it to anyone' : ''}.
 	\n\n
 	Very respectfully,\n
-	The ADMIN Department`;
+	The ADMIN Department</p>`;
 
 	MailApp.sendEmail({
 		to: assigner.email,
