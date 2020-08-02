@@ -504,9 +504,9 @@ function dynamicSheetUpdate(tempData) {
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
 	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
 	const header = userPaperwork.getRange(1, 1, 2, 3).getValues();
-	const outData = userPaperwork.getRange(2, 3, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+	const outData = userPaperwork.getRange(2, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
 	const totalOutData = totalPaperwork
-		.getRange(2, 3, totalPaperwork.getLastRow(), totalPaperwork.getLastColumn())
+		.getRange(2, 1, totalPaperwork.getLastRow(), totalPaperwork.getLastColumn())
 		.getValues();
 
 	var chits = header[1][0];
@@ -535,7 +535,7 @@ function dynamicSheetUpdate(tempData) {
 
 	Logger.log(tempData);
 	var change = 1;
-	if (tempData[7] === 'Canceled') {
+	if (tempData[7] === 'Cancelled' || tempData[7] === 'Rejected') {
 		change = -1;
 	}
 	if (tempData[4] === 'Chit') {
@@ -954,8 +954,19 @@ function sendAssignerSuccessEmail(
 ) {
 	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;*/
+	const namesToEmailFormat = function (names: string[]) {
+		const classSeperatedNames = [[], [], [], []];
+		names.forEach((name) => {
+			if (name.substring(6, 7) === '1') {
+				classSeperatedNames[0].push(name.substring(10));
+			} else if (name.substring(6, 7) === '2') {
+			} else if (name.substring(6, 7) === '3') {
+			} else if (name.substring(6, 7) === '4') {
+			}
+		});
+	};
+
 	let emailBody = assignerData.name + ',\n\n';
-	const namesToEmailFormat = function () {};
 
 	MailApp.sendEmail({
 		to: assignerData.email,
