@@ -455,7 +455,7 @@ function createGoogleFiles() {
 		indFile.addEditor('johnlcorker88@gmail.com');
 		indFile.addEditor('tnbowes@gmail.com');
 	}
-	for (var i = 0; i < battalionIndividuals.length; idx++) {
+	for (var i = 0; i < battalionIndividuals.length; i++) {
         updateSubordinateTab(battalionIndividuals[i]);
 	}
 }
