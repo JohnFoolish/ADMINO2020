@@ -1158,8 +1158,8 @@ function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: 
 function sendAssignerSuccessEmail(
 	assignerData: { name: string; email: string; role: string; group: string },
 	submitData,
-	authority: string[],
-	noAuthority: string[]
+	noAuthority: string[],
+	authority: string[]
 ) {
 	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;*/
@@ -1177,7 +1177,7 @@ function sendAssignerSuccessEmail(
 			}
 		});
 		let out = '';
-
+		Logger.log(classSeperatedNames);
 		classSeperatedNames.forEach((classList, index) => {
 			if (classList.length !== 0) {
 				out += `MIDN ${index + 1}/C ${classList.join(' | ')}<br>`;
@@ -1206,7 +1206,9 @@ function sendAssignerSuccessEmail(
 
 	MailApp.sendEmail({
 		to: assignerData.email,
-		subject: `${authority.length === 0 ? 'No' : authority.length} ${submitData.paperwork} were successfully assigned`,
+		subject: `${authority.length === 0 ? 'No' : authority.length} ${submitData.paperwork}${
+			authority.length > 1 ? 's' : ''
+		} were successfully assigned`,
 		htmlBody: emailBody,
 	});
 }
