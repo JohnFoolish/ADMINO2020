@@ -1176,13 +1176,14 @@ function sendAssignerSuccessEmail(
 				classSeperatedNames[3].push(name.substring(9));
 			}
 		});
-		let out = '';
+		let out = '<ul>';
 		Logger.log(classSeperatedNames);
 		classSeperatedNames.forEach((classList, index) => {
 			if (classList.length !== 0) {
-				out += `MIDN ${index + 1}/C ${classList.join('  |  ')}<br>`;
+				out += `<li>MIDN ${index + 1}/C ${classList.join('  |  ')}</li>`;
 			}
 		});
+		out += '</ul>';
 
 		return out;
 	};
@@ -1190,17 +1191,15 @@ function sendAssignerSuccessEmail(
 	let emailBody = `${assignerData.name},
 	<br><br>
 	You assigned a ${submitData.paperwork} on ${dateToROTCFormat(submitData.dateAssigned)} to:
-	<br><br>
-	${namesToEmailFormat(authority)}
 	<br>
+	${namesToEmailFormat(authority)}
 	because, ${submitData.reason}. It will be due COB ${dateToROTCFormat(submitData.dateDue)}.`;
 
 	if (noAuthority.length > 0) {
 		emailBody += `
-		<br><br><br>
-		You attempted to assign a ${submitData.paperwork} to:<br><br>
+		<br><br>
+		You attempted to assign a ${submitData.paperwork} to:<br>
 		${namesToEmailFormat(noAuthority)}
-		<br>
 		but you do not have the authority.`;
 	}
 
