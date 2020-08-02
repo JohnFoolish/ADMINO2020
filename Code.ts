@@ -446,7 +446,7 @@ function createGoogleFiles() {
 	const templateID = ssTemplate.getId();
 	const newFile = DriveApp.getFileById(templateID);
 	for (var idx = 0; idx < battalionIndividuals.length; idx++) {
-		if (!DriveApp.getFilesByName(battalionIndividuals[idx] + ', GT NROTC').hasNext()) {
+		if (root.getFilesByName(battalionIndividuals[idx] + ', GT NROTC').hasNext()) {
 			Logger.log('The form for user ' + battalionIndividuals[idx] + ' exists.');
 			continue;
 		}
