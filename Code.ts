@@ -1037,18 +1037,18 @@ function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: 
 	/*const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;*/
 	let emailBody = `${assigner.name},
-	
+	<br><br>
 	Your ${submitData.paperwork} did not assign, because ${noDate ? 'you did not give a date' : ''}${
 		noDate && noPeople ? ' and ' : ''
 	}${noPeople ? 'you did not select to assign it to anyone' : ''}.
-	
-	Very respectfully,
+	<br><br>
+	Very respectfully,<br>
 	The ADMIN Department`;
 
 	MailApp.sendEmail({
 		to: assigner.email,
 		subject: `Failed to assign ${submitData.paperwork}`,
-		body: emailBody,
+		htmlBody: emailBody,
 	});
 }
 
@@ -1077,7 +1077,7 @@ function sendAssignerSuccessEmail(
 
 		classSeperatedNames.forEach((classList, index) => {
 			if (classList.length !== 0) {
-				out += `MIDN ${index + 1}/C ${classList.join(' | ')}\n`;
+				out += `MIDN ${index + 1}/C ${classList.join(' | ')}<br>`;
 			}
 		});
 
@@ -1085,26 +1085,26 @@ function sendAssignerSuccessEmail(
 	};
 
 	let emailBody = `${assignerData.name},
-	
-	You assigned a ${submitData.paperwork} on ${dateToROTCFormat(submitData.dateAssigned)} to:
+	<br><br>
+	You assigned a ${submitData.paperwork} on ${dateToROTCFormat(submitData.dateAssigned)} to:<br>
 	${namesToEmailFormat(authority)}because, ${submitData.reason}. It will be due on ${submitData.dateDue}`;
 
 	if (noAuthority.length > 0) {
 		emailBody += `
-		
+		<br><br>
 		You attempted to assign the ${submitData.paperwork} to:
 		${namesToEmailFormat(noAuthority)}but you do not have the authority to do so.`;
 	}
 
 	emailBody += `
-	
+	<br><br>
 	Very Respectfully,
 	The ADMIN Department`;
 
 	MailApp.sendEmail({
 		to: assignerData.email,
 		subject: `${authority.length === 0 ? 'No' : authority.length} ${submitData.paperwork} were successfully assigned`,
-		body: emailBody,
+		htmlBody: emailBody,
 	});
 }
 
