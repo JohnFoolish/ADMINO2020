@@ -463,6 +463,9 @@ function createGoogleFiles() {
 	}
 	// change battalionIndividuals to initMembers below
 	battalionIndividuals.forEach((member) => updateSubordinateTab(member));
+	if (initMembers.length === 0) {
+		ssVariables.getRange(6, 2).setValue('false');
+	}
 }
 
 function findIndSheet(name) {
