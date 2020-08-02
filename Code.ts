@@ -1139,7 +1139,7 @@ function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: 
 	if (!emailsActivated) return;*/
 	let emailBody = `${assigner.name},
 	<br><br>
-	Your ${submitData.paperwork.toLowerCase()} did not assign, because ${noDate ? 'you did not give a date' : ''}${
+	Your ${submitData.paperwork} did not assign, because ${noDate ? 'you did not give a date' : ''}${
 		noDate && noPeople ? ' and ' : ''
 	}${noPeople ? 'you did not select to assign it to anyone' : ''}.
 	<br><br>
@@ -1148,7 +1148,7 @@ function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: 
 
 	MailApp.sendEmail({
 		to: assigner.email,
-		subject: `Failed to assign ${submitData.paperwork.toLowerCase()}`,
+		subject: `Failed to assign ${submitData.paperwork}`,
 		htmlBody: emailBody,
 	});
 }
@@ -1190,7 +1190,7 @@ function sendAssignerSuccessEmail(
 
 	let emailBody = `${assignerData.name},
 	<br><br>
-	You assigned a ${submitData.paperwork.toLowerCase()} on ${dateToROTCFormat(submitData.dateAssigned)} to:
+	You assigned a ${submitData.paperwork} on ${dateToROTCFormat(submitData.dateAssigned)} to:
 	<br>
 	${namesToEmailFormat(authority)}
 	because, ${submitData.reason}. It will be due COB ${dateToROTCFormat(submitData.dateDue)}.`;
@@ -1210,7 +1210,7 @@ function sendAssignerSuccessEmail(
 
 	MailApp.sendEmail({
 		to: assignerData.email,
-		subject: `${authority.length === 0 ? 'No' : authority.length} ${submitData.paperwork.toLowerCase()}${
+		subject: `${authority.length === 0 ? 'No' : authority.length} ${submitData.paperwork}${
 			authority.length > 1 ? 's' : ''
 		} were successfully assigned`,
 		htmlBody: emailBody,
