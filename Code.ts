@@ -447,7 +447,7 @@ function createGoogleFiles() {
 	const newFile = DriveApp.getFileById(templateID);
 	for (var idx = 0; idx < battalionIndividuals.length; idx++) {
 		const email = getIndividualEmail(battalionIndividuals[idx]);
-		if (email === 'tnbowes@gatech.edu' || email === '') {
+		if (email === '') {
 			continue;
 		}
 		const indFile = newFile.makeCopy(battalionIndividuals[idx] + ', GT NROTC', root);
@@ -503,7 +503,33 @@ function updateSubordinateTab(name) {
 	const userSpread = SpreadsheetApp.open(fileArray[0]);
 	const subPaperwork = userSpread.getSheetByName('Subordinate_Paperwork');
 
-	const topChain = createFullBattalionStructure();
+	const battalion = createFullBattalionStructure();
+	const rolesList = [];
+	ssBattalionStructure
+		.getRange(2, 1, ssBattalionStructure.getLastRow(), 1)
+		.getValues()
+		.forEach((row) => {
+			if (row[0] !== '') {
+				rolesList.push(row[0]);
+			}
+		});
+	let highestChainOfIndividual;
+	let personFullData;
+	let foundPerson = false;
+
+	function searchChain(chainNode) {
+		chainNode.members.forEach((member) => {
+			if (member.name === name) {
+				highestChainOfIndividual = chainNode;
+				personFullData = member;
+				foundPerson = true;
+			}
+		});
+		chainNode.children.forEach((child) => {
+			searchChain(child);
+		});
+	}
+	searchChain(battalion);
 
 	var subordinateData;
 	var blankLine;
