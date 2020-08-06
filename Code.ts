@@ -34,12 +34,16 @@ function initSheetReminder() {
 	const now = new Date();
 	const lastEnabled = new Date(ssVariables.getRange(9, 2).getValue().toString());
 	if (ssVariables.getRange(8, 2).getValue() == 'true') {
+		const resetSheet = function () {};
+
 		// Reset for fall
 		if (!(lastEnabled.getMonth() > 6 && lastEnabled.getFullYear() === now.getFullYear()) && now.getMonth() > 6) {
+			resetSheet();
 		}
 
 		// Reset for spring
-		if (!(lastEnabled.getMonth() > 0 && lastEnabled.getFullYear() === now.getFullYear()) && now.getMonth() > 0) {
+		if (!(lastEnabled.getMonth() === 11 && lastEnabled.getFullYear() === now.getFullYear()) && now.getMonth() > 0) {
+			resetSheet();
 		}
 	}
 }
@@ -623,6 +627,7 @@ function grabUsersData(dict) {
 		if (database[idx][1] in dict) {
 			dict[database[idx][1]]['Data'].push([database[idx]]);
 			if (database[idx][7] != 'Cancelled' || database[idx][7] != 'Rejected') {
+				Logger.log(dict[database[idx][1]][database[idx][4]], [database[idx][4]]);
 				dict[database[idx][1]][database[idx][4]] += 1;
 			}
 		}
