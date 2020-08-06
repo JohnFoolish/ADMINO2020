@@ -615,9 +615,9 @@ function grabUsersData(dict) {
 	const database = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 	for (var idx = 0; idx < database.length; idx++) {
 		if (database[idx][1] in dict) {
-			dict[name]['Data'].push(database[idx]);
+			dict[database[idx][1]]['Data'].push(database[idx]);
 			if (database[idx][7] != 'Cancelled' || database[idx][7] != 'Rejected') {
-				dict[name][database[idx][4]] += 1;
+				dict[database[idx][1]][database[idx][4]] += 1;
 			}
 		}
 	}
