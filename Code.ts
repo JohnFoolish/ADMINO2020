@@ -611,12 +611,6 @@ function updateSubordinateTab(name) {
 	let dataList = [];
 	subList.forEach((subName) => {
 		dict[subName] = { Merit: 0, Chit: 0, 'Negative Counseling': 0, Data: JSON.parse(JSON.stringify(dataList)) };
-		//indData = grabUserData(subName);
-		//blankLine = Array(indData[indData.length - 1].length);
-		//indData.splice(3, 2);
-		//indData.push(blankLine);
-		//indData.push(blankLine);
-		//indData.forEach((row) => subordinateData.push(row));
 	});
 	subordinateData = grabUsersData(dict);
 	Logger.log('total subordinate data is: ', subordinateData.length);
@@ -627,6 +621,9 @@ function updateSubordinateTab(name) {
 	}
 }
 
+/**
+ *
+ */
 function grabUsersData(dict) {
 	Logger.log('Entering grabUsersData!');
 	Logger.log('dictionary is: ', dict);
@@ -634,10 +631,10 @@ function grabUsersData(dict) {
 
 	const database = ssData.getRange(2, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 	for (var idx = 0; idx < database.length; idx++) {
-		if (database[idx][1] in dict) {
-			dict[database[idx][1]]['Data'].push(database[idx]);
+		if (database[idx][3] in dict) {
+			dict[database[idx][3]]['Data'].push(database[idx]);
 			if (database[idx][7] != 'Cancelled' || database[idx][7] != 'Rejected') {
-				dict[database[idx][1]][database[idx][4]] += 1;
+				dict[database[idx][3]][database[idx][4]] += 1;
 			}
 		}
 	}
@@ -662,7 +659,7 @@ function grabUsersData(dict) {
 			'',
 			'',
 		]);
-		dict[key]['Data'].array.forEach((assignment) => {
+		dict[key]['Data'].forEach((assignment) => {
 			finalSubData.push(assignment);
 		});
 		finalSubData.push(['', '', '', '', '', '', '', '', '', '']);
@@ -672,25 +669,6 @@ function grabUsersData(dict) {
 	return finalSubData;
 }
 
-/**
- *
- */
-function grabUserData(name) {
-	const [fileIterator, fileList] = findIndSheet(name);
-	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
-	const fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
-
-	if (fileArray.length > 1) {
-		Logger.log('Error, multiple sheets for ' + name);
-		throw Error;
-	}
-
-	const userSpread = SpreadsheetApp.open(fileArray[0]);
-	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
-	const fullData = userPaperwork.getRange(1, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
-
-	return fullData;
-}
 /**
  *
  */
@@ -791,21 +769,21 @@ function initSheet(sheetID, name) {
 	var chits = 0;
 	var merits = 0;
 	var negCounsel = 0;
-	const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
-	for (var i = 1; i < pending.length; i++) {
-		if (pending[i][3] === name) {
-			Logger.log(pending[i]);
-			if (pending[i][4] === 'Chit') {
+	const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
+	for (var i = 1; i < data.length; i++) {
+		if (data[i][3] === name) {
+			Logger.log(data[i]);
+			if (data[i][4] === 'Chit') {
 				chits++;
-			} else if (pending[i][4] === 'Negative Counseling') {
+			} else if (data[i][4] === 'Negative Counseling') {
 				negCounsel++;
-			} else if (pending[i][4] === 'Merit') {
+			} else if (data[i][4] === 'Merit') {
 				merits++;
 			}
 			//ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 			// Exception: The parameters (number,number,number,null) don't match the method signature for SpreadsheetApp.Range.setValues.
-			userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, pending[i].length).setValues([pending[i]]);
-			totalPaperwork.getRange(totalPaperwork.getLastRow() + 1, 1, 1, pending[i].length).setValues([pending[i]]);
+			userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, data[i].length).setValues([data[i]]);
+			totalPaperwork.getRange(totalPaperwork.getLastRow() + 1, 1, 1, data[i].length).setValues([data[i]]);
 		}
 	}
 	const helpData = [];
@@ -1453,8 +1431,13 @@ function sendInitReminderEmail() {
 		<ol type="1">
 			<li>Open up the Main_Database file in the Paperwork Database folder that you can find in the google drive.</li>
 			<li>Start by updating the battaion structure for the semester. To do this click on the \"Battalion Structure\" tab and update the roles and groups columns. Then recreate the chain of command area. The Chain of command area sound update its structure as you fill out the chain of command. There are notes in the headers for each of the columns which will help you fill out those areas.</li>
-			<li>Then you should update the \"Battalion Members\" tab to include all of this semester's members. Make sure to update the classes of each member. </li>
+			<li>Then you should update the \"Battalion Members\" tab to include all of this semester's members. Make sure to update the classes of each member. A member will not appear in the system unless all 6 columns are completed. Also, make sure to check that all of the dropdown selections are vaild. If there is an invalid entree there will be a red arrow in the top right hand corner of the cell.</li>
+			<li>Next you should look at the \"Options\" tab. Make sure send emails is true. Update the policy on the number of buisness days to complete a chit and negative counseling, make sure it is a number. Then update your preferance for how the sheet will handle assignment permissions and assignment due dates when no due date is specified. Row 6 will update itself.</li>
+			<li>Now you can run the initialization function by clicking on the \"DB functions\" dropdown menu in the user interface at the top of the google sheet and clicking the \"Initialize\" option. The database has now been successfully setup for the semester!</li>
 		</ol>
+		<br><br>
+		If you would like to turn off this notification email for the semester because you aren't using the database. Go the the options tab and change the \"Turn off reminder\" option to \"true\"
+		<br><br>
 		<br><br>
 		Very respectfully,
 		<br>Timothy Bowes (tnbowes@gmail.com)
