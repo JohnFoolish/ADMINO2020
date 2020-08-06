@@ -18,10 +18,7 @@ function test() {}
 
 function onOpen() {
 	var ui = SpreadsheetApp.getUi();
-	ui.createMenu('DB Functions')
-		.addItem('Initialize', 'initForSemester')
-		//.addSeparator()
-		.addToUi();
+	ui.createMenu('DB Functions').addItem('Initialize', 'initForSemester').addToUi();
 }
 
 function initForSemester() {
