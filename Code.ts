@@ -649,9 +649,9 @@ function grabUsersData(dict) {
 		finalSubData.push(['Name:', key, 'Rank:', Object.freeze(indData.role), '', '', '', '', '', '']);
 		finalSubData.push(['Chits:', 'Negative Counselings:', 'Merits:', '', '', '', '', '', '', '']);
 		finalSubData.push([
-			dict[key]['Chits'].toString(),
-			dict[key]['Negative Counselings'].toString(),
-			dict[key]['Merits'].toString(),
+			dict[key]['Chit'],
+			dict[key]['Negative Counseling'],
+			dict[key]['Merit'],
 			'',
 			'',
 			'',
@@ -1439,6 +1439,7 @@ function sendInitReminderEmail() {
 		<br>
 		<br>To manage this system follow these general steps:
 		<ul>
+			<li>You should never edit any of the data in the "Data" tab. It is just there for your own referance.</li>
 			<li></li>
 		</ul>
 		<br>
