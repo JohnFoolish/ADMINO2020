@@ -636,7 +636,7 @@ function grabUsersData(dict) {
 	for (var idx = 0; idx < database.length; idx++) {
 		if (database[idx][3] in dict) {
 			dict[database[idx][3]]['Data'].push(database[idx]);
-			if (database[idx][7] !== 'Cancelled' || database[idx][7] !== 'Rejected') {
+			if (database[idx][7] !== 'Cancelled' && database[idx][7] !== 'Rejected') {
 				dict[database[idx][3]][database[idx][4]] += 1;
 			}
 		}
@@ -679,7 +679,6 @@ function grabUsersData(dict) {
 		finalSubData.push(['', '', '', '', '', '', '', '', '', '']);
 		finalSubData.push(['', '', '', '', '', '', '', '', '', '']);
 	}
-	Logger.log(finalSubData);
 	return finalSubData;
 }
 
@@ -787,11 +786,11 @@ function initSheet(sheetID, name) {
 	for (var i = 1; i < data.length; i++) {
 		if (data[i][3] === name) {
 			Logger.log(data[i]);
-			if (data[i][4] === 'Chit' && (data[i][7] != 'Cancelled' || data[i][7] != 'Rejected')) {
+			if (data[i][4] === 'Chit' && data[i][7] !== 'Cancelled' && data[i][7] !== 'Rejected') {
 				chits++;
-			} else if (data[i][4] === 'Negative Counseling' && (data[i][7] !== 'Cancelled' || data[i][7] !== 'Rejected')) {
+			} else if (data[i][4] === 'Negative Counseling' && data[i][7] !== 'Cancelled' && data[i][7] !== 'Rejected') {
 				negCounsel++;
-			} else if (data[i][4] === 'Merit' && (data[i][7] !== 'Cancelled' || data[i][7] !== 'Rejected')) {
+			} else if (data[i][4] === 'Merit' && data[i][7] !== 'Cancelled' && data[i][7] !== 'Rejected') {
 				merits++;
 			}
 			//ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
@@ -1476,3 +1475,5 @@ function getFullMemberData(name: string): { name: string; email: string; role: s
 	});
 	return fullData;
 }
+
+function dailyCheckToRemindPplOfPaperwork() {}
