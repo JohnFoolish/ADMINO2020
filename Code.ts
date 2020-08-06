@@ -32,7 +32,11 @@ function initForSemester() {
 function initSheetReminder() {
 	// Reset reminders and disable sheet if semester end has been reached
 	const now = new Date();
-	// if ()
+	if (
+		ssVariables.getRange(8, 2).getValue() == 'true' &&
+		((now.getMonth() === 11 && now.getDate() > 20) || (now.getMonth() === 4 && now.getDate() > 20))
+	) {
+	}
 }
 
 //Triggers when the submission form is submitted
@@ -610,7 +614,7 @@ function grabUsersData(dict) {
 
 	const database = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 	for (var idx = 0; idx < database.length; idx++) {
-		if (database[idx][1] in dict.keys) {
+		if (database[idx][1] in dict) {
 			dict[name]['Data'].push(database[idx]);
 			if (database[idx][7] != 'Cancelled' || database[idx][7] != 'Rejected') {
 				dict[name][database[idx][4]] += 1;
@@ -622,7 +626,7 @@ function grabUsersData(dict) {
 
 	//Format them into a nice little array to look at and write!
 	var indData;
-	for (const key in dict.keys) {
+	for (const key in dict) {
 		indData = getFullMemberData(key);
 		finalSubData.push(['Name:', key, 'Rank:', Object.freeze(indData.role)]);
 		finalSubData.push(['Chits:', 'Negative Counselings:', 'Merits:']);
