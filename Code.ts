@@ -545,6 +545,11 @@ function createGoogleFiles() {
 	}
 	if (finishInitMem.length === 0) {
 		ssVariables.getRange(6, 2).setValue('false');
+		MailApp.sendEmail({
+			to: Session.getEffectiveUser().getEmail(),
+			subject: 'The Paperwork Database was Successfully Enabled',
+			htmlBody: `ADMINO,<br><br>The paperwork database was successfully initialized. Have a good semester!<br><br>Very respectfully,<br>The ADMIN Department`,
+		});
 	}
 }
 /**
