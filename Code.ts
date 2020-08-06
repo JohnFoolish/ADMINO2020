@@ -1382,8 +1382,8 @@ function sendAssignerSuccessEmail(
 	MailApp.sendEmail({
 		to: assignerData.email,
 		subject: `${authority.length === 0 ? 'No' : authority.length} ${submitData.paperwork}${
-			authority.length > 1 ? 's' : ''
-		} were successfully assigned`,
+			authority.length > 1 || authority.length === 0 ? 's were' : ' was'
+		} successfully assigned`,
 		htmlBody: emailBody,
 	});
 }
