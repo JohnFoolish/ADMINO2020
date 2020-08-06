@@ -162,7 +162,7 @@ function myOnAssignmentSubmit() {
 		if (submitData.dateDue.getFullYear() !== 1945 && people.length !== 0) {
 			// Manipulate data
 			const outData = [];
-			const emailList = [];
+			const emailNameList = [];
 			const noAuthority = [];
 			const Authority = [];
 			for (let i = 0; i < people.length; i++) {
@@ -182,7 +182,7 @@ function myOnAssignmentSubmit() {
 					outData.push(tempOutData);
 
 					if (submitData.sendEmail) {
-						emailList.push(getIndividualEmail(people[i].name));
+						emailNameList.push(people[i].name);
 					}
 					Authority.push(people[i].name);
 				} else {
@@ -190,7 +190,7 @@ function myOnAssignmentSubmit() {
 				}
 			}
 			//Send ouot email notifiying everyone that their paperwork was assigned
-			sendAssigneesEmail(emailList, submitData);
+			sendAssigneesEmail(emailNameList, submitData);
 			//Email the assigner who was assigned it and who was not
 			sendAssignerSuccessEmail(assignerFullData, submitData, noAuthority, Authority);
 
@@ -1449,7 +1449,7 @@ function dateToROTCFormat(date: Date): string {
 /**
  *
  */
-function sendAssigneesEmail(emailList, data) {
+function sendAssigneesEmail(emailNameList, data) {
 	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;
 
@@ -1461,7 +1461,24 @@ function sendAssigneesEmail(emailList, data) {
 
 	const emailSubject = 'NROTC ADMIN Department: New ' + data.paperwork + ' due COB ' + date + '.';
 
-	const emailBody = `Team,
+	var correctedEmail = '';
+	let numEmailsBcc = 0;
+	let lastNameEntered = '';
+	for (let i = 0; i < emailNameList.length; i++) {
+		if (emailNameList[i] === null) {
+			continue;
+		} else {
+			lastNameEntered = emailNameList[i];
+			numEmailsBcc++;
+			if (correctedEmail === '') {
+				correctedEmail = getIndividualEmail(emailNameList[i]);
+			} else {
+				correctedEmail = getIndividualEmail(emailNameList[i]) + ',' + correctedEmail;
+			}
+		}
+	}
+
+	const emailBody = `${numEmailsBcc === 1 ? lastNameEntered : 'Team'},
 	<br>
 	<br>You have been assigned a ${data.paperwork}, because ${data.reason}. It is due COB ${date}. ${
 		data.pdfLink === '' ? '' : 'You can find the paperwork to complete here: ' + data.pdfLink
@@ -1470,19 +1487,7 @@ function sendAssigneesEmail(emailList, data) {
 	<br>Very respectfully,
 	<br>${data.assigner}`;
 
-	var correctedEmail = '';
-	for (let i = 0; i < emailList.length; i++) {
-		if (emailList[i] === null) {
-			continue;
-		} else {
-			if (correctedEmail === '') {
-				correctedEmail = emailList[i];
-			} else {
-				correctedEmail = emailList[i] + ',' + correctedEmail;
-			}
-		}
-	}
-	Logger.log(emailList, emailSender);
+	Logger.log(emailNameList, emailSender);
 	MailApp.sendEmail({
 		to: emailSender,
 		bcc: correctedEmail,
