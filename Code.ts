@@ -623,7 +623,6 @@ function updateSubordinateTab(name) {
 	subPaperwork.getRange(2, 1, subPaperwork.getLastRow(), subPaperwork.getLastColumn()).clearContent();
 	if (subordinateData.length > 0) {
 		Logger.log(subordinateData[0]);
-		Logger.log(subordinateData.length);
 		subPaperwork.getRange(2, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
 	}
 }
@@ -651,7 +650,21 @@ function grabUsersData(dict) {
 		indData = getFullMemberData(key);
 		finalSubData.push(['Name:', key, 'Rank:', Object.freeze(indData.role), '', '', '', '', '', '']);
 		finalSubData.push(['Chits:', 'Negative Counselings:', 'Merits:', '', '', '', '', '', '', '']);
-		finalSubData.push(dict[key]['Data']);
+		finalSubData.push([
+			dict[key]['Chits'],
+			dict[key]['Negative Counselings'],
+			dict[key]['Merits'],
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+		]);
+		dict[key]['Data'].array.forEach((assignment) => {
+			finalSubData.push(assignment);
+		});
 		finalSubData.push(['', '', '', '', '', '', '', '', '', '']);
 		finalSubData.push(['', '', '', '', '', '', '', '', '', '']);
 	}
@@ -1437,7 +1450,11 @@ function sendInitReminderEmail() {
 		<br><br>
 		The Paperwork database has not yet been initialized for the semester.
 		<br>To do this you will need to follow the following steps:
-		<br>1. 
+		<ol type="1">
+			<li>Open up the Main_Database file in the Paperwork Database folder that you can find in the google drive.</li>
+			<li>Start by updating the battaion structure for the semester. To do this click on the \"Battalion Structure\" tab and update the roles and groups columns. Then recreate the chain of command area. The Chain of command area sound update its structure as you fill out the chain of command. There are notes in the headers for each of the columns which will help you fill out those areas.</li>
+			<li>Then you should update the \"Battalion Members\" tab to include all of this semester's members. Make sure to update the classes of each member. </li>
+		</ol>
 		<br><br>
 		Very respectfully,
 		<br>Timothy Bowes (tnbowes@gmail.com)
