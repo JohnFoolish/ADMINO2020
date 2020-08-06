@@ -726,7 +726,7 @@ function grabUsersData(dict) {
 		finalSubData.push([
 			'Chits: ' + dict[key]['Chit'].toString(),
 			'Negative Counselings: ' + dict[key]['Negative Counseling'].toString(),
-			'Merits: ' + dict[key]['Merit'],
+			'Merits: ' + dict[key]['Merit'].toString(),
 			'',
 			'',
 			'',
