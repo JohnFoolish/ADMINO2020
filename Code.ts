@@ -723,11 +723,10 @@ function grabUsersData(dict) {
 			'',
 			'',
 		]);
-		finalSubData.push(['Chits:', 'Negative Counselings:', 'Merits:', '', '', '', '', '', '', '']);
 		finalSubData.push([
-			dict[key]['Chit'],
-			dict[key]['Negative Counseling'],
-			dict[key]['Merit'],
+			'Chits: ' + dict[key]['Chit'].toString(),
+			'Negative Counselings: ' + dict[key]['Negative Counseling'].toString(),
+			'Merits: ' + dict[key]['Merit'],
 			'',
 			'',
 			'',
