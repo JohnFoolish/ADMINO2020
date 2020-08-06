@@ -180,7 +180,6 @@ function myOnAssignmentSubmit() {
 					tempOutData[8] = submitData.reason; // Reason for paperwork
 					tempOutData[9] = submitData.pdfLink; //Link to paperwork
 					outData.push(tempOutData);
-					dynamicSheetUpdate(tempOutData);
 
 					if (submitData.sendEmail) {
 						emailList.push(getIndividualEmail(people[i].name));
@@ -200,6 +199,10 @@ function myOnAssignmentSubmit() {
 
 			// Write to Pending Paperwork
 			ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+
+			outData.forEach((row) => {
+				dynamicSheetUpdate(row);
+			});
 		} else {
 			sendAssignerFailEmail(
 				assignerFullData,
