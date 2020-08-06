@@ -696,9 +696,11 @@ function grabUsersData(dict) {
 	const database = ssData.getRange(2, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 	for (var idx = 0; idx < database.length; idx++) {
 		if (database[idx][3] in dict) {
-			dict[database[idx][3]]['Data'].push(database[idx]);
 			if (database[idx][7] !== 'Cancelled' && database[idx][7] !== 'Rejected') {
 				dict[database[idx][3]][database[idx][4]] += 1;
+			}
+			if (database[idx][7] !== 'Cancelled') {
+				dict[database[idx][3]]['Data'].push(database[idx]);
 			}
 		}
 	}
@@ -809,8 +811,20 @@ function dynamicSheetUpdate(tempData) {
 		chits = 0;
 	}
 
+	const name = tempData[3];
+
+	if (tempData[7] !== 'Cancelled') {
+		tempData = ['', '', '', '', '', '', '', '', ''];
+	}
 	userPaperwork.getRange(lineAddition, 1, 1, tempData.length).setValues([tempData]);
 	totalPaperwork.getRange(totalLineAddition, 1, 1, tempData.length).setValues([tempData]);
+
+	if (userPaperwork.getLastRow() > 6) {
+		userPaperwork.getRange(6, 1, userPaperwork.getLastRow() - 6, userPaperwork.getLastColumn()).sort(1);
+	}
+	if (totalPaperwork.getLastRow() > 6) {
+		totalPaperwork.getRange(6, 1, totalPaperwork.getLastRow() - 6, totalPaperwork.getLastColumn()).sort(1);
+	}
 
 	const helpData = [];
 	helpData.push(chits);
@@ -823,7 +837,7 @@ function dynamicSheetUpdate(tempData) {
 	totalPaperwork.getRange(1, 1, 3, 3).setValues(header);
 	Logger.log(header);
 
-	const superiorList = getSuperiors(tempData[3]);
+	const superiorList = getSuperiors(name);
 	superiorList.forEach((superior) => {
 		updateSubordinateTab(superior);
 	});
@@ -855,10 +869,10 @@ function initSheet(sheetID, name) {
 			} else if (data[i][4] === 'Merit' && data[i][7] !== 'Cancelled' && data[i][7] !== 'Rejected') {
 				merits++;
 			}
-			//ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
-			// Exception: The parameters (number,number,number,null) don't match the method signature for SpreadsheetApp.Range.setValues.
-			userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, data[i].length).setValues([data[i]]);
-			totalPaperwork.getRange(totalPaperwork.getLastRow() + 1, 1, 1, data[i].length).setValues([data[i]]);
+			if (data[i][7] !== 'Cancelled') {
+				userPaperwork.getRange(userPaperwork.getLastRow() + 1, 1, 1, data[i].length).setValues([data[i]]);
+				totalPaperwork.getRange(totalPaperwork.getLastRow() + 1, 1, 1, data[i].length).setValues([data[i]]);
+			}
 		}
 	}
 	const helpData = [];
