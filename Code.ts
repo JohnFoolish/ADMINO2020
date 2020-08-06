@@ -648,7 +648,18 @@ function grabUsersData(dict) {
 	var indData;
 	for (const key in dict) {
 		indData = getFullMemberData(key);
-		finalSubData.push(['Name:', key, 'Rank:', Object.freeze(indData.role), '', '', '', '', '', '']);
+		finalSubData.push([
+			'Name:',
+			key,
+			'Rank:',
+			Object.freeze(indData.role) + ', ' + Object.freeze(indData.group),
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+		]);
 		finalSubData.push(['Chits:', 'Negative Counselings:', 'Merits:', '', '', '', '', '', '', '']);
 		finalSubData.push([
 			dict[key]['Chit'],
