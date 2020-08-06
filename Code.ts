@@ -16,15 +16,47 @@ const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6
 
 function test() {}
 
+function onOpen() {
+	var ui = SpreadsheetApp.getUi();
+	ui.createMenu('DB Functions')
+		.addItem('Initialize', 'initForSemester')
+		//.addSeparator()
+		.addToUi();
+}
+
+function initForSemester() {
+	ssVariables.getRange(6, 2).setValue('true');
+	ssOptions.getRange(6, 2).setValue('true');
+}
+
+function initSheetReminder() {
+	// Reset reminders and disable sheet if semester end has been reached
+	const now = new Date();
+	// if ()
+}
+
 //Triggers when the submission form is submitted
 function myOnSubmit() {
-	if (ssVariables.getRange(1, 2).getValue().toString() !== ssAssignment.getLastRow().toString()) {
-		myOnAssignmentSubmit();
-		ssVariables.getRange(1, 2).setValue(ssAssignment.getLastRow());
-	}
-	if (ssVariables.getRange(2, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
-		myOnFormTurnedInSubmit();
-		ssVariables.getRange(2, 2).setValue(ssTurnedIn.getLastRow());
+	if (ssVariables.getRange(8, 2).getValue() == 'true') {
+		if (ssVariables.getRange(1, 2).getValue().toString() !== ssAssignment.getLastRow().toString()) {
+			myOnAssignmentSubmit();
+			ssVariables.getRange(1, 2).setValue(ssAssignment.getLastRow());
+		}
+		if (ssVariables.getRange(2, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
+			myOnFormTurnedInSubmit();
+			ssVariables.getRange(2, 2).setValue(ssTurnedIn.getLastRow());
+		}
+	} else {
+		let submitterName = '';
+		if (ssVariables.getRange(1, 2).getValue().toString() !== ssAssignment.getLastRow().toString()) {
+			submitterName = ssAssignment.getRange(ssAssignment.getLastRow(), 2).getValue();
+			ssVariables.getRange(1, 2).setValue(ssAssignment.getLastRow());
+		}
+		if (ssVariables.getRange(2, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
+			submitterName = ssTurnedIn.getRange(ssTurnedIn.getLastRow(), 2).getValue();
+			ssVariables.getRange(2, 2).setValue(ssTurnedIn.getLastRow());
+		}
+		sendSheetNotEnabledEmail(submitterName);
 	}
 }
 
@@ -63,7 +95,7 @@ function myOnAssignmentSubmit() {
 				submitData.dateAssigned = dataPairs[1][i];
 			} else if (dataPairs[0][i] === 'Date Due') {
 				submitData.dateDue = specificDueDateLengthCheck(submitData.paperwork, submitData.dateAssigned, dataPairs[1][i]);
-			} else if (dataPairs[0][i] === 'Send Initial Email Notification') {
+			} else if (dataPairs[0][i] === 'Send Assignment Email Notification') {
 				submitData.sendEmail = dataPairs[1][i] === 'No' ? false : true;
 			} else if (dataPairs[0][i] === 'Upload your form as a PDF here:') {
 				submitData.pdfLink = dataPairs[1][i];
@@ -496,11 +528,10 @@ function createGoogleFiles() {
 		ssVariables.getRange(6, 2).setValue('false');
 	}
 }
-
+/**
+ *
+ */
 function findIndSheet(name) {
-	/**
-	 *
-	 */
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	var files = root.getFilesByName(name + ', GT NROTC');
 	const fileList = [];
@@ -554,20 +585,55 @@ function updateSubordinateTab(name) {
 	var indData;
 	// here get each of the subordinates data arrays
 	//for each something goes here
+	var dict = {};
 	subList.forEach((subName) => {
-		indData = grabUserData(subName);
-		blankLine = Array(indData[indData.length - 1].length);
-		indData.splice(3, 2);
-		indData.push(blankLine);
-		indData.push(blankLine);
-		indData.forEach((row) => subordinateData.push(row));
+		dict[subName] = { Merit: 0, Chit: 0, 'Negative Counseling': 0, Data: [] };
+		//indData = grabUserData(subName);
+		//blankLine = Array(indData[indData.length - 1].length);
+		//indData.splice(3, 2);
+		//indData.push(blankLine);
+		//indData.push(blankLine);
+		//indData.forEach((row) => subordinateData.push(row));
 	});
+	subordinateData = grabUsersData(dict);
 	Logger.log('total subordinate data is: ', subordinateData.length);
 	subPaperwork.getRange(2, 1, subPaperwork.getLastRow(), subPaperwork.getLastColumn()).clearContent();
 	if (subordinateData.length > 0) {
 		subPaperwork.getRange(2, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
 	}
 }
+
+function grabUsersData(dict) {
+	Logger.log('Entering grabUsersData!');
+	Logger.log('dictionary is: ', dict);
+	var finalSubData = [];
+
+	const database = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
+	for (var idx = 0; idx < database.length; idx++) {
+		if (database[idx][1] in dict.keys()) {
+			dict[name]['Data'].push(database[idx]);
+			if (database[idx][7] != 'Cancelled' || database[idx][7] != 'Rejected') {
+				dict[name][database[idx][4]] += 1;
+			}
+		}
+	}
+
+	//Now we should have a fully populated dictionary of values
+
+	//Format them into a nice little array to look at and write!
+	var indData;
+	for (const key in dict.keys()) {
+		indData = getFullMemberData(key);
+		finalSubData.push(['Name:', key, 'Rank:', Object.freeze(indData.role)]);
+		finalSubData.push(['Chits:', 'Negative Counselings:', 'Merits:']);
+		finalSubData.push(dict[key]['Data']);
+		finalSubData.push(['', '', '', '', '', '', '', '', '', '']);
+		finalSubData.push(['', '', '', '', '', '', '', '', '', '']);
+	}
+
+	return finalSubData;
+}
+
 /**
  *
  */
@@ -644,6 +710,13 @@ function dynamicSheetUpdate(tempData) {
 		negCounsel += change;
 	} else if (tempData[4] === 'Merit') {
 		merits += change;
+	}
+	if (merits < 0) {
+		merits = 0;
+	} else if (negCounsel < 0) {
+		negCounsel = 0;
+	} else if (chits < 0) {
+		chits = 0;
 	}
 
 	userPaperwork.getRange(lineAddition, 1, 1, tempData.length).setValues([tempData]);
@@ -742,7 +815,7 @@ function updateFormGroups() {
 	item.setRows(rowItems);
 	item.setColumns(colItems);
 	item.setHelpText(
-		'Select the groups/s receiving the paperwork. This question has smart group selection and will assign the paperwork to anyone who qualifies for any of the groups selected.'
+		'Select any group/s that you would like to assign paperwork. Think: the _____(row)/s of the _______(column).'
 	);
 
 	// Update Reciever individuals
@@ -755,7 +828,7 @@ function updateFormGroups() {
 	const colItems2 = ['Individual'];
 	item3.setRows(rowItems2);
 	item3.setColumns(colItems2);
-	item3.setHelpText('Select the individual/s receiving the paperwork.');
+	item3.setHelpText('Select the individual/s receiving the paperwork not already selected by group selection.');
 
 	// Reset form response
 	if (ssAssignment.getLastColumn() > 150) {
@@ -766,15 +839,16 @@ function updateFormGroups() {
 		form.deleteAllResponses();
 		ss.deleteSheet(ssAssignment);
 		form.setDestination(destType, destID);
-	}
 
-	// Find sheet and rename to assignmnet
-	ss.getSheets().forEach((sheet) => {
-		if (sheet.getName().substring(0, 14) === 'Form Responses') {
-			sheet.setName('Assignment Responses');
-			ssAssignment = sheet;
-		}
-	});
+		// Find sheet and rename to assignmnet
+		ss.getSheets().forEach((sheet) => {
+			if (sheet.getName().substring(0, 14) === 'Form Responses') {
+				sheet.setName('Assignment Responses');
+				ssAssignment = sheet;
+				ssAssignment.hideSheet();
+			}
+		});
+	}
 
 	//Update the form submission page
 	const subFormItem = subForm.getItems();
@@ -1318,6 +1392,14 @@ function sendAssigneesEmail(emailList, data) {
 		bcc: correctedEmail,
 		subject: emailSubject,
 		htmlBody: emailBody,
+	});
+}
+
+function sendSheetNotEnabledEmail(submitterEmail) {
+	MailApp.sendEmail({
+		to: submitterEmail,
+		subject: 'The Paperwork Database is Currently Disabled',
+		htmlBody: '',
 	});
 }
 
