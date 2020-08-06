@@ -27,24 +27,32 @@ function onOpen() {
 function initForSemester() {
 	ssVariables.getRange(6, 2).setValue('true');
 	ssOptions.getRange(6, 2).setValue('true');
+	ssVariables.getRange(8, 2).setValue('true');
 }
 
 function initSheetReminder() {
 	// Reset reminders and disable sheet if semester end has been reached
 	const now = new Date();
-	const lastEnabled = new Date(ssVariables.getRange(9, 2).getValue().toString());
 	if (ssVariables.getRange(8, 2).getValue() == 'true') {
-		const resetSheet = function () {};
+		const resetSheet = function () {
+			ssVariables.getRange(8, 2).setValue('false');
+			ssOptions.getRange(6, 2).setValue('false');
+		};
 
 		// Reset for fall
-		if (!(lastEnabled.getMonth() > 6 && lastEnabled.getFullYear() === now.getFullYear()) && now.getMonth() > 6) {
+		if (now.getMonth() === 6) {
 			resetSheet();
 		}
 
 		// Reset for spring
-		if (!(lastEnabled.getMonth() === 11 && lastEnabled.getFullYear() === now.getFullYear()) && now.getMonth() > 0) {
+		if (now.getMonth() === 11 && now.getDate() > 20) {
 			resetSheet();
 		}
+	}
+
+	// Send reminder if not disabled
+	if (ssOptions.getRange(6, 2).getValue() == 'false') {
+		sendInitReminderEmail();
 	}
 }
 
@@ -600,8 +608,9 @@ function updateSubordinateTab(name) {
 	//for each something goes here fda
 
 	var dict = {};
+	let dataList = [];
 	subList.forEach((subName) => {
-		dict[subName] = { Merit: 0, Chit: 0, 'Negative Counseling': 0, Data: Object.freeze([]) };
+		dict[subName] = { Merit: 0, Chit: 0, 'Negative Counseling': 0, Data: JSON.parse(JSON.stringify(dataList)) };
 		//indData = grabUserData(subName);
 		//blankLine = Array(indData[indData.length - 1].length);
 		//indData.splice(3, 2);
@@ -622,10 +631,13 @@ function grabUsersData(dict) {
 	Logger.log('dictionary is: ', dict);
 	var finalSubData = [];
 
-	const database = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
+	const database = ssData.getRange(2, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 	for (var idx = 0; idx < database.length; idx++) {
 		if (database[idx][1] in dict) {
-			dict[database[idx][1]]['Data'].push([database[idx]]);
+			Logger.log(database[idx]);
+			Logger.log(dict[database[idx][1]]);
+			Logger.log(dict[database[idx][1]]['Data']);
+			dict[database[idx][1]]['Data'].push(database[idx]);
 			if (database[idx][7] != 'Cancelled' || database[idx][7] != 'Rejected') {
 				Logger.log(dict[database[idx][1]][database[idx][4]], [database[idx][4]]);
 				dict[database[idx][1]][database[idx][4]] += 1;
@@ -1416,6 +1428,14 @@ function sendSheetNotEnabledEmail(submitterName) {
 		to: getIndividualEmail(submitterName),
 		subject: 'The Paperwork Database is Currently Disabled',
 		htmlBody: `${submitterName},<br><br>The Paperwork database has not yet been initialized for the semester. Please reach out to your ADMIN Department to initialize the database.<br><br>Very respectfully,<br>The ADMIN Department`,
+	});
+}
+
+function sendInitReminderEmail() {
+	MailApp.sendEmail({
+		to: '',
+		subject: 'The Paperwork Database is Currently Disabled',
+		htmlBody: `ADMINO and AADMINO,<br><br>The Paperwork database has not yet been initialized for the semester. Please reach out to your ADMIN Department to initialize the database.<br><br>Very respectfully,<br>The ADMIN Department`,
 	});
 }
 
