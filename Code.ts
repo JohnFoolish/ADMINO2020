@@ -1426,8 +1426,8 @@ function sendInitReminderEmail() {
 		to: Session.getEffectiveUser().getEmail(),
 		subject: 'The Paperwork Database is Currently Disabled',
 		htmlBody: `ADMINO and AADMINO,
-		<br><br>
-		The Paperwork database has not yet been initialized for the semester.
+		<br>
+		<br>The Paperwork database has not yet been initialized for the semester.
 		<br>To do this you will need to follow the following steps:
 		<ol type="1">
 			<li>Open up the Main_Database file in the Paperwork Database folder that you can find in the google drive.</li>
@@ -1440,11 +1440,13 @@ function sendInitReminderEmail() {
 		<br>To manage this system follow these general steps:
 		<ul>
 			<li>You should never edit any of the data in the "Data" tab. It is just there for your own referance.</li>
-			<li></li>
+			<li>The pending paperwork tab will hold all of the paperwork that still needs to be processed. You can change the status of the paperwork here and it will update everywhere.</li>
+			<li>The "Digital Turn In Box" will hold all of the paperwork that has been turned via the google form.</li>
 		</ul>
 		<br>
-		<br>If you would like to turn off this notification email for the semester because you aren't using the database. Go the the options tab and change the "Turn off reminder" option to "true".
+		<br>If you would like to turn off this notification email for the semester because you aren't using the database. Go the the "Options" tab and change the "Turn off reminder" option to "true".
 		<br>
+		<br>If you have any problems or questions please feel free to reach out to us.
 		<br>
 		Very respectfully,
 		<br>Timothy Bowes (tnbowes@gmail.com)
