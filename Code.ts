@@ -35,6 +35,7 @@ function initSheetReminder() {
 	const now = new Date();
 	if (ssVariables.getRange(8, 2).getValue() == 'true') {
 		const resetSheet = function () {
+			wipeGoogleFiles();
 			ssVariables.getRange(8, 2).setValue('false');
 			ssOptions.getRange(6, 2).setValue('false');
 		};
@@ -648,9 +649,9 @@ function grabUsersData(dict) {
 		finalSubData.push(['Name:', key, 'Rank:', Object.freeze(indData.role), '', '', '', '', '', '']);
 		finalSubData.push(['Chits:', 'Negative Counselings:', 'Merits:', '', '', '', '', '', '', '']);
 		finalSubData.push([
-			dict[key]['Chits'],
-			dict[key]['Negative Counselings'],
-			dict[key]['Merits'],
+			dict[key]['Chits'].toString(),
+			dict[key]['Negative Counselings'].toString(),
+			dict[key]['Merits'].toString(),
 			'',
 			'',
 			'',
@@ -773,11 +774,11 @@ function initSheet(sheetID, name) {
 	for (var i = 1; i < data.length; i++) {
 		if (data[i][3] === name) {
 			Logger.log(data[i]);
-			if (data[i][4] === 'Chit') {
+			if (data[i][4] === 'Chit' && (data[i][7] != 'Cancelled' || data[i][7] != 'Rejected')) {
 				chits++;
-			} else if (data[i][4] === 'Negative Counseling') {
+			} else if (data[i][4] === 'Negative Counseling' && (data[i][7] != 'Cancelled' || data[i][7] != 'Rejected')) {
 				negCounsel++;
-			} else if (data[i][4] === 'Merit') {
+			} else if (data[i][4] === 'Merit' && (data[i][7] != 'Cancelled' || data[i][7] != 'Rejected')) {
 				merits++;
 			}
 			//ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
@@ -1430,15 +1431,20 @@ function sendInitReminderEmail() {
 		<br>To do this you will need to follow the following steps:
 		<ol type="1">
 			<li>Open up the Main_Database file in the Paperwork Database folder that you can find in the google drive.</li>
-			<li>Start by updating the battaion structure for the semester. To do this click on the \"Battalion Structure\" tab and update the roles and groups columns. Then recreate the chain of command area. The Chain of command area sound update its structure as you fill out the chain of command. There are notes in the headers for each of the columns which will help you fill out those areas.</li>
-			<li>Then you should update the \"Battalion Members\" tab to include all of this semester's members. Make sure to update the classes of each member. A member will not appear in the system unless all 6 columns are completed. Also, make sure to check that all of the dropdown selections are vaild. If there is an invalid entree there will be a red arrow in the top right hand corner of the cell.</li>
-			<li>Next you should look at the \"Options\" tab. Make sure send emails is true. Update the policy on the number of buisness days to complete a chit and negative counseling, make sure it is a number. Then update your preferance for how the sheet will handle assignment permissions and assignment due dates when no due date is specified. Row 6 will update itself.</li>
-			<li>Now you can run the initialization function by clicking on the \"DB functions\" dropdown menu in the user interface at the top of the google sheet and clicking the \"Initialize\" option. The database has now been successfully setup for the semester!</li>
+			<li>Start by updating the battaion structure for the semester. To do this click on the "Battalion Structure" tab and update the roles and groups columns. Then recreate the chain of command area. The Chain of command area sound update its structure as you fill out the chain of command. There are notes in the headers for each of the columns which will help you fill out those areas.</li>
+			<li>Then you should update the "Battalion Members" tab to include all of this semester's members. Make sure to update the classes of each member. A member will not appear in the system unless all 6 columns are completed. Also, make sure to check that all of the dropdown selections are vaild. If there is an invalid entree there will be a red arrow in the top right hand corner of the cell.</li>
+			<li>Next you should look at the "Options" tab. Make sure send emails is true. Update the policy on the number of buisness days to complete a chit and negative counseling, make sure it is a number. Then update your preferance for how the sheet will handle assignment permissions and assignment due dates when no due date is specified. Row 6 will update itself.</li>
+			<li>Now you can run the initialization function by clicking on the "DB functions" dropdown menu in the user interface at the top of the google sheet and clicking the "Initialize" option. The database has now been successfully setup for the semester!</li>
 		</ol>
-		<br><br>
-		If you would like to turn off this notification email for the semester because you aren't using the database. Go the the options tab and change the \"Turn off reminder\" option to \"true\"
-		<br><br>
-		<br><br>
+		<br>
+		<br>To manage this system follow these general steps:
+		<ul>
+			<li></li>
+		</ul>
+		<br>
+		<br>If you would like to turn off this notification email for the semester because you aren't using the database. Go the the options tab and change the "Turn off reminder" option to "true".
+		<br>
+		<br>
 		Very respectfully,
 		<br>Timothy Bowes (tnbowes@gmail.com)
 		<br>John Lewis Corker (johnlcorker88@gmail.com)`,
