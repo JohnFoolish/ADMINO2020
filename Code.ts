@@ -30,7 +30,7 @@ function initForSemester() {
 function initSheetReminder() {
 	// Reset reminders and disable sheet if semester end has been reached
 	const now = new Date();
-	if (ssVariables.getRange(8, 2).getValue() == 'true') {
+	if (ssVariables.getRange(8, 2).getValue().toString() == 'true') {
 		const resetSheet = function () {
 			wipeGoogleFiles();
 			ssVariables.getRange(8, 2).setValue('false');
@@ -49,14 +49,14 @@ function initSheetReminder() {
 	}
 
 	// Send reminder if not disabled
-	if (ssOptions.getRange(6, 2).getValue() == 'false') {
+	if (ssOptions.getRange(6, 2).getValue().toString() == 'false') {
 		sendInitReminderEmail();
 	}
 }
 
 //Triggers when the submission form is submitted
 function myOnSubmit() {
-	if (ssVariables.getRange(8, 2).getValue() == 'true') {
+	if (ssVariables.getRange(8, 2).getValue().toString() == 'true') {
 		if (ssVariables.getRange(1, 2).getValue().toString() !== ssAssignment.getLastRow().toString()) {
 			myOnAssignmentSubmit();
 			ssVariables.getRange(1, 2).setValue(ssAssignment.getLastRow());
