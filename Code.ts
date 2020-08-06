@@ -35,10 +35,12 @@ function initSheetReminder() {
 	const lastEnabled = new Date(ssVariables.getRange(9, 2).getValue().toString());
 	if (ssVariables.getRange(8, 2).getValue() == 'true') {
 		// Reset for fall
-		if (lastEnabled.getMonth() > 6 && lastEnabled.getFullYear() === now.getFullYear()) {
+		if (!(lastEnabled.getMonth() > 6 && lastEnabled.getFullYear() === now.getFullYear()) && now.getMonth() > 6) {
 		}
 
 		// Reset for spring
+		if (!(lastEnabled.getMonth() > 0 && lastEnabled.getFullYear() === now.getFullYear()) && now.getMonth() > 0) {
+		}
 	}
 }
 
@@ -595,7 +597,7 @@ function updateSubordinateTab(name) {
 
 	var dict = {};
 	subList.forEach((subName) => {
-		dict[subName] = { Merit: 0, Chit: 0, 'Negative Counseling': 0, Data: [] };
+		dict[subName] = { Merit: 0, Chit: 0, 'Negative Counseling': 0, Data: Object.freeze([]) };
 		//indData = grabUserData(subName);
 		//blankLine = Array(indData[indData.length - 1].length);
 		//indData.splice(3, 2);
@@ -619,7 +621,7 @@ function grabUsersData(dict) {
 	const database = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 	for (var idx = 0; idx < database.length; idx++) {
 		if (database[idx][1] in dict) {
-			dict[database[idx][1]]['Data'].push(database[idx]);
+			dict[database[idx][1]]['Data'].push([database[idx]]);
 			if (database[idx][7] != 'Cancelled' || database[idx][7] != 'Rejected') {
 				dict[database[idx][1]][database[idx][4]] += 1;
 			}
@@ -630,6 +632,7 @@ function grabUsersData(dict) {
 
 	//Format them into a nice little array to look at and write!
 	var indData;
+	Logger.log(dict);
 	for (const key in dict) {
 		indData = getFullMemberData(key);
 		finalSubData.push(['Name:', key, 'Rank:', Object.freeze(indData.role), '', '', '', '', '', '']);
