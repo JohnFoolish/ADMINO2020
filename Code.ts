@@ -1420,6 +1420,7 @@ function sendSheetNotEnabledEmail(submitterName) {
 }
 
 function sendInitReminderEmail() {
+	Logger.log('Email sent to:' + Session.getEffectiveUser().getEmail());
 	MailApp.sendEmail({
 		to: Session.getEffectiveUser().getEmail(),
 		subject: 'The Paperwork Database is Currently Disabled',
