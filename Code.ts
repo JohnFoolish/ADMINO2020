@@ -599,6 +599,18 @@ function createGoogleFiles() {
 /**
  *
  */
+function updateAllSubordinates() {
+	const finishInitMem = getGroups(true, false);
+	for (let i = finishInitMem.length - 1; i >= 0; i--) {
+		updateSubordinateTab(finishInitMem[i]);
+		finishInitMem.splice(i, 1);
+		ssVariables.getRange(7, 2).setValue(finishInitMem.join('|'));
+	}
+}
+
+/**
+ *
+ */
 function findIndSheet(name) {
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	var files = root.getFilesByName(name + ', GT NROTC');
@@ -1438,7 +1450,7 @@ function sendAssigneesEmail(emailList, data) {
 	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;
 
-	const dateDemo = data.dueDate.toString().split(' ', 4);
+	const dateDemo = data.dateDue.toString().split(' ', 4);
 
 	const date = dateDemo[0] + ', ' + dateDemo[2] + dateDemo[1].toUpperCase() + dateDemo[3];
 
@@ -1446,25 +1458,15 @@ function sendAssigneesEmail(emailList, data) {
 
 	const emailSubject = 'NROTC ADMIN Department: New ' + data.paperwork + ' due COB ' + date + '.';
 
-	const emailBody =
-		"<h2 'style=color: #5e9ca0;'> You have been assigned a " +
-		data.paperwork +
-		' from ' +
-		data.assigner +
-		'.</h2>' +
-		'<p> The reason is the following: ' +
-		data.reason +
-		'.</p> <p> You must turn this form in by COB on ' +
-		date +
-		'.</p>' +
-		'<p> If you have any questions regarding the validity of the ' +
-		data.paperwork +
-		', please contact the assignee. </p>' +
-		'<p> You can find the paperwork to complete here: ' +
-		data.pdfLink +
-		'</p>';
+	const emailBody = `Team,
+	<br>
+	<br>You have been assigned a ${data.paperwork}, because ${data.reason}. It is due COB ${date}. ${
+		data.pdfLink === '' ? '' : 'You can find the paperwork to complete here: ' + data.pdfLink
+	}
+	<br>
+	<br>Very respectfully,
+	<br>${data.assigner}`;
 
-	//emailList.filter((email) => email !== '');
 	var correctedEmail = '';
 	for (let i = 0; i < emailList.length; i++) {
 		if (emailList[i] === null) {
