@@ -14,19 +14,26 @@ const ssPendingCache = ss.getSheetByName('PendingChangedCache');
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
 const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit');
 
-function test() {}
-
+/**
+ *
+ */
 function myOnOpen(e) {
 	var ui = SpreadsheetApp.getUi();
 	ui.createMenu('DB Functions').addItem('Initialize', 'initForSemester').addToUi();
 }
 
+/**
+ *
+ */
 function initForSemester() {
 	ssVariables.getRange(6, 2).setValue('true');
 	ssOptions.getRange(6, 2).setValue('true');
 	ssVariables.getRange(8, 2).setValue('true');
 }
 
+/**
+ *
+ */
 function initSheetReminder() {
 	// Reset reminders and disable sheet if semester end has been reached
 	const now = new Date();
@@ -54,6 +61,9 @@ function initSheetReminder() {
 	}
 }
 
+/**
+ *
+ */
 //Triggers when the submission form is submitted
 function myOnSubmit() {
 	if (ssVariables.getRange(8, 2).getValue().toString() == 'true') {
@@ -79,6 +89,9 @@ function myOnSubmit() {
 	}
 }
 
+/**
+ *
+ */
 function myOnAssignmentSubmit() {
 	if (ssData.getLastRow() > 0) {
 		// Get newly inserted data
@@ -198,6 +211,9 @@ function myOnAssignmentSubmit() {
 	}
 }
 
+/**
+ *
+ */
 function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifiedDueDate): Date {
 	let out = specifiedDueDate;
 	if (paperwork === 'Chit') {
@@ -227,6 +243,9 @@ function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifi
 	return out;
 }
 
+/**
+ *
+ */
 function adjustDateForWeekends(currentDate, daysToAddToDate): number {
 	let daysAdded = 0;
 	const maniputateDate = new Date(currentDate.toString());
@@ -243,6 +262,9 @@ function adjustDateForWeekends(currentDate, daysToAddToDate): number {
 	return daysAdded;
 }
 
+/**
+ *
+ */
 //This function runs whenever the new paperwork submission form is submitted.
 function myOnFormTurnedInSubmit() {
 	// Get data from linked sheet to use
@@ -257,6 +279,9 @@ function myOnFormTurnedInSubmit() {
 	sortDigitalBox();
 }
 
+/**
+ *
+ */
 function sortDigitalBox() {
 	if (ssDigitalBox.getLastRow() > 1) {
 		ssDigitalBox.getRange(2, 1, ssDigitalBox.getLastRow() - 1, ssDigitalBox.getLastColumn()).sort(1);
@@ -264,6 +289,9 @@ function sortDigitalBox() {
 	}
 }
 
+/**
+ *
+ */
 function myOnEdit() {
 	if (ss.getActiveCell().getSheet().getName() === 'Battalion Members') {
 		updateBattalionMembersJSON();
@@ -310,6 +338,9 @@ function myOnEdit() {
 	}
 }
 
+/**
+ *
+ */
 function updateSheetsFromPendingCache() {
 	if (ssPendingCache.getLastRow() > 0) {
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
@@ -333,6 +364,9 @@ function updateSheetsFromPendingCache() {
 	}
 }
 
+/**
+ *
+ */
 function chainOfCommandStructureUpdater() {
 	if (ssBattalionStructure.getLastRow() > 1) {
 		// Create list of all groups remaining
@@ -472,6 +506,9 @@ function chainOfCommandStructureUpdater() {
 	}
 }
 
+/**
+ *
+ */
 function checkForUniqueRolesAndGroups() {
 	const data = ssBattalionStructure.getRange(2, 1, ssBattalionStructure.getLastRow(), 2).getValues();
 	const alreadyRoles = [];
@@ -502,12 +539,18 @@ function checkForUniqueRolesAndGroups() {
 	}
 }
 
+/**
+ *
+ */
 function autoRunCreateGoogleFiles() {
 	if (ssVariables.getRange(6, 2).getValue().toString().toLowerCase() === 'true') {
 		createGoogleFiles();
 	}
 }
 
+/**
+ *
+ */
 function createGoogleFiles() {
 	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	const battalionIndividuals = getGroups(true, false);
@@ -552,6 +595,7 @@ function createGoogleFiles() {
 		});
 	}
 }
+
 /**
  *
  */
@@ -568,6 +612,7 @@ function findIndSheet(name) {
 	const tup = [files, fileList];
 	return tup;
 }
+
 /**
  *
  */
@@ -587,6 +632,7 @@ function wipeGoogleFiles() {
 		}
 	}
 }
+
 /**
  *
  */
@@ -767,6 +813,7 @@ function dynamicSheetUpdate(tempData) {
 		updateSubordinateTab(superior);
 	});
 }
+
 /**
  *
  */
@@ -812,7 +859,6 @@ function initSheet(sheetID, name) {
 	Logger.log(header);
 }
 
-//userPaperwork.getRange(1, 1, outData.length, outData[0].length).setValues(outData);
 /**
  *
  */
@@ -893,6 +939,7 @@ function updateFormGroups() {
 	subItem.isRequired();
 	subItem.setHelpText('Select your name from the dropdown menu below');
 }
+
 /**
  *
  */
@@ -918,6 +965,7 @@ function getGroups(individuals: boolean, groups: boolean): string[] {
 
 	return out;
 }
+
 /**
  *
  */
@@ -932,6 +980,7 @@ function getIndividualEmail(name: string): string {
 	}
 	return returnEmail;
 }
+
 /**
  *
  */
@@ -957,10 +1006,10 @@ function createFullBattalionStructure() {
 	fillChain(chain);
 	return chain;
 }
+
 /**
  *
  */
-// Still working on this function
 function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 	Logger.log(JSON.stringify(parsedCheckBoxData) + ' ' + JSON.stringify(assigner));
 
@@ -1081,6 +1130,7 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 	Logger.log(outList);
 	return outList; // [{name:string,group:string}]
 }
+
 /**
  *
  */
@@ -1098,6 +1148,7 @@ function updateBattalionMembersJSON() {
 	}
 	ssVariables.getRange(4, 2).setValue(JSON.stringify(peopleList));
 }
+
 /**
  *
  */
@@ -1152,6 +1203,7 @@ function getSuperiors(name: string): string[] {
 
 	return outPeople;
 }
+
 /**
  *
  */
@@ -1181,6 +1233,7 @@ function descendingRankOrderOfSubordinateNames(name: string): string[] {
 	Logger.log(outPeople);
 	return outPeople;
 }
+
 /**
  *
  */
@@ -1235,6 +1288,7 @@ function getSubordinates(name: string): string[] {
 
 	return outPeople;
 }
+
 /**
  *
  */
@@ -1256,6 +1310,7 @@ function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: 
 		htmlBody: emailBody,
 	});
 }
+
 /**
  *
  */
@@ -1321,6 +1376,9 @@ function sendAssignerSuccessEmail(
 	});
 }
 
+/**
+ *
+ */
 function dateToROTCFormat(date: Date): string {
 	let dayNum = date.getDate();
 	let monthNum = date.getMonth();
@@ -1373,6 +1431,9 @@ function dateToROTCFormat(date: Date): string {
 	return day + month + year;
 }
 
+/**
+ *
+ */
 function sendAssigneesEmail(emailList, data) {
 	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;
@@ -1424,7 +1485,9 @@ function sendAssigneesEmail(emailList, data) {
 		htmlBody: emailBody,
 	});
 }
-
+/**
+ *
+ */
 function sendSheetNotEnabledEmail(submitterName) {
 	MailApp.sendEmail({
 		to: getIndividualEmail(submitterName),
@@ -1433,7 +1496,9 @@ function sendSheetNotEnabledEmail(submitterName) {
 		htmlBody: `${submitterName},<br><br>The Paperwork database has not yet been initialized for the semester. Please reach out to your ADMIN Department to initialize the database.<br><br>Very respectfully,<br>The ADMIN Department`,
 	});
 }
-
+/**
+ *
+ */
 function sendInitReminderEmail() {
 	Logger.log('Email sent to:' + Session.getEffectiveUser().getEmail());
 	MailApp.sendEmail({
@@ -1465,7 +1530,9 @@ function sendInitReminderEmail() {
 		<br>John Lewis Corker (johnlcorker88@gmail.com)`,
 	});
 }
-
+/**
+ *
+ */
 function getFullMemberData(name: string): { name: string; email: string; role: string; group: string } {
 	let fullData;
 	JSON.parse(ssVariables.getRange(4, 2).getValue()).forEach((member) => {
@@ -1475,5 +1542,53 @@ function getFullMemberData(name: string): { name: string; email: string; role: s
 	});
 	return fullData;
 }
+/**
+ *
+ */
+function dailyRunFunctions() {
+	dailyCheckToRemindPplOfPaperwork();
+	approveDueGoogleFormsFromDatabase();
+}
+/**
+ *
+ */
+function approveDueGoogleFormsFromDatabase() {
+	const pendingData = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
+	const time = new Date();
+	for (var idx = 0; idx < pendingData.length; idx++) {
+		const dueDate = new Date(pendingData[idx][6].toString());
+		if (pendingData[idx][7] === 'Pending' && dueDate.getTime() - time.getTime() < 0) {
+			pendingData[idx][7] = 'Approved';
+		}
+	}
+	ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).setValues(pendingData);
+}
+/**
+ *
+ */
+function dailyCheckToRemindPplOfPaperwork() {
+	if (ssData.getLastRow() > 1) {
+		const data = ssData.getRange(2, 1, ssData.getLastRow() - 1, ssData.getLastColumn()).getValues();
+		const tomorrow = new Date();
+		tomorrow.setDate(tomorrow.getDate() + 1);
+		for (let i = 0; i < data.length; i++) {
+			const dueDate = new Date(data[i][6].toString());
+			if (
+				data[i][7] === 'Pending' &&
+				tomorrow.getDate() === dueDate.getDate() &&
+				tomorrow.getMonth() === dueDate.getMonth() &&
+				dueDate.getFullYear() === tomorrow.getFullYear()
+			) {
+				sendPaperworkHeadsUpNotification(data[i]);
+			}
+		}
+	}
+}
 
-function dailyCheckToRemindPplOfPaperwork() {}
+function sendPaperworkHeadsUpNotification(row) {
+	MailApp.sendEmail({
+		to: getIndividualEmail(row[3]),
+		subject: `Your ${row[4]} is due tomorrow`,
+		htmlBody: `${row[3]},<br><br>Your ${row[4]} is due tomorrow.<br><br>Very respectfully,<br>The ADMIN Department`,
+	});
+}
