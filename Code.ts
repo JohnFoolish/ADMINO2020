@@ -862,6 +862,7 @@ function updateFormGroups() {
 				ssAssignment.hideSheet();
 			}
 		});
+		ssVariables.getRange(1, 2).setValue('1');
 	}
 
 	//Update the form submission page
