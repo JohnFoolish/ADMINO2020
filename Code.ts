@@ -622,6 +622,8 @@ function updateSubordinateTab(name) {
 	Logger.log('total subordinate data is: ', subordinateData.length);
 	subPaperwork.getRange(2, 1, subPaperwork.getLastRow(), subPaperwork.getLastColumn()).clearContent();
 	if (subordinateData.length > 0) {
+		Logger.log(subordinateData[0]);
+		Logger.log(subordinateData.length);
 		subPaperwork.getRange(2, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
 	}
 }
@@ -634,12 +636,8 @@ function grabUsersData(dict) {
 	const database = ssData.getRange(2, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 	for (var idx = 0; idx < database.length; idx++) {
 		if (database[idx][1] in dict) {
-			Logger.log(database[idx]);
-			Logger.log(dict[database[idx][1]]);
-			Logger.log(dict[database[idx][1]]['Data']);
 			dict[database[idx][1]]['Data'].push(database[idx]);
 			if (database[idx][7] != 'Cancelled' || database[idx][7] != 'Rejected') {
-				Logger.log(dict[database[idx][1]][database[idx][4]], [database[idx][4]]);
 				dict[database[idx][1]][database[idx][4]] += 1;
 			}
 		}
@@ -649,7 +647,6 @@ function grabUsersData(dict) {
 
 	//Format them into a nice little array to look at and write!
 	var indData;
-	Logger.log(dict);
 	for (const key in dict) {
 		indData = getFullMemberData(key);
 		finalSubData.push(['Name:', key, 'Rank:', Object.freeze(indData.role), '', '', '', '', '', '']);
@@ -658,7 +655,7 @@ function grabUsersData(dict) {
 		finalSubData.push(['', '', '', '', '', '', '', '', '', '']);
 		finalSubData.push(['', '', '', '', '', '', '', '', '', '']);
 	}
-
+	Logger.log(finalSubData);
 	return finalSubData;
 }
 
@@ -1426,6 +1423,7 @@ function sendAssigneesEmail(emailList, data) {
 function sendSheetNotEnabledEmail(submitterName) {
 	MailApp.sendEmail({
 		to: getIndividualEmail(submitterName),
+		cc: Session.getEffectiveUser().getEmail(),
 		subject: 'The Paperwork Database is Currently Disabled',
 		htmlBody: `${submitterName},<br><br>The Paperwork database has not yet been initialized for the semester. Please reach out to your ADMIN Department to initialize the database.<br><br>Very respectfully,<br>The ADMIN Department`,
 	});
@@ -1433,9 +1431,17 @@ function sendSheetNotEnabledEmail(submitterName) {
 
 function sendInitReminderEmail() {
 	MailApp.sendEmail({
-		to: '',
+		to: Session.getEffectiveUser().getEmail(),
 		subject: 'The Paperwork Database is Currently Disabled',
-		htmlBody: `ADMINO and AADMINO,<br><br>The Paperwork database has not yet been initialized for the semester. Please reach out to your ADMIN Department to initialize the database.<br><br>Very respectfully,<br>The ADMIN Department`,
+		htmlBody: `ADMINO and AADMINO,
+		<br><br>
+		The Paperwork database has not yet been initialized for the semester.
+		<br>To do this you will need to follow the following steps:
+		<br>1. 
+		<br><br>
+		Very respectfully,
+		<br>Timothy Bowes (tnbowes@gmail.com)
+		<br>John Lewis Corker (johnlcorker88@gmail.com)`,
 	});
 }
 
