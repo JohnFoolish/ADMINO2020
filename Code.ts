@@ -1435,15 +1435,13 @@ function sendInitReminderEmail() {
 			<li>Next you should look at the "Options" tab. Make sure send emails is true. Update the policy on the number of buisness days to complete a chit and negative counseling, make sure it is a number. Then update your preferance for how the sheet will handle assignment permissions and assignment due dates when no due date is specified. Row 6 will update itself.</li>
 			<li>Now you can run the initialization function by clicking on the "DB functions" dropdown menu in the user interface at the top of the google sheet and clicking the "Initialize" option. The database has now been successfully setup for the semester!</li>
 		</ol>
-		<br>
-		<br>To manage this system follow these general steps:
+		To manage this system follow these general steps:
 		<ul>
 			<li>You should never edit any of the data in the "Data" tab. It is just there for your own referance.</li>
 			<li>The pending paperwork tab will hold all of the paperwork that still needs to be processed. You can change the status of the paperwork here and it will update everywhere.</li>
 			<li>The "Digital Turn In Box" will hold all of the paperwork that has been turned via the google form.</li>
 		</ul>
-		<br>
-		<br>If you would like to turn off this notification email for the semester because you aren't using the database. Go the the "Options" tab and change the "Turn off reminder" option to "true".
+		If you would like to turn off this notification email for the semester because you aren't using the database. Go the the "Options" tab and change the "Turn off reminder" option to "true".
 		<br>
 		<br>If you have any problems or questions please feel free to reach out to us.
 		<br>
