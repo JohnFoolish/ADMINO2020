@@ -35,7 +35,9 @@ function initSheetReminder() {
 	const lastEnabled = new Date(ssVariables.getRange(9, 2).getValue().toString());
 	if (ssVariables.getRange(8, 2).getValue() == 'true') {
 		// Reset for fall
-		//if ()
+		if (lastEnabled.getMonth() > 6 && lastEnabled.getFullYear() === now.getFullYear()) {
+		}
+
 		// Reset for spring
 	}
 }
@@ -589,7 +591,8 @@ function updateSubordinateTab(name) {
 	var blankLine;
 	var indData;
 	// here get each of the subordinates data arrays
-	//for each something goes here
+	//for each something goes here fda
+
 	var dict = {};
 	subList.forEach((subName) => {
 		dict[subName] = { Merit: 0, Chit: 0, 'Negative Counseling': 0, Data: [] };
@@ -629,7 +632,7 @@ function grabUsersData(dict) {
 	var indData;
 	for (const key in dict) {
 		indData = getFullMemberData(key);
-		finalSubData.push(['Name:', key, 'Rank:', Object.freeze(indData.role), '', '', '', '', '']);
+		finalSubData.push(['Name:', key, 'Rank:', Object.freeze(indData.role), '', '', '', '', '', '']);
 		finalSubData.push(['Chits:', 'Negative Counselings:', 'Merits:', '', '', '', '', '', '', '']);
 		finalSubData.push(dict[key]['Data']);
 		finalSubData.push(['', '', '', '', '', '', '', '', '', '']);
