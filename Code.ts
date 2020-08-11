@@ -308,11 +308,11 @@ function myOnEdit() {
 	} else if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
 		const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 		let oneWasTrue = false;
+		let alertUserToAddContent = false;
 		for (let j = 1; j < pending.length; j++) {
 			if (pending[j][7].toString() !== 'Pending' && pending[j][7].toString() !== '') {
 				if (pending[j][9] === '' && pending[j][7] === 'Approved') {
-					const ui = SpreadsheetApp.getUi();
-					ui.alert('You need to put either "Turned in Physically" or the link to their digitally turned in file');
+					alertUserToAddContent = true;
 					pending[j][7] = 'Pending';
 				} else {
 					oneWasTrue = true;
@@ -321,9 +321,13 @@ function myOnEdit() {
 				}
 			}
 		}
-		if (oneWasTrue) {
+		if (oneWasTrue || alertUserToAddContent) {
 			ssPending.getRange(1, 1, pending.length, pending[0].length).setValues(pending);
 			ssPending.sort(1);
+		}
+		if (alertUserToAddContent) {
+			const ui = SpreadsheetApp.getUi();
+			ui.alert('You need to put either "Turned in Physically" or the link to their digitally turned in file');
 		}
 	} else if (
 		ss.getActiveCell().getSheet().getName() === 'Digital Turn In Box' &&
