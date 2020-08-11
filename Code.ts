@@ -812,7 +812,7 @@ function dynamicSheetUpdate(tempData) {
 
 	const name = tempData[3];
 
-	if (tempData[7] !== 'Cancelled') {
+	if (tempData[7] === 'Cancelled') {
 		tempData = ['', '', '', '', '', '', '', '', ''];
 	}
 	userPaperwork.getRange(lineAddition, 1, 1, tempData.length).setValues([tempData]);
