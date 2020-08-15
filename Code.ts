@@ -312,13 +312,6 @@ function sortDigitalBox() {
 function myOnEdit() {
 	if (ss.getActiveCell().getSheet().getName() === 'Battalion Members') {
 		updateBattalionMembersJSON();
-		if (
-			ss.getActiveCell().getColumn() === 1 ||
-			ss.getActiveCell().getColumn() === 2 ||
-			ss.getActiveCell().getColumn() === 3
-		) {
-			updateFormGroups();
-		}
 	} else if (ss.getActiveCell().getSheet().getName() === 'Pending Paperwork' && ss.getActiveCell().getColumn() === 8) {
 		const pending = ssPending.getRange(1, 1, ssPending.getLastRow(), ssPending.getLastColumn()).getValues();
 		let oneWasTrue = false;
@@ -703,7 +696,7 @@ function updateSubordinateTab(name) {
  */
 function grabUsersData(dict) {
 	Logger.log('Entering grabUsersData!');
-	Logger.log('dictionary is: ', dict);
+	//Logger.log('dictionary is: ', dict);
 	var finalSubData = [];
 
 	const database = ssData.getRange(2, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
@@ -761,13 +754,19 @@ function grabUsersData(dict) {
  *
  */
 function dynamicSheetUpdate(tempData) {
-	const [fileIterator, fileList] = findIndSheet(tempData[3]);
-	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
-	const fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
+	let [fileIterator, fileList] = findIndSheet(tempData[3]);
+	let fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
+	let fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
 
 	if (fileArray.length > 1) {
 		Logger.log('Error, multiple sheets for ' + tempData[3]);
 		throw Error;
+	} else if (fileArray.length == 0) {
+		createGoogleFiles();
+		Logger.log('Attempted to created google file for ', tempData[3]);
+		[fileIterator, fileList] = findIndSheet(tempData[3]);
+		fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
+		fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
 	}
 	const userSpread = SpreadsheetApp.open(fileArray[0]);
 
@@ -980,6 +979,7 @@ function updateFormGroups() {
 	subItem.setChoices(subIndList);
 	subItem.isRequired();
 	subItem.setHelpText('Select your name from the dropdown menu below');
+	createGoogleFiles();
 }
 
 /**
@@ -1188,7 +1188,37 @@ function updateBattalionMembersJSON() {
 			}
 		});
 	}
+	const oldMembers = JSON.parse(ssVariables.getRange(4, 2).getValue().toString());
 	ssVariables.getRange(4, 2).setValue(JSON.stringify(peopleList));
+
+	if (peopleList.length !== oldMembers.length) {
+		updateFormGroups();
+	} else {
+		const dictOfPeople = {};
+		function addToDict(name) {
+			if (dictOfPeople[name] === undefined) {
+				dictOfPeople[name] = 0;
+			} else {
+				dictOfPeople[name]++;
+			}
+		}
+		oldMembers.forEach((member) => {
+			addToDict(member.name);
+		});
+		peopleList.forEach((member) => {
+			addToDict(member.name);
+		});
+
+		let runUpdateFormGroups = false;
+		for (const name in dictOfPeople) {
+			if (dictOfPeople[name] === 0) {
+				runUpdateFormGroups = true;
+			}
+		}
+		if (runUpdateFormGroups) {
+			updateFormGroups();
+		}
+	}
 }
 
 /**
