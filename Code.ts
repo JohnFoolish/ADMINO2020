@@ -19,7 +19,11 @@ const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6
  */
 function myOnOpen(e) {
 	var ui = SpreadsheetApp.getUi();
-	ui.createMenu('DB Functions').addItem('Initialize', 'initForSemester').addToUi();
+	ui.createMenu('DB Functions')
+		.addItem('Initialize', 'initForSemester')
+		.addSeparator()
+		.addItem('Clear Pending Cache', 'updateSheetsFromPendingCache')
+		.addToUi();
 }
 
 /**
