@@ -1487,7 +1487,7 @@ function sendAssigneesEmail(emailNameList, data) {
 	let numEmailsBcc = 0;
 	let lastNameEntered = '';
 	for (let i = 0; i < emailNameList.length; i++) {
-		if (emailNameList[i] === null || emailNameList[i] === '') {
+		if (emailNameList[i] === null || emailNameList[i] === '' || correctedEmail.indexOf(emailNameList[i]) !== -1) {
 			continue;
 		} else {
 			lastNameEntered = emailNameList[i];
