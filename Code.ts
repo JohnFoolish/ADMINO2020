@@ -13,7 +13,10 @@ const ssPendingCache = ss.getSheetByName('PendingChangedCache');
 
 const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
 const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit');
-
+const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
+const ssTemplate = SpreadsheetApp.openByUrl(
+	'https://docs.google.com/spreadsheets/d/1QbC9z04dQWhDNz-Q4qm2urfWzZjtKxLmmCsFQ4J9uOU/edit#gid=0'
+);
 /**
  *
  */
@@ -563,11 +566,8 @@ function autoRunCreateGoogleFiles() {
  *
  */
 function createGoogleFiles() {
-	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	const battalionIndividuals = getGroups(true, false);
-	var ssTemplate = SpreadsheetApp.openByUrl(
-		'https://docs.google.com/spreadsheets/d/1QbC9z04dQWhDNz-Q4qm2urfWzZjtKxLmmCsFQ4J9uOU/edit#gid=0'
-	);
+
 	const templateID = ssTemplate.getId();
 	const newFile = DriveApp.getFileById(templateID);
 	for (var idx = 0; idx < battalionIndividuals.length; idx++) {
@@ -623,7 +623,6 @@ function updateAllSubordinates() {
  *
  */
 function findIndSheet(name) {
-	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	var files = root.getFilesByName(name + ', GT NROTC');
 	const fileList = [];
 	while (files.hasNext()) {
@@ -640,7 +639,6 @@ function findIndSheet(name) {
  *
  */
 function wipeGoogleFiles() {
-	const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 	const battalionIndividuals = getGroups(true, false);
 	for (var ind = 0; ind < battalionIndividuals.length; ind++) {
 		const email = getIndividualEmail(battalionIndividuals[ind]);
