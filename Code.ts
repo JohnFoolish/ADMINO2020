@@ -1,3 +1,10 @@
+/* To Do
+Link sheets / names by semester
+Sort data sheet in reverse order by date
+Write out proper documentation/docstrings
+
+*/
+
 // This code was complited from typescript
 const ss = SpreadsheetApp.getActiveSpreadsheet();
 const ssData = ss.getSheetByName('Data');
@@ -52,7 +59,7 @@ function initSheetReminder() {
 		};
 
 		// Reset for fall
-		if (now.getMonth() === 6) {
+		if (now.getMonth() === 7) {
 			resetSheet();
 		}
 
@@ -1514,7 +1521,7 @@ function sendAssigneesEmail(emailNameList, data) {
 
 	Logger.log(emailNameList, emailSender);
 	MailApp.sendEmail({
-		to: emailSender,
+		to: Session.getEffectiveUser().getEmail(),
 		bcc: correctedEmail,
 		subject: emailSubject,
 		htmlBody: emailBody,
@@ -1544,11 +1551,11 @@ function sendInitReminderEmail() {
 		<br>The paperwork database has not yet been initialized for the semester.
 		<br>To do this you will need to follow the following steps:
 		<ol type="1">
-			<li>Open up the Main_Database file in the Paperwork Database folder that you can find in the google drive.</li>
+			<li>Open up the Main Database file in the Paperwork Database folder that you can find in the google drive.</li>
 			<li>Start by updating the battaion structure for the semester. To do this click on the "Battalion Structure" tab and update the roles and groups columns. Then recreate the chain of command area. The Chain of command area should update its structure as you fill out the chain of command. There are notes in the headers for each of the columns which will help you fill out those areas.</li>
 			<li>Then you should update the "Battalion Members" tab to include all of this semester's members. Make sure to update the classes of each member. A member will not appear in the system unless all 6 columns are completed. Also, make sure to check that all of the dropdown selections are vaild. If there is an invalid entree there will be a red arrow in the top right hand corner of the cell.</li>
 			<li>Next you should look at the "Options" tab. Make sure send emails is true. Update the policy on the number of buisness days to complete a chit and negative counseling, make sure it is a number. Then update your preferance for how the sheet will handle assignment permissions and assignment due dates when no due date is specified. Row 6 will update itself.</li>
-			<li>Now you can run the initialization function by clicking on the "DB functions" dropdown menu in the user interface at the top of the google sheet and clicking the "Initialize" option. The database has now been successfully setup for the semester!</li>
+			<li>Now you can run the initialization function by clicking on the "DB functions" dropdown menu in the user interface at the top of the google sheet and clicking the "Initialize" option. The database will be successfully set up once you recieve the success email!</li>
 		</ol>
 		To manage this system follow these general steps:
 		<ul>
