@@ -1473,6 +1473,11 @@ function sendAssigneesEmail(emailNameList, data) {
 	const emailsActivated = ssOptions.getRange(1, 2).getValue().toString().toLowerCase() === 'true';
 	if (!emailsActivated) return;
 
+	if (emailNameList.length > 49) {
+		sendAssigneesEmail(emailNameList.slice(49), data);
+		emailNameList = emailNameList.slice(0, 49);
+	}
+
 	const dateDemo = data.dateDue.toString().split(' ', 4);
 
 	const date = dateDemo[0] + ', ' + dateDemo[2] + dateDemo[1].toUpperCase() + dateDemo[3];
@@ -1601,6 +1606,7 @@ function dailyCheckToRemindPplOfPaperwork() {
 		const data = ssData.getRange(2, 1, ssData.getLastRow() - 1, ssData.getLastColumn()).getValues();
 		const tomorrow = new Date();
 		tomorrow.setDate(tomorrow.getDate() + 1);
+		const paperworkTypes = {};
 		for (let i = 0; i < data.length; i++) {
 			const dueDate = new Date(data[i][6].toString());
 			if (
@@ -1609,16 +1615,32 @@ function dailyCheckToRemindPplOfPaperwork() {
 				tomorrow.getMonth() === dueDate.getMonth() &&
 				dueDate.getFullYear() === tomorrow.getFullYear()
 			) {
-				sendPaperworkHeadsUpNotification(data[i]);
+				paperworkTypes[data[i][4]] =
+					paperworkTypes[data[i][4]] === undefined ? [data[i][3]] : paperworkTypes[data[i][4]].push(data[i][3]);
 			}
 		}
+		sendPaperworkHeadsUpNotification(paperworkTypes);
 	}
 }
 
-function sendPaperworkHeadsUpNotification(row) {
-	MailApp.sendEmail({
-		to: getIndividualEmail(row[3]),
-		subject: `Your ${row[4]} is due tomorrow`,
-		htmlBody: `${row[3]},<br><br>Your ${row[4]} is due tomorrow.<br><br>Very respectfully,<br>The ADMIN Department`,
-	});
+function sendPaperworkHeadsUpNotification(paperworkTypes) {
+	for (const key in paperworkTypes) {
+		sendEmail(key, paperworkTypes[key]);
+	}
+	function sendEmail(key, names) {
+		if (names.length > 49) {
+			sendEmail(key, names.slice(49));
+			names = names.slice(0, 49);
+		}
+		const bccEmails = names.map((name) => getIndividualEmail(name));
+
+		MailApp.sendEmail({
+			to: Session.getEffectiveUser().getEmail(),
+			bcc: bccEmails.join(),
+			subject: `Your ${key} is due tomorrow`,
+			htmlBody: `${
+				names.length === 1 ? names[0] : 'Team'
+			},<br><br>Your ${key} is due tomorrow.<br><br>Very respectfully,<br>The ADMIN Department`,
+		});
+	}
 }
