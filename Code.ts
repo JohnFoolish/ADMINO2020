@@ -566,6 +566,10 @@ function autoRunCreateGoogleFiles() {
  *
  */
 function createGoogleFiles() {
+	if (ssVariables.getRange(8, 2).getValue().toString().toLowerCase() == 'false') {
+		return;
+	}
+
 	const battalionIndividuals = getGroups(true, false);
 
 	const templateID = ssTemplate.getId();
