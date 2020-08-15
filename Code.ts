@@ -668,7 +668,7 @@ function updateSubordinateTab(name) {
 	}
 
 	const userSpread = SpreadsheetApp.open(fileArray[0]);
-	const subPaperwork = userSpread.getSheetByName('Subordinate_Paperwork');
+	const subPaperwork = userSpread.getSheetByName('Subordinate Paperwork');
 
 	const subList = descendingRankOrderOfSubordinateNames(name);
 	var subordinateData = [];
@@ -764,8 +764,8 @@ function dynamicSheetUpdate(tempData) {
 	}
 	const userSpread = SpreadsheetApp.open(fileArray[0]);
 
-	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
-	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
+	const userPaperwork = userSpread.getSheetByName('Total Paperwork');
+	const totalPaperwork = userSpread.getSheetByName('All Semesters');
 	const header = userPaperwork.getRange(1, 1, 3, 3).getValues();
 	const outData = userPaperwork.getRange(1, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
 	const totalOutData = totalPaperwork
@@ -854,8 +854,8 @@ function dynamicSheetUpdate(tempData) {
  */
 function initSheet(sheetID, name) {
 	const userSpread = SpreadsheetApp.openById(sheetID);
-	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
-	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
+	const userPaperwork = userSpread.getSheetByName('Total Paperwork');
+	const totalPaperwork = userSpread.getSheetByName('All Semesters');
 	const header = userPaperwork.getRange(1, 1, 3, 3).getValues();
 	const outData = userPaperwork.getRange(3, 3, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
 
