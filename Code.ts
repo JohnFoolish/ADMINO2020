@@ -785,10 +785,10 @@ function dynamicSheetUpdate(tempData) {
 	for (var i = 5; i < outData.length; i++) {
 		if (tempData[0].toString() === outData[i][0].toString()) {
 			//Duplicate file found!
-			lineAddition = i;
+			lineAddition = i + 1;
 			for (var j = 5; j < totalOutData.length; j++) {
 				if (tempData[0].toString() === totalOutData[j][0].toString()) {
-					totalLineAddition = j;
+					totalLineAddition = j + 1;
 					found = true;
 				}
 			}
