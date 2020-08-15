@@ -364,12 +364,12 @@ function updateSheetsFromPendingCache() {
 				data[i][9] = pending[0][9];
 			}
 		}
+		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 		dynamicSheetUpdate(pending[0]);
-		pending[0] = pending[0].map((item) => '');
 
+		pending[0] = pending[0].map((item) => '');
 		ssPendingCache.getRange(1, 1, 1, pending[0].length).setValues(pending);
 		ssPendingCache.sort(1);
-		ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).setValues(data);
 		Logger.log('Successfully updated: ', pending[0]);
 		updateSheetsFromPendingCache();
 	}
