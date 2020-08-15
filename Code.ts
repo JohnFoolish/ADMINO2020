@@ -585,8 +585,13 @@ function createGoogleFiles() {
 		initSheet(indID, battalionIndividuals[idx]);
 		indFile.addViewer(email);
 		Logger.log(email, battalionIndividuals[idx]);
-		indFile.addEditor('johnlcorker88@gmail.com');
-		indFile.addEditor('tnbowes@gmail.com');
+
+		// For editting the sheet in the testing version
+		if (Session.getEffectiveUser().getEmail() !== 'gtnrotc.ado@gmail.com') {
+			indFile.addEditor('johnlcorker88@gmail.com');
+			indFile.addEditor('tnbowes@gmail.com');
+		}
+
 		ssVariables.getRange(7, 2).setValue(ssVariables.getRange(7, 2).getValue() + '|' + battalionIndividuals[idx] + '|');
 	}
 	let finishInitMem = ssVariables
