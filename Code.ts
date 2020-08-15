@@ -769,11 +769,12 @@ function dynamicSheetUpdate(tempData) {
 	const userPaperwork = userSpread.getSheetByName('Total_Paperwork');
 	const totalPaperwork = userSpread.getSheetByName('All_Semesters');
 	const header = userPaperwork.getRange(1, 1, 3, 3).getValues();
-	const outData = userPaperwork.getRange(3, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+	const outData = userPaperwork.getRange(1, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
 	const totalOutData = totalPaperwork
-		.getRange(3, 1, totalPaperwork.getLastRow(), totalPaperwork.getLastColumn())
+		.getRange(1, 1, totalPaperwork.getLastRow(), totalPaperwork.getLastColumn())
 		.getValues();
 
+	var headerLines = 5;
 	var chits = header[2][0];
 	var merits = header[2][1];
 	var negCounsel = header[2][2];
@@ -781,13 +782,13 @@ function dynamicSheetUpdate(tempData) {
 	var totalLineAddition = totalPaperwork.getLastRow() + 1;
 	var found = false;
 
-	for (var i = 0; i < outData.length; i++) {
+	for (var i = 5; i < outData.length; i++) {
 		if (tempData[0].toString() === outData[i][0].toString()) {
 			//Duplicate file found!
-			lineAddition = i + 2;
-			for (var j = 1; j < totalOutData.length; j++) {
+			lineAddition = i;
+			for (var j = 5; j < totalOutData.length; j++) {
 				if (tempData[0].toString() === totalOutData[j][0].toString()) {
-					totalLineAddition = j + 2;
+					totalLineAddition = j;
 					found = true;
 				}
 			}
