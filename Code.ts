@@ -1379,7 +1379,7 @@ function sendAssignerFailEmail(assigner, submitData, noDate: boolean, noPeople: 
 	if (!emailsActivated) return;*/
 	let emailBody = `${assigner.name},
 	<br><br>
-	Your ${submitData.paperwork} did not assign, because ${noDate ? 'you did not give a date' : ''}${
+	Your ${submitData.paperwork} did not assign, because ${noDate ? 'you did not give a due date' : ''}${
 		noDate && noPeople ? ' and ' : ''
 	}${noPeople ? 'you did not select to assign it to anyone' : ''}.
 	<br><br>
