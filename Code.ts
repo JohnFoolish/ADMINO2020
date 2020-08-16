@@ -784,6 +784,7 @@ function dynamicSheetUpdate(tempData) {
 		fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
 		fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
 	}
+	const name = tempData[3];
 	fileArray.forEach((file) => {
 		const userSpread = SpreadsheetApp.open(file);
 
@@ -840,8 +841,6 @@ function dynamicSheetUpdate(tempData) {
 		} else if (chits < 0) {
 			chits = 0;
 		}
-
-		const name = tempData[3];
 
 		if (tempData[7] === 'Cancelled') {
 			tempData = ['', '', '', '', '', '', '', '', ''];
