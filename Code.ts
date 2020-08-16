@@ -222,7 +222,7 @@ function myOnAssignmentSubmit() {
 			ssPending
 				.getRange(ssPending.getLastRow() + 1, 1, pendingAndDataWriteData.length, pendingAndDataWriteData[0].length)
 				.setValues(pendingAndDataWriteData);
-			ssPending.getRange(2, 1, ssPendingCache.getLastRow() - 1, ssPendingCache.getLastColumn()).sort(7);
+			ssPending.getRange(2, 1, ssPending.getLastRow() - 1, ssPending.getLastColumn()).sort(7);
 
 			outData.forEach((row) => {
 				dynamicSheetUpdate(row);
