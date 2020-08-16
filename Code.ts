@@ -210,9 +210,11 @@ function myOnAssignmentSubmit() {
 
 			//Write to data sheet
 			ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+			ssData.getRange(2, 1, ssData.getLastRow() - 1, ssData.getLastColumn()).sort({ column: 1, ascending: false });
 
 			// Write to Pending Paperwork
 			ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+			ssPending.getRange(2, 1, ssPendingCache.getLastRow() - 1, ssPendingCache.getLastColumn()).sort(7);
 
 			outData.forEach((row) => {
 				dynamicSheetUpdate(row);
@@ -292,6 +294,8 @@ function myOnFormTurnedInSubmit() {
 		const outData = data;
 		outData[0].push('FALSE');
 
+		updateTurnedInPaperworkTab(outData[0]);
+
 		// Write to Digital Admin box sheet
 		ssDigitalBox.getRange(ssDigitalBox.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 		sortDigitalBox();
@@ -343,6 +347,9 @@ function myOnEdit() {
 		ss.getActiveCell().getColumn() === 4
 	) {
 		sortDigitalBox();
+		updateTurnedInPaperworkTab(
+			ssDigitalBox.getRange(ss.getActiveCell().getRow(), 1, 1, ssDigitalBox.getLastColumn()).getValues()[0]
+		);
 	} else if (ss.getActiveCell().getSheet().getName() === 'Battalion Structure' && ss.getActiveCell().getColumn() > 1) {
 		if (ss.getActiveCell().getColumn() === 1 || ss.getActiveCell().getColumn() === 2) {
 			updateFormGroups();
@@ -663,6 +670,47 @@ function wipeGoogleFiles() {
 			root.removeFile(file);
 		}
 	}
+}
+/**
+ *
+ */
+function updateTurnedInPaperworkTab(tempData) {
+	let [fileIterator, fileList] = findIndSheet(tempData[1]);
+	let fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
+	let fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
+
+	if (fileArray.length > 1) {
+		Logger.log('Error, multiple sheets for ' + tempData[1]);
+	} else if (fileArray.length == 0) {
+		createGoogleFiles();
+		Logger.log('Attempted to created google file for ', tempData[1]);
+		[fileIterator, fileList] = findIndSheet(tempData[1]);
+		fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
+		fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
+	}
+	const name = tempData[1];
+	fileArray.forEach((file) => {
+		const userSpread = SpreadsheetApp.open(file);
+
+		const userPaperwork = userSpread.getSheetByName('Submitted Paperwork');
+		const outData = userPaperwork.getRange(1, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+		var lineAddition = userPaperwork.getLastRow() + 1;
+
+		for (var i = 1; i < outData.length; i++) {
+			if (tempData[0].toString() === outData[i][0].toString()) {
+				//Duplicate file found!
+				lineAddition = i + 1;
+			}
+		}
+		Logger.log(lineAddition);
+		Logger.log(tempData);
+
+		userPaperwork.getRange(lineAddition, 1, 1, tempData.length).setValues([tempData]);
+
+		if (userPaperwork.getLastRow() > 6) {
+			userPaperwork.getRange(6, 1, userPaperwork.getLastRow() - 6, userPaperwork.getLastColumn()).sort(1);
+		}
+	});
 }
 
 /**
