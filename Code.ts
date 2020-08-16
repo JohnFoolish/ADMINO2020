@@ -789,10 +789,9 @@ function dynamicSheetUpdate(tempData) {
 		.getRange(1, 1, totalPaperwork.getLastRow(), totalPaperwork.getLastColumn())
 		.getValues();
 
-	var headerLines = 5;
 	var chits = header[2][0];
-	var merits = header[2][1];
-	var negCounsel = header[2][2];
+	var merits = header[2][2];
+	var negCounsel = header[2][1];
 	var lineAddition = userPaperwork.getLastRow() + 1;
 	var totalLineAddition = totalPaperwork.getLastRow() + 1;
 	var found = false;
