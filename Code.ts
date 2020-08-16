@@ -284,16 +284,18 @@ function adjustDateForWeekends(currentDate, daysToAddToDate): number {
  */
 //This function runs whenever the new paperwork submission form is submitted.
 function myOnFormTurnedInSubmit() {
-	// Get data from linked sheet to use
-	const data = ssTurnedIn.getRange(ssTurnedIn.getLastRow(), 1, 1, ssTurnedIn.getLastColumn()).getValues();
+	if (ssTurnedIn.getLastRow() > 1) {
+		// Get data from linked sheet to use
+		const data = ssTurnedIn.getRange(ssTurnedIn.getLastRow(), 1, 1, ssTurnedIn.getLastColumn()).getValues();
 
-	// Manipulate Data / Rearrange Data
-	const outData = data;
-	outData[0].push('FALSE');
+		// Manipulate Data / Rearrange Data
+		const outData = data;
+		outData[0].push('FALSE');
 
-	// Write to Digital Admin box sheet
-	ssDigitalBox.getRange(ssDigitalBox.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
-	sortDigitalBox();
+		// Write to Digital Admin box sheet
+		ssDigitalBox.getRange(ssDigitalBox.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+		sortDigitalBox();
+	}
 }
 
 /**
