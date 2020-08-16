@@ -670,12 +670,18 @@ function wipeGoogleFiles() {
  */
 function updateSubordinateTab(name) {
 	//go and get the data from each of the subordinate's paperwork sheets
-	const [fileIterator, fileList] = findIndSheet(name);
-	const fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
-	const fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
+	let [fileIterator, fileList] = findIndSheet(name);
+	let fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
+	let fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
 	if (fileArray.length > 1) {
 		Logger.log('Error, multiple sheets for ' + name);
 		throw Error;
+	} else if (fileArray.length == 0) {
+		createGoogleFiles();
+		Logger.log('Attempted to created google file for ', name);
+		[fileIterator, fileList] = findIndSheet(name);
+		fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
+		fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
 	}
 
 	const userSpread = SpreadsheetApp.open(fileArray[0]);
