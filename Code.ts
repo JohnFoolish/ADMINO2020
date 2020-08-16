@@ -675,7 +675,6 @@ function updateSubordinateTab(name) {
 	let fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
 	if (fileArray.length > 1) {
 		Logger.log('Error, multiple sheets for ' + name);
-		throw Error;
 	} else if (fileArray.length == 0) {
 		createGoogleFiles();
 		Logger.log('Attempted to created google file for ', name);
@@ -683,29 +682,30 @@ function updateSubordinateTab(name) {
 		fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
 		fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
 	}
+	fileArray.forEach((file) => {
+		const userSpread = SpreadsheetApp.open(file);
+		const subPaperwork = userSpread.getSheetByName('Subordinate Paperwork');
 
-	const userSpread = SpreadsheetApp.open(fileArray[0]);
-	const subPaperwork = userSpread.getSheetByName('Subordinate Paperwork');
+		const subList = descendingRankOrderOfSubordinateNames(name);
+		var subordinateData = [];
+		var blankLine;
+		var indData;
+		// here get each of the subordinates data arrays
+		//for each something goes here fda
 
-	const subList = descendingRankOrderOfSubordinateNames(name);
-	var subordinateData = [];
-	var blankLine;
-	var indData;
-	// here get each of the subordinates data arrays
-	//for each something goes here fda
-
-	var dict = {};
-	let dataList = [];
-	subList.forEach((subName) => {
-		dict[subName] = { Merit: 0, Chit: 0, 'Negative Counseling': 0, Data: JSON.parse(JSON.stringify(dataList)) };
+		var dict = {};
+		let dataList = [];
+		subList.forEach((subName) => {
+			dict[subName] = { Merit: 0, Chit: 0, 'Negative Counseling': 0, Data: JSON.parse(JSON.stringify(dataList)) };
+		});
+		subordinateData = grabUsersData(dict);
+		Logger.log('total subordinate data is: ', subordinateData.length);
+		subPaperwork.getRange(2, 1, subPaperwork.getLastRow(), subPaperwork.getLastColumn()).clearContent();
+		if (subordinateData.length > 0) {
+			Logger.log(subordinateData[0]);
+			subPaperwork.getRange(2, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
+		}
 	});
-	subordinateData = grabUsersData(dict);
-	Logger.log('total subordinate data is: ', subordinateData.length);
-	subPaperwork.getRange(2, 1, subPaperwork.getLastRow(), subPaperwork.getLastColumn()).clearContent();
-	if (subordinateData.length > 0) {
-		Logger.log(subordinateData[0]);
-		subPaperwork.getRange(2, 1, subordinateData.length, subordinateData[0].length).setValues(subordinateData);
-	}
 }
 
 /**
@@ -777,7 +777,6 @@ function dynamicSheetUpdate(tempData) {
 
 	if (fileArray.length > 1) {
 		Logger.log('Error, multiple sheets for ' + tempData[3]);
-		throw Error;
 	} else if (fileArray.length == 0) {
 		createGoogleFiles();
 		Logger.log('Attempted to created google file for ', tempData[3]);
@@ -785,88 +784,89 @@ function dynamicSheetUpdate(tempData) {
 		fileArray = fileList as Array<GoogleAppsScript.Drive.File>;
 		fileLinkedList = fileIterator as GoogleAppsScript.Drive.FileIterator;
 	}
-	const userSpread = SpreadsheetApp.open(fileArray[0]);
+	fileArray.forEach((file) => {
+		const userSpread = SpreadsheetApp.open(file);
 
-	const userPaperwork = userSpread.getSheetByName('Total Paperwork');
-	const totalPaperwork = userSpread.getSheetByName('All Semesters');
-	const header = userPaperwork.getRange(1, 1, 3, 3).getValues();
-	const outData = userPaperwork.getRange(1, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
-	const totalOutData = totalPaperwork
-		.getRange(1, 1, totalPaperwork.getLastRow(), totalPaperwork.getLastColumn())
-		.getValues();
+		const userPaperwork = userSpread.getSheetByName('Total Paperwork');
+		const totalPaperwork = userSpread.getSheetByName('All Semesters');
+		const header = userPaperwork.getRange(1, 1, 3, 3).getValues();
+		const outData = userPaperwork.getRange(1, 1, userPaperwork.getLastRow(), userPaperwork.getLastColumn()).getValues();
+		const totalOutData = totalPaperwork
+			.getRange(1, 1, totalPaperwork.getLastRow(), totalPaperwork.getLastColumn())
+			.getValues();
 
-	var chits = header[2][0];
-	var merits = header[2][2];
-	var negCounsel = header[2][1];
-	var lineAddition = userPaperwork.getLastRow() + 1;
-	var totalLineAddition = totalPaperwork.getLastRow() + 1;
-	var found = false;
+		var chits = header[2][0];
+		var merits = header[2][2];
+		var negCounsel = header[2][1];
+		var lineAddition = userPaperwork.getLastRow() + 1;
+		var totalLineAddition = totalPaperwork.getLastRow() + 1;
+		var found = false;
 
-	for (var i = 5; i < outData.length; i++) {
-		if (tempData[0].toString() === outData[i][0].toString()) {
-			//Duplicate file found!
-			lineAddition = i + 1;
-			for (var j = 5; j < totalOutData.length; j++) {
-				if (tempData[0].toString() === totalOutData[j][0].toString()) {
-					totalLineAddition = j + 1;
-					found = true;
+		for (var i = 5; i < outData.length; i++) {
+			if (tempData[0].toString() === outData[i][0].toString()) {
+				//Duplicate file found!
+				lineAddition = i + 1;
+				for (var j = 5; j < totalOutData.length; j++) {
+					if (tempData[0].toString() === totalOutData[j][0].toString()) {
+						totalLineAddition = j + 1;
+						found = true;
+					}
+				}
+				if (!found) {
+					Logger.log("Did not find the data in the total paperwork, but it was present in this semester's... Error");
+					throw Error;
 				}
 			}
-			if (!found) {
-				Logger.log("Did not find the data in the total paperwork, but it was present in this semester's... Error");
-				throw Error;
-			}
 		}
-	}
-	Logger.log(lineAddition);
-	Logger.log(tempData);
-	var change = 1;
-	if (tempData[7] === 'Cancelled' || tempData[7] === 'Rejected') {
-		change = -1;
-	} else if (tempData[7] === 'Approved') {
-		change = 0;
-	}
-	if (tempData[4] === 'Chit') {
-		chits += change;
-	} else if (tempData[4] === 'Negative Counseling') {
-		negCounsel += change;
-	} else if (tempData[4] === 'Merit') {
-		merits += change;
-	}
-	if (merits < 0) {
-		merits = 0;
-	} else if (negCounsel < 0) {
-		negCounsel = 0;
-	} else if (chits < 0) {
-		chits = 0;
-	}
+		Logger.log(lineAddition);
+		Logger.log(tempData);
+		var change = 1;
+		if (tempData[7] === 'Cancelled' || tempData[7] === 'Rejected') {
+			change = -1;
+		} else if (tempData[7] === 'Approved') {
+			change = 0;
+		}
+		if (tempData[4] === 'Chit') {
+			chits += change;
+		} else if (tempData[4] === 'Negative Counseling') {
+			negCounsel += change;
+		} else if (tempData[4] === 'Merit') {
+			merits += change;
+		}
+		if (merits < 0) {
+			merits = 0;
+		} else if (negCounsel < 0) {
+			negCounsel = 0;
+		} else if (chits < 0) {
+			chits = 0;
+		}
 
-	const name = tempData[3];
+		const name = tempData[3];
 
-	if (tempData[7] === 'Cancelled') {
-		tempData = ['', '', '', '', '', '', '', '', ''];
-	}
-	userPaperwork.getRange(lineAddition, 1, 1, tempData.length).setValues([tempData]);
-	totalPaperwork.getRange(totalLineAddition, 1, 1, tempData.length).setValues([tempData]);
+		if (tempData[7] === 'Cancelled') {
+			tempData = ['', '', '', '', '', '', '', '', ''];
+		}
+		userPaperwork.getRange(lineAddition, 1, 1, tempData.length).setValues([tempData]);
+		totalPaperwork.getRange(totalLineAddition, 1, 1, tempData.length).setValues([tempData]);
 
-	if (userPaperwork.getLastRow() > 6) {
-		userPaperwork.getRange(6, 1, userPaperwork.getLastRow() - 6, userPaperwork.getLastColumn()).sort(1);
-	}
-	if (totalPaperwork.getLastRow() > 6) {
-		totalPaperwork.getRange(6, 1, totalPaperwork.getLastRow() - 6, totalPaperwork.getLastColumn()).sort(1);
-	}
+		if (userPaperwork.getLastRow() > 6) {
+			userPaperwork.getRange(6, 1, userPaperwork.getLastRow() - 6, userPaperwork.getLastColumn()).sort(1);
+		}
+		if (totalPaperwork.getLastRow() > 6) {
+			totalPaperwork.getRange(6, 1, totalPaperwork.getLastRow() - 6, totalPaperwork.getLastColumn()).sort(1);
+		}
 
-	const helpData = [];
-	helpData.push(chits);
-	helpData.push(negCounsel);
-	helpData.push(merits);
-	header[2][0] = chits;
-	header[2][1] = negCounsel;
-	header[2][2] = merits;
-	userPaperwork.getRange(1, 1, 3, 3).setValues(header);
-	totalPaperwork.getRange(1, 1, 3, 3).setValues(header);
-	Logger.log(header);
-
+		const helpData = [];
+		helpData.push(chits);
+		helpData.push(negCounsel);
+		helpData.push(merits);
+		header[2][0] = chits;
+		header[2][1] = negCounsel;
+		header[2][2] = merits;
+		userPaperwork.getRange(1, 1, 3, 3).setValues(header);
+		totalPaperwork.getRange(1, 1, 3, 3).setValues(header);
+		Logger.log(header);
+	});
 	const superiorList = getSuperiors(name);
 	superiorList.forEach((superior) => {
 		updateSubordinateTab(superior);
