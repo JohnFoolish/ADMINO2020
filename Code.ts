@@ -593,14 +593,12 @@ function createGoogleFiles() {
 		const indFile = newFile.makeCopy(battalionIndividuals[idx] + ', GT NROTC', root);
 		const indID = indFile.getId();
 		initSheet(indID, battalionIndividuals[idx]);
-		try {
-			indFile.addViewer(email);
-		} catch {
-			indFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-			const link = `https://docs.google.com/spreadsheets/d/${indFile.getId()}/edit?usp=sharing`;
-			emailLinkToPersonalSheet(battalionIndividuals[idx], link);
-			Logger.log(`Emailed ${battalionIndividuals[idx]} a shareable link: ${link}`);
-		}
+
+		indFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+		const link = `https://docs.google.com/spreadsheets/d/${indFile.getId()}/edit?usp=sharing`;
+		emailLinkToPersonalSheet(battalionIndividuals[idx], link);
+		Logger.log(`Emailed ${battalionIndividuals[idx]} a shareable link: ${link}`);
+
 		Logger.log(email, battalionIndividuals[idx]);
 
 		// For editting the sheet in the testing version
