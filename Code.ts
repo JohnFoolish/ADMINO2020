@@ -1252,12 +1252,12 @@ function updateBattalionMembersJSON() {
 	if (data[0].length === 6) {
 		data.forEach((row) => {
 			if (
-				row[0].trim() !== '' &&
-				row[1].trim() !== '' &&
-				row[2].trim() !== '' &&
-				row[3].trim() !== '' &&
-				row[4].trim() !== '' &&
-				row[5].trim() !== ''
+				row[0].toString().trim() !== '' &&
+				row[1].toString().trim() !== '' &&
+				row[2].toString().trim() !== '' &&
+				row[3].toString().trim() !== '' &&
+				row[4].toString().trim() !== '' &&
+				row[5].toString().trim() !== ''
 			) {
 				peopleList.push({ name: `MIDN ${row[0]}/C ${row[1]}, ${row[2]}`, email: row[3], role: row[4], group: row[5] });
 			}
