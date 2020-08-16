@@ -817,6 +817,8 @@ function dynamicSheetUpdate(tempData) {
 	var change = 1;
 	if (tempData[7] === 'Cancelled' || tempData[7] === 'Rejected') {
 		change = -1;
+	} else if (tempData[7] === 'Approved') {
+		change = 0;
 	}
 	if (tempData[4] === 'Chit') {
 		chits += change;
