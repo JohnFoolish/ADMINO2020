@@ -1251,7 +1251,14 @@ function updateBattalionMembersJSON() {
 	const peopleList = [];
 	if (data[0].length === 6) {
 		data.forEach((row) => {
-			if (row[0] !== '' && row[1] !== '' && row[2] !== '' && row[3] !== '' && row[4] !== '' && row[5] !== '') {
+			if (
+				row[0].trim() !== '' &&
+				row[1].trim() !== '' &&
+				row[2].trim() !== '' &&
+				row[3].trim() !== '' &&
+				row[4].trim() !== '' &&
+				row[5].trim() !== ''
+			) {
 				peopleList.push({ name: `MIDN ${row[0]}/C ${row[1]}, ${row[2]}`, email: row[3], role: row[4], group: row[5] });
 			}
 		});
