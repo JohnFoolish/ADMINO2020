@@ -1,7 +1,8 @@
 /* To Do
-Link sheets / names by semester
-Sort data sheet in reverse order by date
-Write out proper documentation/docstrings
+	Link sheets / names by semester
+	Sort data sheet in reverse order by date
+	Write out proper documentation/docstrings
+	Form type
 
 */
 
@@ -1644,7 +1645,8 @@ function emailLinkToPersonalSheet(name, link) {
 		subject: `Link to view you Paperwork Spreadsheet`,
 		htmlBody: `${name},
 		<br>
-		<br> This is the link to your Paperwork Spreadsheet: <a href="${link}" target="_blank">${link}</a>.
+		<br>This is the link to your Paperwork Spreadsheet: <a href="${link}" target="_blank">${link}</a>.
+		<br>Keep this link somewhere safe for future referance. 
 		<br>
 		<br>Very respectfully,
 		<br>The ADMIN Department`,
