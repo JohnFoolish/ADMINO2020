@@ -208,7 +208,8 @@ function myOnAssignmentSubmit() {
 			//Email the assigner who was assigned it and who was not
 			sendAssignerSuccessEmail(assignerFullData, submitData, noAuthority, Authority);
 
-			const pendingAndDataWriteData = outData.map((row) => {
+			const copyOutData = JSON.parse(JSON.stringify(outData));
+			const pendingAndDataWriteData = copyOutData.map((row) => {
 				row[9] = '';
 				return row;
 			});
