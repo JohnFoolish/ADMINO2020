@@ -1644,7 +1644,7 @@ function emailLinkToPersonalSheet(name, link) {
 		subject: `Link to view you Paperwork Spreadsheet`,
 		htmlBody: `${name},
 		<br>
-		<br> This is the link to your Paperwork Spreadsheet: ${link}
+		<br> This is the link to your Paperwork Spreadsheet: <a href="${link}" target="_blank">${link}</a>.
 		<br>
 		<br>Very respectfully,
 		<br>The ADMIN Department`,
