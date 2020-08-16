@@ -208,12 +208,20 @@ function myOnAssignmentSubmit() {
 			//Email the assigner who was assigned it and who was not
 			sendAssignerSuccessEmail(assignerFullData, submitData, noAuthority, Authority);
 
+			const pendingAndDataWriteData = outData.map((row) => {
+				row[9] = '';
+				return row;
+			});
 			//Write to data sheet
-			ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+			ssData
+				.getRange(ssData.getLastRow() + 1, 1, pendingAndDataWriteData.length, pendingAndDataWriteData[0].length)
+				.setValues(pendingAndDataWriteData);
 			ssData.getRange(2, 1, ssData.getLastRow() - 1, ssData.getLastColumn()).sort({ column: 1, ascending: false });
 
 			// Write to Pending Paperwork
-			ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
+			ssPending
+				.getRange(ssPending.getLastRow() + 1, 1, pendingAndDataWriteData.length, pendingAndDataWriteData[0].length)
+				.setValues(pendingAndDataWriteData);
 			ssPending.getRange(2, 1, ssPendingCache.getLastRow() - 1, ssPendingCache.getLastColumn()).sort(7);
 
 			outData.forEach((row) => {
