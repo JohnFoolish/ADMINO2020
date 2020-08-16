@@ -599,6 +599,7 @@ function createGoogleFiles() {
 			indFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 			const link = `https://docs.google.com/spreadsheets/d/${indFile.getId()}/edit?usp=sharing`;
 			emailLinkToPersonalSheet(battalionIndividuals[idx], link);
+			Logger.log(`Emailed ${battalionIndividuals[idx]} a shareable link: ${link}`);
 		}
 		Logger.log(email, battalionIndividuals[idx]);
 
