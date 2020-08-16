@@ -707,8 +707,10 @@ function updateTurnedInPaperworkTab(tempData) {
 
 		userPaperwork.getRange(lineAddition, 1, 1, tempData.length).setValues([tempData]);
 
-		if (userPaperwork.getLastRow() > 6) {
-			userPaperwork.getRange(6, 1, userPaperwork.getLastRow() - 6, userPaperwork.getLastColumn()).sort(1);
+		if (userPaperwork.getLastRow() > 1) {
+			userPaperwork
+				.getRange(2, 1, userPaperwork.getLastRow() - 1, userPaperwork.getLastColumn())
+				.sort({ column: 1, ascending: false });
 		}
 	});
 }
