@@ -192,7 +192,7 @@ function myOnAssignmentSubmit() {
 					tempOutData[6] = submitData.dateDue; // Date Due
 					tempOutData[7] = 'Pending'; // Status
 					tempOutData[8] = submitData.reason; // Reason for paperwork
-					tempOutData[9] = submitData.pdfLink; //Link to paperwork
+					tempOutData[9] = ''; //Link to paperwork
 					outData.push(tempOutData);
 
 					if (submitData.sendEmail) {
@@ -208,24 +208,16 @@ function myOnAssignmentSubmit() {
 			//Email the assigner who was assigned it and who was not
 			sendAssignerSuccessEmail(assignerFullData, submitData, noAuthority, Authority);
 
-			const copyOutData = JSON.parse(JSON.stringify(outData));
-			const pendingAndDataWriteData = copyOutData.map((row) => {
-				row[9] = '';
-				return row;
-			});
 			//Write to data sheet
-			ssData
-				.getRange(ssData.getLastRow() + 1, 1, pendingAndDataWriteData.length, pendingAndDataWriteData[0].length)
-				.setValues(pendingAndDataWriteData);
+			ssData.getRange(ssData.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 			ssData.getRange(2, 1, ssData.getLastRow() - 1, ssData.getLastColumn()).sort({ column: 1, ascending: false });
 
 			// Write to Pending Paperwork
-			ssPending
-				.getRange(ssPending.getLastRow() + 1, 1, pendingAndDataWriteData.length, pendingAndDataWriteData[0].length)
-				.setValues(pendingAndDataWriteData);
+			ssPending.getRange(ssPending.getLastRow() + 1, 1, outData.length, outData[0].length).setValues(outData);
 			ssPending.getRange(2, 1, ssPending.getLastRow() - 1, ssPending.getLastColumn()).sort(7);
 
 			outData.forEach((row) => {
+				row[9] = submitData.pdfLink;
 				dynamicSheetUpdate(row);
 			});
 		} else {
