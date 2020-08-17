@@ -1000,7 +1000,11 @@ function updateFormGroups() {
 	roles.forEach((item) => {
 		if (item[0] !== '') rowItems.push(item[0]);
 	});
-	rowItems.concat(['1/C MIDN', '2/C MIDN', '3/C MIDN', '4/C MIDN']);
+	rowItems.push('1/C MIDN');
+	rowItems.push('2/C MIDN');
+	rowItems.push('3/C MIDN');
+	rowItems.push('4/C MIDN');
+	//rowItems.concat(['1/C MIDN', '2/C MIDN', '3/C MIDN', '4/C MIDN']);
 	const colItems = [];
 	getGroups(false, true).forEach((group) => {
 		colItems.push(group);
