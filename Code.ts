@@ -1000,18 +1000,18 @@ function updateFormGroups() {
 	roles.forEach((item) => {
 		if (item[0] !== '') rowItems.push(item[0]);
 	});
+	rowItems.concat(['1/C MIDN', '2/C MIDN', '3/C MIDN', '4/C MIDN']);
 	const colItems = [];
 	getGroups(false, true).forEach((group) => {
 		colItems.push(group);
 	});
-	Logger.log(colItems);
 	item.setRows(rowItems);
 	item.setColumns(colItems);
 	item.setHelpText(
 		'Select any group/s that you would like to assign paperwork. Think: the _____(row)/s of the _______(column).'
 	);
 
-	// Update Reciever individuals f
+	// Update Reciever individuals
 	const item3 = FormItem[2].asCheckboxGridItem();
 	item3.setTitle('Receiving Individual/s');
 	const rowItems2 = [];
@@ -1076,7 +1076,6 @@ function getGroups(individuals: boolean, groups: boolean): string[] {
 				out.push(group);
 			}
 		}
-		out.concat(['1/C MIDN', '2/C MIDN', '3/C MIDN', '4/C MIDN']);
 	}
 
 	if (individuals) {
