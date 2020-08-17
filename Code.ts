@@ -290,11 +290,11 @@ function adjustDateForWeekends(currentDate, daysToAddToDate): number {
 function myOnFormTurnedInSubmit() {
 	if (ssTurnedIn.getLastRow() > 1) {
 		// Get data from linked sheet to use
-		const data = ssTurnedIn.getRange(ssTurnedIn.getLastRow(), 1, 1, ssTurnedIn.getLastColumn()).getValues();
+		const data = ssTurnedIn.getRange(ssTurnedIn.getLastRow(), 1, 1, 4).getValues();
 
 		// Manipulate Data / Rearrange Data
 		const outData = data;
-		outData[0].push('FALSE');
+		outData[0][3] = 'false';
 
 		updateTurnedInPaperworkTab(outData[0]);
 
@@ -577,6 +577,7 @@ function autoRunCreateGoogleFiles() {
  *
  */
 function createGoogleFiles() {
+	//if ()
 	if (ssVariables.getRange(8, 2).getValue().toString().toLowerCase() == 'false') {
 		return;
 	}
