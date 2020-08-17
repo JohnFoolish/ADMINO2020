@@ -295,6 +295,7 @@ function myOnFormTurnedInSubmit() {
 		// Manipulate Data / Rearrange Data
 		const outData = data;
 		outData[0][3] = 'false';
+		outData[0][4] = '';
 
 		updateTurnedInPaperworkTab(outData[0]);
 
@@ -901,7 +902,7 @@ function dynamicSheetUpdate(tempData) {
 		}
 
 		if (tempData[7] === 'Cancelled') {
-			tempData = ['', '', '', '', '', '', '', '', ''];
+			tempData = ['', '', '', '', '', '', '', '', '', ''];
 		}
 		userPaperwork.getRange(lineAddition, 1, 1, tempData.length).setValues([tempData]);
 		totalPaperwork.getRange(totalLineAddition, 1, 1, tempData.length).setValues([tempData]);
@@ -1072,6 +1073,7 @@ function getGroups(individuals: boolean, groups: boolean): string[] {
 				out.push(group);
 			}
 		}
+		//out.concat(['1/C MIDN', '2/C MIDN', '3/C MIDN', '4/C MIDN']);
 	}
 
 	if (individuals) {
