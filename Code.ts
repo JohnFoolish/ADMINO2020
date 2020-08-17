@@ -1010,7 +1010,7 @@ function updateFormGroups() {
 		'Select any group/s that you would like to assign paperwork. Think: the _____(row)/s of the _______(column).'
 	);
 
-	// Update Reciever individuals
+	// Update Reciever individuals f
 	const item3 = FormItem[2].asCheckboxGridItem();
 	item3.setTitle('Receiving Individual/s');
 	const rowItems2 = [];
