@@ -1005,6 +1005,7 @@ function updateFormGroups() {
 	getGroups(false, true).forEach((group) => {
 		colItems.push(group);
 	});
+	Logger.log(rowItems);
 	item.setRows(rowItems);
 	item.setColumns(colItems);
 	item.setHelpText(
