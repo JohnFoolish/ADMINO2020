@@ -1073,7 +1073,7 @@ function getGroups(individuals: boolean, groups: boolean): string[] {
 				out.push(group);
 			}
 		}
-		//out.concat(['1/C MIDN', '2/C MIDN', '3/C MIDN', '4/C MIDN']);
+		out.concat(['1/C MIDN', '2/C MIDN', '3/C MIDN', '4/C MIDN']);
 	}
 
 	if (individuals) {
@@ -1163,7 +1163,7 @@ function getIndividualsFromCheckBoxGrid(parsedCheckBoxData, assigner) {
 					//Search down chain for role
 					function addPeopleDownChain(chainNode) {
 						chainNode.members.forEach((member) => {
-							if (member.role === node.role) {
+							if (member.role === node.role || node.role.toString().substring(0, 1) === member.name.substring(5, 6)) {
 								outList.push({
 									name: member.name,
 									group: selectedGroup + ':' + node.role,
