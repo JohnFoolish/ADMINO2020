@@ -43,7 +43,6 @@ function myOnOpen(e) {
 function initForSemester() {
 	ssVariables.getRange(6, 2).setValue('true');
 	ssOptions.getRange(6, 2).setValue('true');
-	ssVariables.getRange(8, 2).setValue('true');
 }
 
 /**
@@ -579,9 +578,6 @@ function autoRunCreateGoogleFiles() {
  */
 function createGoogleFiles() {
 	//if ()
-	if (ssVariables.getRange(8, 2).getValue().toString().toLowerCase() == 'false') {
-		return;
-	}
 
 	const battalionIndividuals = getGroups(true, false);
 
@@ -626,11 +622,14 @@ function createGoogleFiles() {
 	}
 	if (finishInitMem.length === 0) {
 		ssVariables.getRange(6, 2).setValue('false');
-		MailApp.sendEmail({
-			to: Session.getEffectiveUser().getEmail(),
-			subject: 'The Paperwork Database was Successfully Enabled',
-			htmlBody: `ADMINO,<br><br>The paperwork database was successfully initialized. Have a good semester!<br><br>Very respectfully,<br>The ADMIN Department`,
-		});
+		if (ssVariables.getRange(8, 2).getValue().toString().toLowerCase() === 'false') {
+			MailApp.sendEmail({
+				to: Session.getEffectiveUser().getEmail(),
+				subject: 'The Paperwork Database was Successfully Enabled',
+				htmlBody: `ADMINO,<br><br>The paperwork database was successfully initialized. Have a good semester!<br><br>Very respectfully,<br>The ADMIN Department`,
+			});
+		}
+		ssVariables.getRange(8, 2).setValue('true');
 	}
 }
 
