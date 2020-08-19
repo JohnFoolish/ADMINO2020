@@ -1763,6 +1763,7 @@ function dailyCheckToRemindPplOfPaperwork() {
 				}
 			}
 		}
+		Logger.log(paperworkTypes);
 		sendPaperworkHeadsUpNotification(paperworkTypes);
 	}
 }
