@@ -1785,7 +1785,7 @@ function sendPaperworkHeadsUpNotification(paperworkTypes) {
 			subject: `Your ${key} is due tomorrow`,
 			htmlBody: `${
 				names.length === 1 ? names[0] : 'Team'
-			},<br><br>Your ${key} is due tomorrow.<br><br>Very respectfully,<br>The ADMIN Department`,
+			},<br><br>This is a reminder that your ${key} is due tomorrow.<br><br>Very respectfully,<br>The ADMIN Department`,
 		});
 	}
 }
