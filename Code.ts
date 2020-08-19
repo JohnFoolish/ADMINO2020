@@ -1758,7 +1758,7 @@ function dailyCheckToRemindPplOfPaperwork() {
 			) {
 				if (paperworkTypes[data[i][4]] === undefined) {
 					paperworkTypes[data[i][4]] = [data[i][3]];
-				} else {
+				} else if (paperworkTypes[data[i][4]].indexOf(data[i][3]) === -1) {
 					paperworkTypes[data[i][4]].push(data[i][3]);
 				}
 			}
