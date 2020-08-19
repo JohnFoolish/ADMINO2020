@@ -1756,8 +1756,11 @@ function dailyCheckToRemindPplOfPaperwork() {
 				tomorrow.getMonth() === dueDate.getMonth() &&
 				dueDate.getFullYear() === tomorrow.getFullYear()
 			) {
-				paperworkTypes[data[i][4]] =
-					paperworkTypes[data[i][4]] === undefined ? [data[i][3]] : paperworkTypes[data[i][4]].push(data[i][3]);
+				if (paperworkTypes[data[i][4]] === undefined) {
+					paperworkTypes[data[i][4]] = [data[i][3]];
+				} else {
+					paperworkTypes[data[i][4]].push(data[i][3]);
+				}
 			}
 		}
 		sendPaperworkHeadsUpNotification(paperworkTypes);
