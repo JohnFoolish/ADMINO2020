@@ -1047,6 +1047,20 @@ function updateFormGroups() {
 	createGoogleFiles();
 }
 
+function processFromAssignemntForm() {
+	const responses = form.getResponses();
+	responses.forEach((response) => {
+		const timestamp = response.getTimestamp();
+		const answers = response.getItemResponses();
+		answers.forEach((answer) => {
+			const temptitle = answer.getItem().getTitle();
+			const tempresponce = answer.getResponse();
+			Logger.log(temptitle + ' ' + JSON.stringify(tempresponce));
+		});
+	});
+	//form.deleteAllResponses();
+}
+
 /**
  *
  */
