@@ -19,7 +19,7 @@ const ssBattalionStructure = ss.getSheetByName('Battalion Structure');
 const ssBattalionMembers = ss.getSheetByName('Battalion Members');
 const ssPendingCache = ss.getSheetByName('PendingChangedCache');
 
-const form = FormApp.openByUrl('https://docs.google.com/forms/d/1l6lZZhsOWb5rcyTFDxyiFJln0tFBuVIiFRGK_hjnZ84/edit');
+const form = FormApp.openByUrl('https://docs.google.com/forms/d/1f22EenrHBNRjiR-QXk8hDm0BroLEFAcvfPYg1Bmedp8/edit');
 const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit');
 const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 const ssTemplate = SpreadsheetApp.openByUrl(
@@ -1027,28 +1027,9 @@ function updateFormGroups() {
 	item3.setColumns(colItems2);
 	item3.setHelpText('Select the individual/s receiving the paperwork not already selected by group selection.');
 
-	// Reset form response
-	if (ssAssignment.getLastColumn() > 150) {
-		// 256 is max number of columns, I use 150 cuz why not
-		const destID = form.getDestinationId();
-		const destType = form.getDestinationType();
-		form.removeDestination();
-		form.deleteAllResponses();
-		ss.deleteSheet(ssAssignment);
-		Utilities.sleep(4500);
-		form.setDestination(destType, destID);
-		Utilities.sleep(4500);
-
-		// Find sheet and rename to assignmnet
-		ss.getSheets().forEach((sheet) => {
-			if (sheet.getName().substring(0, 14) === 'Form Responses') {
-				sheet.setName('Assignment Responses');
-				ssAssignment = sheet;
-				ssAssignment.hideSheet();
-			}
-		});
-		ssVariables.getRange(1, 2).setValue('1');
-	}
+	// Reset form
+	form.deleteAllResponses();
+	ssAssignment.clear();
 
 	//Update the form submission page
 	const subFormItem = subForm.getItems();
@@ -1063,30 +1044,6 @@ function updateFormGroups() {
 	subItem.isRequired();
 	subItem.setHelpText('Select your name from the dropdown menu below');
 	createGoogleFiles();
-}
-
-function manualLinkForm() {
-	// 256 is max number of columns, I use 150 cuz why not
-	const destID = '1RCf31-VbRmI0UEIhZFBTAYOAUgbbMvNjd98LSGXXKPM';
-	const destType = FormApp.DestinationType.SPREADSHEET;
-	form.removeDestination();
-	form.deleteAllResponses();
-	if (ssAssignment !== null) {
-		ss.deleteSheet(ssAssignment);
-	}
-	Utilities.sleep(4500);
-	form.setDestination(destType, destID);
-	Utilities.sleep(4500);
-
-	// Find sheet and rename to assignmnet
-	ss.getSheets().forEach((sheet) => {
-		if (sheet.getName().substring(0, 14) === 'Form Responses') {
-			sheet.setName('Assignment Responses');
-			ssAssignment = sheet;
-			ssAssignment.hideSheet();
-		}
-	});
-	ssVariables.getRange(1, 2).setValue('1');
 }
 
 /**
