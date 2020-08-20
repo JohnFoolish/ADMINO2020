@@ -1071,7 +1071,9 @@ function manualLinkForm() {
 	const destType = FormApp.DestinationType.SPREADSHEET;
 	form.removeDestination();
 	form.deleteAllResponses();
-	ss.deleteSheet(ssAssignment);
+	if (ss.getSheetByName('Assignment Responses') !== undefined) {
+		ss.deleteSheet(ssAssignment);
+	}
 	Utilities.sleep(4500);
 	form.setDestination(destType, destID);
 	Utilities.sleep(4500);
