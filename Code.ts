@@ -1035,9 +1035,9 @@ function updateFormGroups() {
 		form.removeDestination();
 		form.deleteAllResponses();
 		ss.deleteSheet(ssAssignment);
-		Utilities.sleep(1500);
+		Utilities.sleep(4500);
 		form.setDestination(destType, destID);
-		Utilities.sleep(1500);
+		Utilities.sleep(4500);
 
 		// Find sheet and rename to assignmnet
 		ss.getSheets().forEach((sheet) => {
