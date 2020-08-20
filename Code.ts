@@ -19,7 +19,7 @@ const ssBattalionStructure = ss.getSheetByName('Battalion Structure');
 const ssBattalionMembers = ss.getSheetByName('Battalion Members');
 const ssPendingCache = ss.getSheetByName('PendingChangedCache');
 
-const form = FormApp.openByUrl('https://docs.google.com/forms/d/1f22EenrHBNRjiR-QXk8hDm0BroLEFAcvfPYg1Bmedp8/edit');
+const form = FormApp.openByUrl('https://docs.google.com/forms/d/1oslMj7BvOhj4ErQxhq4yiVt9VpRvSP6vlkZ3d0DW6UU/edit');
 const subForm = FormApp.openByUrl('https://docs.google.com/forms/d/1x2HP45ygThm6MoYlKasVnaacgZUW_yKA7Cz9pxKKOJc/edit');
 const root = DriveApp.getFolderById('1vPucUC-lnMzCRWPZQ8FYkQHswNkB7Nv9');
 const ssTemplate = SpreadsheetApp.openByUrl(
