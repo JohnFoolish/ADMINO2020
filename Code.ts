@@ -1030,6 +1030,7 @@ function updateFormGroups() {
 	// Reset form
 	form.deleteAllResponses();
 	ssAssignment.clear();
+	ssVariables.getRange(1, 2).setValue('0');
 
 	//Update the form submission page
 	const subFormItem = subForm.getItems();
