@@ -1724,6 +1724,7 @@ function getFullMemberData(name: string): { name: string; email: string; role: s
 function dailyRunFunctions() {
 	dailyCheckToRemindPplOfPaperwork();
 	approveDueGoogleFormsFromDatabase();
+	updateBattalionMembersJSON();
 }
 /**
  *
