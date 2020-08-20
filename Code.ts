@@ -1065,6 +1065,28 @@ function updateFormGroups() {
 	createGoogleFiles();
 }
 
+function manualLinkForm() {
+	// 256 is max number of columns, I use 150 cuz why not
+	const destID = '1RCf31-VbRmI0UEIhZFBTAYOAUgbbMvNjd98LSGXXKPM';
+	const destType = FormApp.DestinationType.SPREADSHEET;
+	form.removeDestination();
+	form.deleteAllResponses();
+	ss.deleteSheet(ssAssignment);
+	Utilities.sleep(4500);
+	form.setDestination(destType, destID);
+	Utilities.sleep(4500);
+
+	// Find sheet and rename to assignmnet
+	ss.getSheets().forEach((sheet) => {
+		if (sheet.getName().substring(0, 14) === 'Form Responses') {
+			sheet.setName('Assignment Responses');
+			ssAssignment = sheet;
+			ssAssignment.hideSheet();
+		}
+	});
+	ssVariables.getRange(1, 2).setValue('1');
+}
+
 /**
  *
  */
