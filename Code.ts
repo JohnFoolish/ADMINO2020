@@ -57,15 +57,18 @@ function initSheetReminder() {
 			wipeGoogleFiles();
 			ssVariables.getRange(8, 2).setValue('false');
 			ssOptions.getRange(6, 2).setValue('false');
+			ssVariables.getRange(5, 2).setValue(now);
 		};
 
-		// Reset for fall
-		if (now.getMonth() === 7) {
+		const lastResetDate = new Date(ssVariables.getRange(5, 2).getValue().toString());
+
+		// Reset for fall if hasnt been reset in last 60 days
+		if (now.getMonth() === 7 && now.getTime() - lastResetDate.getTime() > 1000 * 60 * 60 * 24 * 60) {
 			resetSheet();
 		}
 
-		// Reset for spring
-		if (now.getMonth() === 11 && now.getDate() > 20) {
+		// Reset for spring if hasnt been reset in last 60 days
+		if (now.getMonth() === 11 && now.getTime() - lastResetDate.getTime() > 1000 * 60 * 60 * 24 * 60) {
 			resetSheet();
 		}
 	}
