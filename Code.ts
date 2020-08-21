@@ -1740,6 +1740,23 @@ function dailyRunFunctions() {
 	approveDueGoogleFormsFromDatabase();
 	updateBattalionMembersJSON();
 }
+
+/**
+ *
+ */
+function runWeekly() {
+	initSheetReminder();
+}
+
+/**
+ *
+ */
+function runEveryTenMinutes() {
+	updateSheetsFromPendingCache();
+	autoRunCreateGoogleFiles();
+	processFromAssignemntForm();
+}
+
 /**
  *
  */
