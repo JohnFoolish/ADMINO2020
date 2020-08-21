@@ -1062,6 +1062,7 @@ function processFromAssignemntForm() {
 								groups: row,
 							});
 						}
+						Logger.log(`Row: ${row} \ typeof = ${typeof row}`);
 					});
 					break;
 				default:
@@ -1069,7 +1070,9 @@ function processFromAssignemntForm() {
 					break;
 			}
 		});
-		Logger.log(`Submit data: ${JSON.stringify(submitData)} ////// RawGridData: ${keyValuePairsRawGridCheckbox}`);
+		Logger.log(
+			`Submit data: ${JSON.stringify(submitData)} ////// RawGridData: ${JSON.stringify(keyValuePairsRawGridCheckbox)}`
+		);
 		//myOnAssignmentSubmit(submitData, keyValuePairsRawGridCheckbox);
 	});
 	//form.deleteAllResponses();
