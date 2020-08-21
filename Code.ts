@@ -319,6 +319,12 @@ function myOnEdit() {
  */
 function updateSheetsFromPendingCache() {
 	if (ssPendingCache.getLastRow() > 0) {
+		var lock = LockService.getScriptLock();
+		try {
+			lock.waitLock(100000);
+		} catch (e) {
+			Logger.log('Could not obtain lock after 100 seconds.');
+		}
 		const data = ssData.getRange(1, 1, ssData.getLastRow(), ssData.getLastColumn()).getValues();
 		const pending = ssPendingCache.getRange(1, 1, 1, ssPendingCache.getLastColumn()).getValues();
 
@@ -336,6 +342,8 @@ function updateSheetsFromPendingCache() {
 		ssPendingCache.getRange(1, 1, 1, pending[0].length).setValues(pending);
 		ssPendingCache.sort(1);
 		Logger.log('Successfully updated: ', pending[0]);
+		SpreadsheetApp.flush();
+		lock.releaseLock();
 		updateSheetsFromPendingCache();
 	}
 }
@@ -529,6 +537,12 @@ function autoRunCreateGoogleFiles() {
  */
 function createGoogleFiles() {
 	//if multiple sessions hten dont run
+	var lock = LockService.getScriptLock();
+	try {
+		lock.waitLock(100000);
+	} catch (e) {
+		Logger.log('Could not obtain lock after 100 seconds.');
+	}
 
 	const battalionIndividuals = getGroups(true, false);
 
@@ -582,6 +596,8 @@ function createGoogleFiles() {
 		}
 		ssVariables.getRange(8, 2).setValue('true');
 	}
+	SpreadsheetApp.flush();
+	lock.releaseLock();
 }
 
 /**
@@ -946,15 +962,11 @@ function updateFormGroups() {
 	const item = FormItem[1].asCheckboxGridItem();
 	item.setTitle('Receiving Groups/s');
 	let roles = ssBattalionStructure.getRange(2, 1, ssBattalionStructure.getLastRow(), 1).getValues();
-	const rowItems = [];
+	let rowItems = [];
 	roles.forEach((item) => {
 		if (item[0] !== '') rowItems.push(item[0]);
 	});
-	rowItems.push('1/C MIDN');
-	rowItems.push('2/C MIDN');
-	rowItems.push('3/C MIDN');
-	rowItems.push('4/C MIDN');
-	//rowItems.concat(['1/C MIDN', '2/C MIDN', '3/C MIDN', '4/C MIDN']);
+	rowItems = rowItems.concat(['1/C MIDN', '2/C MIDN', '3/C MIDN', '4/C MIDN']);
 	const colItems = [];
 	getGroups(false, true).forEach((group) => {
 		colItems.push(group);
@@ -994,6 +1006,13 @@ function updateFormGroups() {
 }
 
 function processFromAssignemntForm() {
+	var lock = LockService.getScriptLock();
+	try {
+		lock.waitLock(100000);
+	} catch (e) {
+		Logger.log('Could not obtain lock after 100 seconds.');
+	}
+
 	const responses = form.getResponses();
 	responses.forEach((response) => {
 		// Init stuff to add to data
@@ -1071,6 +1090,9 @@ function processFromAssignemntForm() {
 		myOnAssignmentSubmit(submitData, keyValuePairsRawGridCheckbox);
 	});
 	form.deleteAllResponses();
+
+	SpreadsheetApp.flush();
+	lock.releaseLock();
 }
 
 /**
