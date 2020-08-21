@@ -1062,7 +1062,7 @@ function processFromAssignemntForm() {
 								groups: row,
 							});
 						}
-						Logger.log(`Row: ${row} \ typeof = ${typeof row}`);
+						Logger.log(`Row: ${row} \ row === null : ${row === null}`);
 					});
 					break;
 				default:
