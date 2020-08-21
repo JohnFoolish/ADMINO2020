@@ -1030,6 +1030,9 @@ function updateFormGroups() {
 	// Reset form
 	form.deleteAllResponses();
 	ssAssignment.clear();
+	for (let i = 0; i < ssAssignment.getMaxColumns() - 2; i++) {
+		ssAssignment.deleteColumn(2);
+	}
 	ssVariables.getRange(1, 2).setValue('0');
 
 	//Update the form submission page
@@ -1055,7 +1058,7 @@ function processFromAssignemntForm() {
 		answers.forEach((answer) => {
 			const temptitle = answer.getItem().getTitle();
 			const tempresponce = answer.getResponse();
-			Logger.log(temptitle + ' ' + JSON.stringify(tempresponce));
+			Logger.log(timestamp + ' :: ' + temptitle + ' ' + JSON.stringify(tempresponce));
 		});
 	});
 	//form.deleteAllResponses();
