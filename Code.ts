@@ -80,25 +80,13 @@ function initSheetReminder() {
 //Triggers when the submission form is submitted
 function myOnSubmit() {
 	if (ssVariables.getRange(8, 2).getValue().toString() == 'true') {
-		/*
-		if (ssVariables.getRange(1, 2).getValue().toString() !== ssAssignment.getLastRow().toString()) {
-			This code bit is out dated because shifting to response checking not turn in
-			myOnAssignmentSubmit();
-			ssVariables.getRange(1, 2).setValue(ssAssignment.getLastRow());
-		}
-		*/
+		// It will always be this sheet, but I dont wanna recode it since there is only one form which submits to it now
 		if (ssVariables.getRange(2, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
 			myOnFormTurnedInSubmit();
 			ssVariables.getRange(2, 2).setValue(ssTurnedIn.getLastRow());
 		}
 	} else {
 		let submitterName = '';
-		/* Replace this logic in the other function
-		if (ssVariables.getRange(1, 2).getValue().toString() !== ssAssignment.getLastRow().toString()) {
-			submitterName = ssAssignment.getRange(ssAssignment.getLastRow(), 2).getValue();
-			ssVariables.getRange(1, 2).setValue(ssAssignment.getLastRow());
-		}
-		*/
 		if (ssVariables.getRange(2, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
 			submitterName = ssTurnedIn.getRange(ssTurnedIn.getLastRow(), 2).getValue();
 			ssVariables.getRange(2, 2).setValue(ssTurnedIn.getLastRow());
@@ -116,7 +104,7 @@ function myOnAssignmentSubmit(submitData: submittedData, keyValuePairsRawGridChe
 
 		// Check to make sure the sheet is active and send email accordingly if not open
 		if (ssVariables.getRange(8, 2).getValue().toString() == 'false') {
-			sendSheetNotEnabledEmail(name);
+			sendSheetNotEnabledEmail(submitData.assigner);
 		}
 
 		// Make sure assigner is in system
