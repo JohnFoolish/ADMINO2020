@@ -32,6 +32,8 @@ function myOnOpen(e) {
 	ui.createMenu('DB Functions')
 		.addItem('Initialize', 'initForSemester')
 		.addSeparator()
+		.addItem('Manual Process Responses', 'processFromAssignemntForm')
+		.addSeparator()
 		.addItem('Clear Pending Cache', 'updateSheetsFromPendingCache')
 		.addToUi();
 }
