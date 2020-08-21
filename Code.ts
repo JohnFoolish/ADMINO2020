@@ -1076,48 +1076,7 @@ function processFromAssignemntForm() {
 		);
 		myOnAssignmentSubmit(submitData, keyValuePairsRawGridCheckbox);
 	});
-	//form.deleteAllResponses();
-
-	/*
-
-		
-		for (let i = 0; i < dataPairs[0].length; i++) {
-			if (dataPairs[0][i] === "Assigner's Name") {
-				submitData.assigner = dataPairs[1][i];
-			} else if (dataPairs[0][i] === 'Paperwork') {
-				submitData.paperwork = dataPairs[1][i];
-			} else if (dataPairs[0][i] === 'Reason for paperwork') {
-				submitData.reason = dataPairs[1][i];
-			} else if (dataPairs[0][i] === 'Date Assigned') {
-				submitData.dateAssigned = dataPairs[1][i];
-			} else if (dataPairs[0][i] === 'Date Due') {
-				submitData.dateDue = specificDueDateLengthCheck(submitData.paperwork, submitData.dateAssigned, dataPairs[1][i]);
-			} else if (dataPairs[0][i] === 'Send Assignment Email Notification') {
-				submitData.sendEmail = dataPairs[1][i] === 'No' ? false : true;
-			} else if (dataPairs[0][i] === 'Upload your form as a PDF here:') {
-				submitData.pdfLink = dataPairs[1][i];
-			} else if (dataPairs[0][i].substring(0, 22) === 'Receiving Individual/s') {
-				if (dataPairs[1][i] !== '') {
-					keyValuePairsRawGridCheckbox.push({
-						role: dataPairs[0][i].substring(24, dataPairs[0][i].length - 1),
-						groups: dataPairs[1][i].split(',').map((element) => element.trim()),
-					});
-				}
-			} else if (dataPairs[0][i].substring(0, 18) === 'Receiving Groups/s') {
-				if (dataPairs[1][i] !== '') {
-					keyValuePairsRawGridCheckbox.push({
-						role: dataPairs[0][i].substring(20, dataPairs[0][i].length - 1),
-						groups: dataPairs[1][i].split(',').map((element) => element.trim()),
-					});
-				}
-			}
-		}
-
-		NOTE****
-		role:: dataparis[0][i] ~= 'Receiving Groups/s [Petty Officer]' or 'Receiving Individual/s [MIDN 1/C Tran, Tu]'
-		grousp:: dataPairs[1][i] ~= 'Battalion,Academics' or 'Individual'
-
-	*/
+	form.deleteAllResponses();
 }
 
 /**
