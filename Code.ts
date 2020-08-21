@@ -1056,7 +1056,7 @@ function processFromAssignemntForm() {
 				case 'Receiving Groups/s':
 					const rowGroupNames: string[] = question.getItem().asCheckboxGridItem().getRows();
 					(answer as string[][]).forEach((row, index) => {
-						if (row !== ['']) {
+						if (row !== []) {
 							keyValuePairsRawGridCheckbox.push({
 								role: rowGroupNames[index],
 								groups: row,
@@ -1069,9 +1069,7 @@ function processFromAssignemntForm() {
 					break;
 			}
 		});
-		Logger.log(
-			`Submit data: ${JSON.stringify(submitData)} ////// RawGridData: ${JSON.stringify(keyValuePairsRawGridCheckbox)}`
-		);
+		Logger.log(`Submit data: ${JSON.stringify(submitData)} ////// RawGridData: ${keyValuePairsRawGridCheckbox}`);
 		//myOnAssignmentSubmit(submitData, keyValuePairsRawGridCheckbox);
 	});
 	//form.deleteAllResponses();
