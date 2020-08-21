@@ -1074,7 +1074,7 @@ function processFromAssignemntForm() {
 		Logger.log(
 			`Submit data: ${JSON.stringify(submitData)} ////// RawGridData: ${JSON.stringify(keyValuePairsRawGridCheckbox)}`
 		);
-		//myOnAssignmentSubmit(submitData, keyValuePairsRawGridCheckbox);
+		myOnAssignmentSubmit(submitData, keyValuePairsRawGridCheckbox);
 	});
 	//form.deleteAllResponses();
 
