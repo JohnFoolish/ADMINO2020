@@ -1047,22 +1047,23 @@ function processFromAssignemntForm() {
 				case 'Receiving Individual/s':
 					const rowIndividualNames: string[] = question.getItem().asCheckboxGridItem().getRows();
 					(answer as string[][]).forEach((row, index) => {
-						keyValuePairsRawGridCheckbox.push({
-							role: rowIndividualNames[index],
-							groups: row,
-						});
+						if (row !== null) {
+							keyValuePairsRawGridCheckbox.push({
+								role: rowIndividualNames[index],
+								groups: row,
+							});
+						}
 					});
 					break;
 				case 'Receiving Groups/s':
 					const rowGroupNames: string[] = question.getItem().asCheckboxGridItem().getRows();
 					(answer as string[][]).forEach((row, index) => {
-						if (row !== []) {
+						if (row !== null) {
 							keyValuePairsRawGridCheckbox.push({
 								role: rowGroupNames[index],
 								groups: row,
 							});
 						}
-						Logger.log(`Row: ${row} \ row === null : ${row === null}`);
 					});
 					break;
 				default:
