@@ -1752,9 +1752,9 @@ function runWeekly() {
  *
  */
 function runEveryTenMinutes() {
+	processFromAssignemntForm();
 	updateSheetsFromPendingCache();
 	autoRunCreateGoogleFiles();
-	processFromAssignemntForm();
 }
 
 /**
