@@ -946,6 +946,13 @@ function initSheet(sheetID, name) {
  *
  */
 function updateFormGroups() {
+	var lock = LockService.getScriptLock();
+	try {
+		lock.waitLock(100000);
+	} catch (e) {
+		Logger.log('Could not obtain lock after 100 seconds.');
+	}
+
 	// Update assigner names list
 	const FormItem = form.getItems();
 	const item2 = FormItem[0].asListItem();
@@ -1003,6 +1010,8 @@ function updateFormGroups() {
 	subItem.isRequired();
 	subItem.setHelpText('Select your name from the dropdown menu below');
 	createGoogleFiles();
+
+	lock.releaseLock();
 }
 
 function processFromAssignemntForm() {
