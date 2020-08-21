@@ -100,8 +100,6 @@ function myOnSubmit() {
  */
 function myOnAssignmentSubmit(submitData: submittedData, keyValuePairsRawGridCheckbox) {
 	if (ssData.getLastRow() > 0) {
-		// const dataPairs = [dataResponseFormat[0], submittedData[0]];
-
 		// Check to make sure the sheet is active and send email accordingly if not open
 		if (ssVariables.getRange(8, 2).getValue().toString() == 'false') {
 			sendSheetNotEnabledEmail(submitData.assigner);
