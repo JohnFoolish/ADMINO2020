@@ -1056,7 +1056,7 @@ function processFromAssignemntForm() {
 				case 'Receiving Groups/s':
 					const rowGroupNames: string[] = question.getItem().asCheckboxGridItem().getRows();
 					(answer as string[][]).forEach((row, index) => {
-						if (row !== 'null') {
+						if (row !== ['']) {
 							keyValuePairsRawGridCheckbox.push({
 								role: rowGroupNames[index],
 								groups: row,
