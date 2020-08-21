@@ -9,7 +9,6 @@
 // This code was complited from typescript
 const ss = SpreadsheetApp.getActiveSpreadsheet();
 const ssData = ss.getSheetByName('Data');
-let ssAssignment = ss.getSheetByName('Assignment Responses');
 const ssTurnedIn = ss.getSheetByName('Turnin Responses');
 const ssOptions = ss.getSheetByName('Options');
 const ssPending = ss.getSheetByName('Pending Paperwork');
@@ -81,20 +80,25 @@ function initSheetReminder() {
 //Triggers when the submission form is submitted
 function myOnSubmit() {
 	if (ssVariables.getRange(8, 2).getValue().toString() == 'true') {
+		/*
 		if (ssVariables.getRange(1, 2).getValue().toString() !== ssAssignment.getLastRow().toString()) {
+			This code bit is out dated because shifting to response checking not turn in
 			myOnAssignmentSubmit();
 			ssVariables.getRange(1, 2).setValue(ssAssignment.getLastRow());
 		}
+		*/
 		if (ssVariables.getRange(2, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
 			myOnFormTurnedInSubmit();
 			ssVariables.getRange(2, 2).setValue(ssTurnedIn.getLastRow());
 		}
 	} else {
 		let submitterName = '';
+		/* Replace this logic in the other function
 		if (ssVariables.getRange(1, 2).getValue().toString() !== ssAssignment.getLastRow().toString()) {
 			submitterName = ssAssignment.getRange(ssAssignment.getLastRow(), 2).getValue();
 			ssVariables.getRange(1, 2).setValue(ssAssignment.getLastRow());
 		}
+		*/
 		if (ssVariables.getRange(2, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
 			submitterName = ssTurnedIn.getRange(ssTurnedIn.getLastRow(), 2).getValue();
 			ssVariables.getRange(2, 2).setValue(ssTurnedIn.getLastRow());
@@ -106,60 +110,13 @@ function myOnSubmit() {
 /**
  *
  */
-function myOnAssignmentSubmit() {
+function myOnAssignmentSubmit(submitData: submittedData, keyValuePairsRawGridCheckbox) {
 	if (ssData.getLastRow() > 0) {
-		// Get newly inserted data
-		const dataResponseFormat = ssAssignment.getRange(1, 1, 1, ssAssignment.getLastColumn()).getValues();
-		const submittedData = ssAssignment
-			.getRange(ssAssignment.getLastRow(), 1, 1, ssAssignment.getLastColumn())
-			.getValues();
-		const dataPairs = [dataResponseFormat[0], submittedData[0]];
+		// const dataPairs = [dataResponseFormat[0], submittedData[0]];
 
-		interface submittedData {
-			timestamp: Date;
-			assigner: string;
-			paperwork: string;
-			reason: string;
-			dateAssigned: Date;
-			dateDue: Date;
-			sendEmail: boolean;
-			pdfLink: string;
-		}
-
-		const submitData = {} as submittedData;
-		const keyValuePairsRawGridCheckbox = [];
-		for (let i = 0; i < dataPairs[0].length; i++) {
-			if (dataPairs[0][i] === 'Timestamp') {
-				submitData.timestamp = dataPairs[1][i];
-			} else if (dataPairs[0][i] === "Assigner's Name") {
-				submitData.assigner = dataPairs[1][i];
-			} else if (dataPairs[0][i] === 'Paperwork') {
-				submitData.paperwork = dataPairs[1][i];
-			} else if (dataPairs[0][i] === 'Reason for paperwork') {
-				submitData.reason = dataPairs[1][i];
-			} else if (dataPairs[0][i] === 'Date Assigned') {
-				submitData.dateAssigned = dataPairs[1][i];
-			} else if (dataPairs[0][i] === 'Date Due') {
-				submitData.dateDue = specificDueDateLengthCheck(submitData.paperwork, submitData.dateAssigned, dataPairs[1][i]);
-			} else if (dataPairs[0][i] === 'Send Assignment Email Notification') {
-				submitData.sendEmail = dataPairs[1][i] === 'No' ? false : true;
-			} else if (dataPairs[0][i] === 'Upload your form as a PDF here:') {
-				submitData.pdfLink = dataPairs[1][i];
-			} else if (dataPairs[0][i].substring(0, 22) === 'Receiving Individual/s') {
-				if (dataPairs[1][i] !== '') {
-					keyValuePairsRawGridCheckbox.push({
-						role: dataPairs[0][i].substring(24, dataPairs[0][i].length - 1),
-						groups: dataPairs[1][i].split(',').map((element) => element.trim()),
-					});
-				}
-			} else if (dataPairs[0][i].substring(0, 18) === 'Receiving Groups/s') {
-				if (dataPairs[1][i] !== '') {
-					keyValuePairsRawGridCheckbox.push({
-						role: dataPairs[0][i].substring(20, dataPairs[0][i].length - 1),
-						groups: dataPairs[1][i].split(',').map((element) => element.trim()),
-					});
-				}
-			}
+		// Check to make sure the sheet is active and send email accordingly if not open
+		if (ssVariables.getRange(8, 2).getValue().toString() == 'false') {
+			sendSheetNotEnabledEmail(name);
 		}
 
 		// Make sure assigner is in system
@@ -577,7 +534,7 @@ function autoRunCreateGoogleFiles() {
  *
  */
 function createGoogleFiles() {
-	//if ()
+	//if multiple sessions hten dont run
 
 	const battalionIndividuals = getGroups(true, false);
 
@@ -1027,14 +984,6 @@ function updateFormGroups() {
 	item3.setColumns(colItems2);
 	item3.setHelpText('Select the individual/s receiving the paperwork not already selected by group selection.');
 
-	// Reset form
-	form.deleteAllResponses();
-	ssAssignment.clear();
-	for (let i = 0; i < ssAssignment.getMaxColumns() - 2; i++) {
-		ssAssignment.deleteColumn(2);
-	}
-	ssVariables.getRange(1, 2).setValue('0');
-
 	//Update the form submission page
 	const subFormItem = subForm.getItems();
 	const subItem = subFormItem[0].asListItem();
@@ -1053,15 +1002,118 @@ function updateFormGroups() {
 function processFromAssignemntForm() {
 	const responses = form.getResponses();
 	responses.forEach((response) => {
-		const timestamp = response.getTimestamp();
-		const answers = response.getItemResponses();
-		answers.forEach((answer) => {
-			const temptitle = answer.getItem().getTitle();
-			const tempresponce = answer.getResponse();
-			Logger.log(timestamp + ' :: ' + temptitle + ' ' + JSON.stringify(tempresponce));
+		// Init stuff to add to data
+		const submitData = {} as submittedData;
+		const keyValuePairsRawGridCheckbox = [];
+		submitData.timestamp = new Date(response.getTimestamp().toString());
+		submitData.assigner = '';
+		submitData.paperwork = '';
+		submitData.reason = '';
+		submitData.dateAssigned = new Date();
+		submitData.dateDue = new Date();
+		submitData.sendEmail = false;
+		submitData.pdfLink = '';
+
+		// Modify data as needed
+		response.getItemResponses().forEach((question) => {
+			const temptitle = question.getItem().getTitle();
+			const answer = question.getResponse();
+			switch (temptitle) {
+				case "Assigner's Name":
+					submitData.assigner = answer as string;
+					break;
+				case 'Paperwork':
+					submitData.paperwork = answer as string;
+					break;
+				case 'Reason for paperwork':
+					submitData.reason = answer as string;
+					break;
+				case 'Date Assigned':
+					submitData.dateAssigned = new Date(answer as string);
+					break;
+				case 'Date Due':
+					submitData.dateDue = specificDueDateLengthCheck(
+						submitData.paperwork,
+						submitData.dateAssigned,
+						answer as string
+					);
+					break;
+				case 'Send Assignment Email Notification':
+					submitData.sendEmail = (answer as string) === 'No' ? false : true;
+					break;
+				case 'Upload your form as a PDF here:':
+					submitData.pdfLink = answer as string;
+					break;
+				case 'Receiving Individual/s':
+					const rowIndividualNames: string[] = question.getItem().asCheckboxGridItem().getRows();
+					(answer as string[][]).forEach((row, index) => {
+						keyValuePairsRawGridCheckbox.push({
+							role: rowIndividualNames[index],
+							groups: row,
+						});
+					});
+					break;
+				case 'Receiving Groups/s':
+					const rowGroupNames: string[] = question.getItem().asCheckboxGridItem().getRows();
+					(answer as string[][]).forEach((row, index) => {
+						keyValuePairsRawGridCheckbox.push({
+							role: rowGroupNames[index],
+							groups: row,
+						});
+					});
+					break;
+				default:
+					sendResponceParseFailEmail(temptitle, answer);
+					break;
+			}
 		});
+		Logger.log(
+			`Submit data: ${JSON.stringify(submitData)} ////// RawGridData: ${JSON.stringify(keyValuePairsRawGridCheckbox)}`
+		);
+		myOnAssignmentSubmit(submitData, keyValuePairsRawGridCheckbox);
 	});
 	//form.deleteAllResponses();
+
+	/*
+
+		
+		for (let i = 0; i < dataPairs[0].length; i++) {
+			if (dataPairs[0][i] === "Assigner's Name") {
+				submitData.assigner = dataPairs[1][i];
+			} else if (dataPairs[0][i] === 'Paperwork') {
+				submitData.paperwork = dataPairs[1][i];
+			} else if (dataPairs[0][i] === 'Reason for paperwork') {
+				submitData.reason = dataPairs[1][i];
+			} else if (dataPairs[0][i] === 'Date Assigned') {
+				submitData.dateAssigned = dataPairs[1][i];
+			} else if (dataPairs[0][i] === 'Date Due') {
+				submitData.dateDue = specificDueDateLengthCheck(submitData.paperwork, submitData.dateAssigned, dataPairs[1][i]);
+			} else if (dataPairs[0][i] === 'Send Assignment Email Notification') {
+				submitData.sendEmail = dataPairs[1][i] === 'No' ? false : true;
+			} else if (dataPairs[0][i] === 'Upload your form as a PDF here:') {
+				submitData.pdfLink = dataPairs[1][i];
+			} else if (dataPairs[0][i].substring(0, 22) === 'Receiving Individual/s') {
+				if (dataPairs[1][i] !== '') {
+					keyValuePairsRawGridCheckbox.push({
+						role: dataPairs[0][i].substring(24, dataPairs[0][i].length - 1),
+						groups: dataPairs[1][i].split(',').map((element) => element.trim()),
+					});
+				}
+			} else if (dataPairs[0][i].substring(0, 18) === 'Receiving Groups/s') {
+				if (dataPairs[1][i] !== '') {
+					keyValuePairsRawGridCheckbox.push({
+						role: dataPairs[0][i].substring(20, dataPairs[0][i].length - 1),
+						groups: dataPairs[1][i].split(',').map((element) => element.trim()),
+					});
+				}
+			}
+		}
+
+		NOTE****
+		role:: dataparis[0][i] ~= 'Receiving Groups/s [Petty Officer]' or 'Receiving Individual/s [MIDN 1/C Tran, Tu]'
+		grousp:: dataPairs[1][i] ~= 'Battalion,Academics' or 'Individual'
+
+	*/
 }
 
 /**
@@ -1768,6 +1820,14 @@ function dailyCheckToRemindPplOfPaperwork() {
 	}
 }
 
+function sendResponceParseFailEmail(title, answer) {
+	MailApp.sendEmail({
+		to: Session.getEffectiveUser().getEmail(),
+		subject: `Uncaught responce question!!!!`,
+		htmlBody: `ADMINO,<br><br>The response to <br>Question Title: ${title}<br>Question answer: ${answer}<br> was not caught in the "Paperwork Assignment" form. There is probably something really wrong.<br><br>Very respectfully,<br>The ADMIN Department`,
+	});
+}
+
 function sendPaperworkHeadsUpNotification(paperworkTypes) {
 	for (const key in paperworkTypes) {
 		sendEmail(key, paperworkTypes[key]);
@@ -1788,4 +1848,19 @@ function sendPaperworkHeadsUpNotification(paperworkTypes) {
 			},<br><br>This is a reminder that your ${key} is due tomorrow.<br><br>Very respectfully,<br>The ADMIN Department`,
 		});
 	}
+}
+
+//
+// Interfaces
+//
+
+interface submittedData {
+	timestamp: Date;
+	assigner: string;
+	paperwork: string;
+	reason: string;
+	dateAssigned: Date;
+	dateDue: Date;
+	sendEmail: boolean;
+	pdfLink: string;
 }
