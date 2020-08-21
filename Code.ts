@@ -1,6 +1,5 @@
 /* To Do
 	Link sheets / names by semester
-	Sort data sheet in reverse order by date
 	Write out proper documentation/docstrings
 	Form type
 
@@ -62,13 +61,17 @@ function initSheetReminder() {
 
 		const lastResetDate = new Date(ssVariables.getRange(5, 2).getValue().toString());
 
-		// Reset for fall if hasnt been reset in last 60 days
+		// Reset for fall if its June and if hasnt been autoreset in last 60 days
 		if (now.getMonth() === 7 && now.getTime() - lastResetDate.getTime() > 1000 * 60 * 60 * 24 * 60) {
 			resetSheet();
 		}
 
-		// Reset for spring if hasnt been reset in last 60 days
-		if (now.getMonth() === 11 && now.getTime() - lastResetDate.getTime() > 1000 * 60 * 60 * 24 * 60) {
+		// Reset for spring if after DEC 20 and if hasnt been autoreset in last 60 days
+		if (
+			now.getMonth() === 11 &&
+			now.getDate() > 20 &&
+			now.getTime() - lastResetDate.getTime() > 1000 * 60 * 60 * 24 * 60
+		) {
 			resetSheet();
 		}
 	}
