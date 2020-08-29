@@ -183,8 +183,8 @@ function myOnAssignmentSubmit(submitData: submittedData, keyValuePairsRawGridChe
  *
  */
 function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifiedDueDate): Date {
-	Logger.log(specifiedDueDate);
 	let out = new Date(specifiedDueDate.toString());
+	out.setDate(out.getDate() + 1);
 	if (paperwork === 'Chit') {
 		out = new Date(assignDate.toString());
 		let chitTime = ssOptions.getRange(2, 2).getValue();
