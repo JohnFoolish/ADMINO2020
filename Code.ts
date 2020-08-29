@@ -686,6 +686,40 @@ function updateTurnedInPaperworkTab(tempData) {
 		}
 	});
 }
+/**
+ *
+ */
+function updateDigitalTurnIn() {
+	var rawData = ssTurnedIn.getRange(1, 1, ssTurnedIn.getLastRow(), ssTurnedIn.getLastColumn()).getValues();
+	var finalData = ssDigitalBox.getRange(1, 1, ssDigitalBox.getLastRow(), ssDigitalBox.getLastColumn()).getValues();
+
+	var UUIDList = [];
+
+	for (var j = 0; j < finalData.length; j++) {
+		UUIDList.push(finalData[j][0].toString());
+	}
+
+	var missingData = [];
+	var missingNo = 0;
+	for (var i = 0; i < rawData.length; i++) {
+		if (rawData[i][0].toString() in UUIDList) {
+			continue;
+			// Do nothing
+		} else {
+			missingData.push(rawData[i]);
+		}
+	}
+	Logger.log('Found ' + missingData.length + ' missing forms!');
+	Logger.log('The following: ', missingData);
+
+	missingData.forEach((tempData) => {
+		updateTurnedInPaperworkTab(tempData);
+	});
+
+	ssDigitalBox
+		.getRange(2, 1, ssDigitalBox.getLastRow() - 1, ssDigitalBox.getLastColumn())
+		.sort({ column: 1, ascending: false });
+}
 
 /**
  *
@@ -1761,6 +1795,7 @@ function dailyRunFunctions() {
 	dailyCheckToRemindPplOfPaperwork();
 	approveDueGoogleFormsFromDatabase();
 	updateBattalionMembersJSON();
+	updateDigitalTurnIn();
 }
 
 /**
