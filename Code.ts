@@ -698,6 +698,7 @@ function updateDigitalTurnIn() {
 	for (var j = 0; j < finalData.length; j++) {
 		UUIDList.push(finalData[j][0].toString());
 	}
+	Logger.log(UUIDList);
 
 	var missingData = [];
 	var missingNo = 0;
@@ -706,6 +707,8 @@ function updateDigitalTurnIn() {
 			continue;
 			// Do nothing
 		} else {
+			rawData[i][3] = 'false';
+			rawData[i][4] = '';
 			missingData.push(rawData[i]);
 		}
 	}
