@@ -208,7 +208,6 @@ function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifi
 			out.setDate(out.getDate() + parseInt(handleEmpty));
 		}
 	}
-	Logger.log(out);
 	return out;
 }
 
