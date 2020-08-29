@@ -1707,7 +1707,9 @@ function sendAssigneesEmail(emailNameList, data) {
 	const emailBody = `${numEmailsBcc === 1 ? lastNameEntered : 'Team'},
 	<br>
 	<br>You have been assigned a ${data.paperwork}, because ${data.reason}. It is due COB ${date}. ${
-		data.pdfLink === '' ? '' : 'You can find the paperwork to complete here: ' + data.pdfLink
+		data.pdfLink === ''
+			? ''
+			: `You can find the paperwork to complete here: <a href="${data.pdfLink}" target="_blank">${data.pdfLink}</a>`
 	}
 	<br>
 	<br>Very respectfully,
