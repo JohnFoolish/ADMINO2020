@@ -121,7 +121,7 @@ function myOnAssignmentSubmit(submitData: submittedData, keyValuePairsRawGridChe
 		const people = getIndividualsFromCheckBoxGrid(keyValuePairsRawGridCheckbox, assignerFullData);
 
 		// Check to make sure inputs are valid
-		if (submitData.dateDue.getFullYear() !== 1945 && people.length !== 0) {
+		if (submitData.dateDue.getFullYear() !== 2000 && people.length !== 0) {
 			// Manipulate data
 			const outData = [];
 			const emailNameList = [];
@@ -172,7 +172,7 @@ function myOnAssignmentSubmit(submitData: submittedData, keyValuePairsRawGridChe
 			sendAssignerFailEmail(
 				assignerFullData,
 				submitData,
-				submitData.dateDue.getFullYear() === 1945,
+				submitData.dateDue.getFullYear() === 2000,
 				people.length === 0
 			);
 		}
@@ -202,12 +202,13 @@ function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifi
 		const handleEmpty = ssOptions.getRange(5, 2).getValue();
 		if (handleEmpty === 'Reject Submission') {
 			out = new Date();
-			out.setFullYear('1945');
+			out.setFullYear('2000');
 		} else {
 			out = new Date(assignDate.toString());
 			out.setDate(out.getDate() + parseInt(handleEmpty));
 		}
 	}
+	Logger.log(out);
 	return out;
 }
 
@@ -1089,7 +1090,7 @@ function processFromAssignemntForm() {
 					submitData.dateDue = specificDueDateLengthCheck(
 						submitData.paperwork,
 						submitData.dateAssigned,
-						answer as string
+						answer.toString() as string
 					);
 					break;
 				case 'Send Assignment Email Notification':
