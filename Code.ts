@@ -1097,7 +1097,7 @@ function processFromAssignemntForm() {
 					submitData.sendEmail = (answer as string) === 'No' ? false : true;
 					break;
 				case 'Upload your form as a PDF here:':
-					submitData.pdfLink = answer as string;
+					submitData.pdfLink = 'https://drive.google.com/open?id=' + (answer as string);
 					break;
 				case 'Receiving Individual/s':
 					const rowIndividualNames: string[] = question.getItem().asCheckboxGridItem().getRows();
