@@ -1085,6 +1085,7 @@ function processFromAssignemntForm() {
 					break;
 				case 'Date Assigned':
 					submitData.dateAssigned = new Date(answer as string);
+					submitData.dateAssigned.setDate(submitData.dateAssigned.getDate() + 1);
 					break;
 				case 'Date Due':
 					Logger.log('Due date updated');
