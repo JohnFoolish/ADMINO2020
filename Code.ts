@@ -62,7 +62,7 @@ function initSheetReminder() {
 		const lastResetDate = new Date(ssVariables.getRange(5, 2).getValue().toString());
 
 		// Reset for fall if its June and if hasnt been autoreset in last 60 days
-		if (now.getMonth() === 7 && now.getTime() - lastResetDate.getTime() > 1000 * 60 * 60 * 24 * 60) {
+		if (now.getMonth() === 6 && now.getTime() - lastResetDate.getTime() > 1000 * 60 * 60 * 24 * 60) {
 			resetSheet();
 		}
 
@@ -296,10 +296,10 @@ function myOnEdit() {
 		ss.getActiveCell().getSheet().getName() === 'Digital Turn In Box' &&
 		ss.getActiveCell().getColumn() === 4
 	) {
-		sortDigitalBox();
 		updateTurnedInPaperworkTab(
 			ssDigitalBox.getRange(ss.getActiveCell().getRow(), 1, 1, ssDigitalBox.getLastColumn()).getValues()[0]
 		);
+		sortDigitalBox();
 	} else if (ss.getActiveCell().getSheet().getName() === 'Battalion Structure' && ss.getActiveCell().getColumn() > 1) {
 		if (ss.getActiveCell().getColumn() === 1 || ss.getActiveCell().getColumn() === 2) {
 			updateFormGroups();
