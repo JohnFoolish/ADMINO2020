@@ -89,10 +89,7 @@ function initSheetReminder() {
 function myOnSubmit() {
 	if (ssVariables.getRange(8, 2).getValue().toString() == 'true') {
 		// It will always be this sheet, but I dont wanna recode it since there is only one form which submits to it now
-		if (ssVariables.getRange(2, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
-			myOnFormTurnedInSubmit();
-			ssVariables.getRange(2, 2).setValue(ssTurnedIn.getLastRow());
-		}
+		myOnFormTurnedInSubmit();
 	} else {
 		let submitterName = '';
 		if (ssVariables.getRange(2, 2).getValue().toString() !== ssTurnedIn.getLastRow().toString()) {
