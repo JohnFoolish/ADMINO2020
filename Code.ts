@@ -716,10 +716,10 @@ function updateDigitalTurnIn() {
 	missingData.forEach((tempData) => {
 		updateTurnedInPaperworkTab(tempData);
 	});
-
 	ssDigitalBox
-		.getRange(2, 1, ssDigitalBox.getLastRow() - 1, ssDigitalBox.getLastColumn())
-		.sort({ column: 1, ascending: false });
+		.getRange(ssDigitalBox.getLastRow() + 1, 1, missingData.length, missingData[0].length)
+		.setValues(missingData);
+	sortDigitalBox();
 }
 
 /**
