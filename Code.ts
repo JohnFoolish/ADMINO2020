@@ -695,18 +695,16 @@ function updateDigitalTurnIn() {
 
 	var UUIDList = [];
 
-	for (var j = 0; j < finalData.length; j++) {
+	for (var j = 1; j < finalData.length; j++) {
 		UUIDList.push(finalData[j][0].toString());
 	}
 	Logger.log(UUIDList);
 
 	var missingData = [];
 	var missingNo = 0;
-	for (var i = 0; i < rawData.length; i++) {
-		if (rawData[i][0].toString() in UUIDList) {
-			continue;
-			// Do nothing
-		} else {
+	for (var i = 1; i < rawData.length; i++) {
+		if (UUIDList.indexOf(rawData[i][0].toString()) === -1) {
+			Logger.log(rawData[i][0].toString());
 			rawData[i][3] = 'false';
 			rawData[i][4] = '';
 			missingData.push(rawData[i]);
