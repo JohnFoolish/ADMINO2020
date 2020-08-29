@@ -183,7 +183,7 @@ function myOnAssignmentSubmit(submitData: submittedData, keyValuePairsRawGridChe
  *
  */
 function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifiedDueDate): Date {
-	let out = specifiedDueDate;
+	let out = new Date(specifiedDueDate.toString());
 	if (paperwork === 'Chit') {
 		out = new Date(assignDate.toString());
 		let chitTime = ssOptions.getRange(2, 2).getValue();
@@ -198,11 +198,11 @@ function specificDueDateLengthCheck(paperwork: string, assignDate: Date, specifi
 			ncTime = '3';
 		}
 		out.setDate(out.getDate() + adjustDateForWeekends(out, parseInt(ncTime)));
-	} else if (out === '') {
+	} else if (specifiedDueDate === '') {
 		const handleEmpty = ssOptions.getRange(5, 2).getValue();
 		if (handleEmpty === 'Reject Submission') {
 			out = new Date();
-			out.setFullYear('2000');
+			out.setFullYear(2000);
 		} else {
 			out = new Date(assignDate.toString());
 			out.setDate(out.getDate() + parseInt(handleEmpty));
@@ -1087,6 +1087,7 @@ function processFromAssignemntForm() {
 					submitData.dateAssigned = new Date(answer as string);
 					break;
 				case 'Date Due':
+					Logger.log('Due date updated');
 					submitData.dateDue = specificDueDateLengthCheck(
 						submitData.paperwork,
 						submitData.dateAssigned,
