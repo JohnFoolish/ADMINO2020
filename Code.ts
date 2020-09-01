@@ -168,6 +168,7 @@ function myOnAssignmentSubmit(submitData: submittedData, keyValuePairsRawGridChe
 				row[9] = submitData.pdfLink;
 				dynamicSheetUpdate(row);
 			});
+			updateAllSubordinates();
 		} else {
 			sendAssignerFailEmail(
 				assignerFullData,
@@ -924,10 +925,10 @@ function dynamicSheetUpdate(tempData) {
 		totalPaperwork.getRange(1, 1, 3, 3).setValues(header);
 		Logger.log(header);
 	});
-	const superiorList = getSuperiors(name);
-	superiorList.forEach((superior) => {
-		updateSubordinateTab(superior);
-	});
+	//const superiorList = getSuperiors(name);
+	//superiorList.forEach((superior) => {
+	//	updateSubordinateTab(superior);
+	//});
 }
 
 /**
