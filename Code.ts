@@ -168,7 +168,6 @@ function myOnAssignmentSubmit(submitData: submittedData, keyValuePairsRawGridChe
 				row[9] = submitData.pdfLink;
 				dynamicSheetUpdate(row);
 			});
-			updateAllSubordinates();
 		} else {
 			sendAssignerFailEmail(
 				assignerFullData,
@@ -1819,6 +1818,7 @@ function runEveryTenMinutes() {
 	processFromAssignemntForm();
 	updateSheetsFromPendingCache();
 	autoRunCreateGoogleFiles();
+	updateAllSubordinates();
 }
 
 /**
