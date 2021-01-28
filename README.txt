@@ -1,10 +1,9 @@
-run npm init
+Online Paperwork System Backend
+===============================
 
-Hey Tim, this is the readme for the project we are working on!
-Here is my push!
+Developmed by Timothy Bowes and John Lewis Corker, this repository allows for the 
+complete automation of online paperwork processing for the GT NROTC battalion and
+was developed in response to COVID-19.
 
-John Lewis Corker
 
-Automated the push function
-
-Tim
+To begin the collaborative session: run npm init
